@@ -97,7 +97,7 @@ uglyURLs = false
 # Author’s information
 [author]
     # Name
-    name = "이청파 leechungpa"
+    name = "Lee Chung Pa"
     # Email
     email = "leechungpa@naver.com"
     # Motto or introduction
@@ -285,7 +285,7 @@ uglyURLs = false
     # family can be configured in typography
     # section at the bottom of this file.
     # Unit: em
-    siteBrandFontSize = 1
+    siteBrandFontSize = 1.2
     siteBrandFontColor = "var(--color-contrast-high)"
 
 
@@ -344,16 +344,17 @@ uglyURLs = false
     siteLogo = "/icons/apple-touch-icon.png"
     # Note: used for JSON-LD, Open Graph
 
-    siteDescription = "MemE is a powerful and highly customizable GoHugo theme for personal blogs."
+    siteDescription = "Blog for Data Science by Leechungpa."
     # Note: used for HTML head meta, JSON-LD,
     #       Open Graph, Atom, RSS
 
-    siteCreatedTime = "1969-07-20T20:17:43+00:00"
+    siteCreatedTime = "2020-04-20T20:00:00+09:00"
     # ATTENTION: keep this format, change
     #            the number
 
-    siteTwitter = "reuixiy"
+    siteTwitter = ""
     # Note: used for Twitter Cards
+    # 트위터 하면 트위터 id 넣으면 됨
 
 
     ######################################
@@ -424,7 +425,7 @@ uglyURLs = false
     ######################################
     # List Page
 
-    listWidth = 39
+    listWidth = "50"
     # Note: you can leave it empty("") to
     #       fallback to the default value: 42
     #       Unit: em
@@ -443,7 +444,7 @@ uglyURLs = false
     groupByMonth = true
 
     # Enable Chinese zodiac?
-    chineseZodiac = true
+    chineseZodiac = false
 
     # Translate the year? (valid for title)
     i18nYear = false
@@ -717,7 +718,7 @@ uglyURLs = false
     #            supported
 
     # The content width of the post
-    postWidth = ""
+    postWidth = "50"
     # Note: you can leave it empty("") to
     #       fallback to the default value: 42
     #       Unit: em
@@ -957,7 +958,7 @@ uglyURLs = false
     ######################################
     ## Font Size (unit: px)
 
-        fontSize = 18
+        fontSize = 15
 
     ######################################
     ## Tab Size
@@ -1044,9 +1045,9 @@ uglyURLs = false
     ######################################
     # Post Copyright
 
-    enablePostCopyright = true
+    enablePostCopyright = false
 
-    displayPostCopyright = true
+    displayPostCopyright = false
     # Note: *global settings*
     #       `displayCopyright` in post’s Front Matter
     #       has a higher priority than here
@@ -1111,10 +1112,10 @@ uglyURLs = false
     shareOnFacebook = true
     shareOnLinkedIn = true
     shareOnTelegram = true
-    shareOnWeibo = true
-    shareOnDouban = true
-    shareOnQQ = true
-    shareOnQzone = true
+    shareOnWeibo = false
+    shareOnDouban = false
+    shareOnQQ = false
+    shareOnQzone = false
 
     shareViaQRCode = true
 
@@ -1250,7 +1251,7 @@ uglyURLs = false
     enableHighlight = true
 
     enableOverflowY = true
-    maxHeight = 20
+    maxHeight = 1000
     # Unit: em
 
     enableCopy = true

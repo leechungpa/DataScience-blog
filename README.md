@@ -2,6 +2,9 @@
 
 블로그 주소 : https://leechungpa.netlify.app/
 
+    
+    
+### 역사    
 
 2020.04.20 데이터사이언스입문 - 블로그 제작 
 

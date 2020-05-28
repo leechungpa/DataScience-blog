@@ -9,21 +9,21 @@
     <channel>
         <title>Leechungpa&#39;s Data Science blog</title>
         <link>/</link>
-        <description>MemE is a powerful and highly customizable GoHugo theme for personal blogs.</description>
+        <description>Blog for Data Science by Leechungpa.</description>
         <generator>Hugo 0.71.1 https://gohugo.io/</generator>
         
             <language>en-us</language>
         
         
-            <managingEditor>leechungpa@naver.com (이청파 leechungpa)</managingEditor>
+            <managingEditor>leechungpa@naver.com (Lee Chung Pa)</managingEditor>
         
         
-            <webMaster>leechungpa@naver.com (이청파 leechungpa)</webMaster>
+            <webMaster>leechungpa@naver.com (Lee Chung Pa)</webMaster>
         
         
             <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</copyright>
         
-        <lastBuildDate>Thu, 28 May 2020 17:08:13 &#43;0900</lastBuildDate>
+        <lastBuildDate>Thu, 28 May 2020 22:16:03 &#43;0900</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="/rss.xml" />
         
@@ -34,7 +34,7 @@
                 <guid isPermaLink="true">/posts/1/</guid>
                 <pubDate>Wed, 27 May 2020 00:00:00 &#43;0000</pubDate>
                 
-                    <author>leechungpa@naver.com (이청파 leechungpa)</author>
+                    <author>leechungpa@naver.com (Lee Chung Pa)</author>
                 
                 <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</copyright>
                 
@@ -1088,100 +1088,6 @@ mean(abs(test_df$log_price_ratio - pred)/abs(test_df$log_price_ratio))*100&lt;/c
                                 
                                 
                                     <category domain="/tags/r-markdown/">R Markdown</category>
-                                
-                            
-                        
-                    
-                
-            </item>
-        
-            <item>
-                <title>Hello R Markdown</title>
-                <link>/posts/2015-07-23-r-rmarkdown/</link>
-                <guid isPermaLink="true">/posts/2015-07-23-r-rmarkdown/</guid>
-                <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
-                
-                    <author>leechungpa@naver.com (이청파 leechungpa)</author>
-                
-                <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</copyright>
-                
-                    <description>
-
-
-&lt;div id=&#34;r-markdown&#34; class=&#34;section level1&#34;&gt;
-&lt;h1&gt;R Markdown&lt;/h1&gt;
-&lt;p&gt;This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see &lt;a href=&#34;http://rmarkdown.rstudio.com&#34; class=&#34;uri&#34;&gt;http://rmarkdown.rstudio.com&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;You can embed an R code chunk like this:&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;summary(cars)
-##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00
-fit &amp;lt;- lm(dist ~ speed, data = cars)
-fit
-## 
-## Call:
-## lm(formula = dist ~ speed, data = cars)
-## 
-## Coefficients:
-## (Intercept)        speed  
-##     -17.579        3.932&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;div id=&#34;including-plots&#34; class=&#34;section level1&#34;&gt;
-&lt;h1&gt;Including Plots&lt;/h1&gt;
-&lt;p&gt;You can also embed plots. See Figure &lt;a href=&#34;/posts/2015-07-23-r-rmarkdown/#fig:pie&#34;&gt;1&lt;/a&gt; for example:&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;par(mar = c(0, 1, 0, 1))
-pie(
-  c(280, 60, 20),
-  c(&amp;#39;Sky&amp;#39;, &amp;#39;Sunny side of pyramid&amp;#39;, &amp;#39;Shady side of pyramid&amp;#39;),
-  col = c(&amp;#39;#0292D8&amp;#39;, &amp;#39;#F7EA39&amp;#39;, &amp;#39;#C4B632&amp;#39;),
-  init.angle = -50, border = NA
-)&lt;/code&gt;&lt;/pre&gt;
-&lt;div class=&#34;figure&#34;&gt;&lt;span id=&#34;fig:pie&#34;&gt;&lt;/span&gt;
-&lt;img src=&#34;/post/2015-07-23-r-rmarkdown_files/figure-html/pie-1.png&#34; alt=&#34;A fancy pie chart.&#34; width=&#34;672&#34; /&gt;
-&lt;p class=&#34;caption&#34;&gt;
-Figure 1: A fancy pie chart.
-&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-</description>
-                
-                
-                
-                
-                
-                    
-                        
-                            
-                                
-                                
-                                
-                                    <category domain="/categories/r/">R</category>
-                                
-                            
-                        
-                    
-                        
-                            
-                                
-                                
-                                
-                                    <category domain="/tags/r-markdown/">R Markdown</category>
-                                
-                            
-                                
-                                
-                                
-                                    <category domain="/tags/plot/">plot</category>
-                                
-                            
-                                
-                                
-                                
-                                    <category domain="/tags/regression/">regression</category>
                                 
                             
                         
