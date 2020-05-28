@@ -4,12 +4,12 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-us">
     <title type="text">Leechungpa&#39;s Data Science blog</title>
     <subtitle type="html">MemE is a powerful and highly customizable GoHugo theme for personal blogs.</subtitle>
-    <updated>2020-05-28T15:20:05&#43;09:00</updated>
+    <updated>2020-05-28T16:16:15&#43;09:00</updated>
     <id>/</id>
     <link rel="alternate" type="text/html" href="/" />
     <link rel="self" type="application/atom&#43;xml" href="/atom.xml" />
     <author>
-            <name>leechungpa</name>
+            <name>이청파 leechungpa</name>
             <uri>/</uri>
             
                 <email>leechungpa@naver.com</email>
@@ -20,11 +20,11 @@
             <title type="text">데이터마이닝 1차과제</title>
             <link rel="alternate" type="text/html" href="/post/1/" />
             <id>/post/1/</id>
-            <updated>2020-05-28T14:51:23&#43;09:00</updated>
+            <updated>2020-05-28T16:05:12&#43;09:00</updated>
             <published>2020-05-27T00:00:00&#43;00:00</published>
             <author>
-                    <name>leechungpa</name>
-                    <uri>https://io-oi.me/</uri>
+                    <name>이청파 leechungpa</name>
+                    <uri>https://leechungpa.netlify.app/</uri>
                     <email>leechungpa@naver.com</email>
                     </author>
             <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</rights><summary type="html">자료 불러오기library(readxl)airbnb &amp;lt;- read_excel(&amp;quot;data/airbnb.xlsx&amp;quot;)str(airbnb)## tibble [74,111 x 29] (S3: tbl_df/tbl/data.frame)## $ id : num [1:74111] 6901257 6304928 7919400 13418779 3808709 ...## $ log_price : num [1:74111] 5.01 5.13 4.98 6.62 4.74 ...## $ property_type : chr [1:74111] &amp;quot;Apartment&amp;quot; &amp;quot;Apartment&amp;quot; &amp;quot;Apartment&amp;quot; &amp;quot;House&amp;quot; .</summary>
@@ -1090,11 +1090,11 @@ mean(abs(test_df$log_price_ratio - pred)/abs(test_df$log_price_ratio))*100&lt;/c
             <title type="text">Hello R Markdown</title>
             <link rel="alternate" type="text/html" href="/post/2015-07-23-r-rmarkdown/" />
             <id>/post/2015-07-23-r-rmarkdown/</id>
-            <updated>2020-05-28T14:32:11&#43;09:00</updated>
+            <updated>2020-05-28T16:07:08&#43;09:00</updated>
             <published>2015-07-23T21:13:14-05:00</published>
             <author>
-                    <name>leechungpa</name>
-                    <uri>https://io-oi.me/</uri>
+                    <name>이청파 leechungpa</name>
+                    <uri>https://leechungpa.netlify.app/</uri>
                     <email>leechungpa@naver.com</email>
                     </author>
             <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</rights><summary type="html">R MarkdownThis is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
@@ -1180,34 +1180,6 @@ Figure 1: A fancy pie chart.
                                 <category scheme="/tags/regression/" term="regression" label="regression" />
                             
                         
-                    
-                
-            
-        </entry>
-    
-        <entry>
-            <title type="text">Lorem Ipsum</title>
-            <link rel="alternate" type="text/html" href="/post/2015-01-01-lorem-ipsum/" />
-            <id>/post/2015-01-01-lorem-ipsum/</id>
-            <updated>2020-05-16T00:55:01&#43;09:00</updated>
-            <published>2015-01-01T13:09:13-06:00</published>
-            <author>
-                    <name>leechungpa</name>
-                    <uri>https://io-oi.me/</uri>
-                    <email>leechungpa@naver.com</email>
-                    </author>
-            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</rights><summary type="html">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</summary>
-            
-                <content type="html">&lt;p&gt;&lt;strong&gt;Lorem ipsum&lt;/strong&gt; dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore &lt;em&gt;magna aliqua&lt;/em&gt;. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&lt;/p&gt;
-</content>
-            
-            
-            
-            
-            
-                
-                    
-                
                     
                 
             

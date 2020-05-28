@@ -5,6 +5,7 @@ baseURL = "https://leechungpa.netlify.app/"
 title = "Leechungpa's Data Science blog"
 languageCode = "en-us"
 hasCJKLanguage = false
+
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
 # Copyright information (Markdown supported)
@@ -96,15 +97,15 @@ uglyURLs = false
 # Author’s information
 [author]
     # Name
-    name = "leechungpa"
+    name = "이청파 leechungpa"
     # Email
     email = "leechungpa@naver.com"
     # Motto or introduction
-    motto = "Viva La Vida"
+    motto = "나라는 사람이 좀 더 바르고 사회를 위한 존재로 거듭나길 오늘도 노력한다."
     # Avatar
     avatar = "/icons/apple-touch-icon.png"
     # Personal website, default: baseURL
-    website = "https://io-oi.me/"
+    website = "https://leechungpa.netlify.app/"
     # Twitter
     twitter = "reuixiy"
 
@@ -925,11 +926,11 @@ uglyURLs = false
     # Menu bar
     fontFamilyMenu = ""
     # Post title, post subtitle, list title, year and month title of the list, related posts title, previous/next post title, header of table, term/name in a definition list
-    fontFamilyTitle = "'Nanum Gothic', sans-serif"
+    fontFamilyTitle = "'Nanum Gothic','Comfortaa',  serif"
     # Headings, toc title
-    fontFamilyHeadings = "'Nanum Gothic', sans-serif"
+    fontFamilyHeadings = "'Nanum Gothic','Comfortaa',  serif"
     # Code, superscript, post meta info, post updated badge, post gitinfo, minimal footer, busuanzi site view counter
-    fontFamilyCode = "'Nanum Gothic', monospace"
+    fontFamilyCode = "'Source Code Pro', 'Nanum Gothic', monospace"
     # Blockquotes
     fontFamilyQuote = ""
     # Table of contents
@@ -939,13 +940,13 @@ uglyURLs = false
     # Footer
     fontFamilyFooter = ""
     # Body
-    fontFamilyBody = "'IBM Plex Serif', serif"
+    fontFamilyBody = "'Nanum Gothic','IBM Plex Serif',  serif"
 
     # Embed fonts link
     fontsLink = "https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,700;1,400;1,700&family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&family=Comfortaa:wght@700&display=swap&family=Nanum+Gothic:wght@400;700;800&display=swap"
     # Note: In order for the reader to
     #       experience the fonts you set,
-    #       it is best to use web fonts.
+    #       it is best to use web fonts. 
     #       MemE currently only supports
     #       Google Fonts, please go to
     #       https://fonts.google.com/ to

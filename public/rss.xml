@@ -15,15 +15,15 @@
             <language>en-us</language>
         
         
-            <managingEditor>leechungpa@naver.com (leechungpa)</managingEditor>
+            <managingEditor>leechungpa@naver.com (이청파 leechungpa)</managingEditor>
         
         
-            <webMaster>leechungpa@naver.com (leechungpa)</webMaster>
+            <webMaster>leechungpa@naver.com (이청파 leechungpa)</webMaster>
         
         
             <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</copyright>
         
-        <lastBuildDate>Thu, 28 May 2020 15:20:05 &#43;0900</lastBuildDate>
+        <lastBuildDate>Thu, 28 May 2020 16:16:15 &#43;0900</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="/rss.xml" />
         
@@ -34,7 +34,7 @@
                 <guid isPermaLink="true">/post/1/</guid>
                 <pubDate>Wed, 27 May 2020 00:00:00 &#43;0000</pubDate>
                 
-                    <author>leechungpa@naver.com (leechungpa)</author>
+                    <author>leechungpa@naver.com (이청파 leechungpa)</author>
                 
                 <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</copyright>
                 
@@ -1101,7 +1101,7 @@ mean(abs(test_df$log_price_ratio - pred)/abs(test_df$log_price_ratio))*100&lt;/c
                 <guid isPermaLink="true">/post/2015-07-23-r-rmarkdown/</guid>
                 <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
                 
-                    <author>leechungpa@naver.com (leechungpa)</author>
+                    <author>leechungpa@naver.com (이청파 leechungpa)</author>
                 
                 <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</copyright>
                 
@@ -1184,31 +1184,6 @@ Figure 1: A fancy pie chart.
                                     <category domain="/tags/regression/">regression</category>
                                 
                             
-                        
-                    
-                
-            </item>
-        
-            <item>
-                <title>Lorem Ipsum</title>
-                <link>/post/2015-01-01-lorem-ipsum/</link>
-                <guid isPermaLink="true">/post/2015-01-01-lorem-ipsum/</guid>
-                <pubDate>Thu, 01 Jan 2015 13:09:13 -0600</pubDate>
-                
-                    <author>leechungpa@naver.com (leechungpa)</author>
-                
-                <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</copyright>
-                
-                    <description>&lt;p&gt;&lt;strong&gt;Lorem ipsum&lt;/strong&gt; dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore &lt;em&gt;magna aliqua&lt;/em&gt;. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&lt;/p&gt;
-</description>
-                
-                
-                
-                
-                
-                    
-                        
-                    
                         
                     
                 
