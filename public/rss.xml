@@ -23,15 +23,15 @@
         
             <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</copyright>
         
-        <lastBuildDate>Thu, 28 May 2020 16:16:15 &#43;0900</lastBuildDate>
+        <lastBuildDate>Thu, 28 May 2020 17:08:13 &#43;0900</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="/rss.xml" />
         
         
             <item>
                 <title>데이터마이닝 1차과제</title>
-                <link>/post/1/</link>
-                <guid isPermaLink="true">/post/1/</guid>
+                <link>/posts/1/</link>
+                <guid isPermaLink="true">/posts/1/</guid>
                 <pubDate>Wed, 27 May 2020 00:00:00 &#43;0000</pubDate>
                 
                     <author>leechungpa@naver.com (이청파 leechungpa)</author>
@@ -1097,8 +1097,8 @@ mean(abs(test_df$log_price_ratio - pred)/abs(test_df$log_price_ratio))*100&lt;/c
         
             <item>
                 <title>Hello R Markdown</title>
-                <link>/post/2015-07-23-r-rmarkdown/</link>
-                <guid isPermaLink="true">/post/2015-07-23-r-rmarkdown/</guid>
+                <link>/posts/2015-07-23-r-rmarkdown/</link>
+                <guid isPermaLink="true">/posts/2015-07-23-r-rmarkdown/</guid>
                 <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
                 
                     <author>leechungpa@naver.com (이청파 leechungpa)</author>
@@ -1132,7 +1132,7 @@ fit
 &lt;/div&gt;
 &lt;div id=&#34;including-plots&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Including Plots&lt;/h1&gt;
-&lt;p&gt;You can also embed plots. See Figure &lt;a href=&#34;/post/2015-07-23-r-rmarkdown/#fig:pie&#34;&gt;1&lt;/a&gt; for example:&lt;/p&gt;
+&lt;p&gt;You can also embed plots. See Figure &lt;a href=&#34;/posts/2015-07-23-r-rmarkdown/#fig:pie&#34;&gt;1&lt;/a&gt; for example:&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;par(mar = c(0, 1, 0, 1))
 pie(
   c(280, 60, 20),

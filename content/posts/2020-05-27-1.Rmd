@@ -1,0 +1,429 @@
+---
+title: 데이터마이닝 1차과제
+author: 이청파
+date: 2020-05-27
+slug: '1'
+categories:
+  - R
+tags:
+  - R Markdown
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+---
+
+# 자료 불러오기
+
+```{r}
+library(readxl)
+airbnb <- read_excel("data/airbnb.xlsx")
+str(airbnb)
+```
+
+---
+
+# 데이터 전처리
+
+### “property_type”은 ‘House’, ‘Apartment’, ’Other’ 등의 3범주로 변환하시오.
+
+```{r}
+attach(airbnb)
+airbnb$property_type[!(property_type=='House'| property_type=='Apartment')] = "Other"
+airbnb$property_type <- as.factor(airbnb$property_type)
+levels(airbnb$property_type)
+```
+
+### “bed_type”은 ‘Bed’, ‘Other’ 등의 2범주로 변환하시오.
+Real Bed와 Airbed 는 Bed로, 나머지는 Other로 변환하였다.
+
+```{r}
+airbnb$bed_type[(bed_type=='Airbed'| bed_type=='Real Bed')] = "Bed"
+airbnb$bed_type[!(bed_type=='Airbed'| bed_type=='Real Bed')] = "Other"
+airbnb$bed_type <- as.factor(airbnb$bed_type)
+levels(airbnb$bed_type)
+detach(airbnb)
+```
+
+### “number_of_reviews”가 11개 이상인 데이터만 추출해서 분석에 사용하시오.
+
+```{r}
+airbnb <- airbnb[airbnb$number_of_reviews>=11 , 1:ncol(airbnb)]
+```
+
+### ‘가격비(price_ratio)’ 변수를 생성하시오.
+
+```{r}
+
+airbnb$log_price <- exp(airbnb$log_price)
+mean_price <- aggregate(log_price ~ city, airbnb, mean)
+names(mean_price) <-c ("city","mean_price")
+f_airbnb <- merge(x =airbnb,y=mean_price,by="city",all.x=T)
+f_airbnb$price_ratio <- f_airbnb$log_price/f_airbnb$mean_price*100
+```
+
+---
+
+# 데이터 분석
+
+## 1.  “가격비(price_ratio)” 변수의 평균과 표준편차를 답하시오.
+
+```{r}
+mean(f_airbnb$price_ratio)
+sd(f_airbnb$price_ratio)
+```
+
+## 2. “가격비(price_ratio)”를 종속변수로 하여 선형회귀분석을 수행하시오.
+
+
+먼저 시행에 앞서 불필요한 변수를 제거한다. 제거한 것들은 아래와 같다.
+*amenities나 description의 경우 길이로 변환하여 분석하였으나 큰 의미가 없어 제거하고 분석하였다.*
+(y변수 계산에 필요했던 것들 및  url이나 설명같이 의미없는 것들을 제외한다.)
+  
+ - description  
+   
+ - amenities  
+   
+ - name  
+   
+ - neighbourhood  
+   
+ - thumbnail_url  
+   
+ - id  
+   
+ - log_price  
+   
+ - mean_price  
+ 
+```{r}
+f_df <- subset(f_airbnb, select = -c(description, amenities, name, neighbourhood, thumbnail_url, id, log_price, mean_price))
+```
+
+character를 factor로 변환한다.
+순서가 있는 cancellation_policy의 경우 순서를 준다.
+
+```{r}
+find_char_col<-NA
+for (i in 1:ncol(f_df)){
+  find_char_col[i] <- is.character(f_df[,i])
+}
+char_col <- colnames(f_df)[find_char_col]
+f_df[char_col] <- lapply(f_df[char_col] , factor)
+
+f_df$cleaning_fee <- as.factor(f_df$cleaning_fee)
+```
+
+cancellation_policy에서도 "super_strict_60"는 2개뿐이므로"super_strict_30"에 포함시켰다. (즉 super_strict_30는 super_strict_30+를 의미한다.)
+
+```{r}
+which(f_df$cancellation_policy == "super_strict_60")
+f_df$cancellation_policy[which(f_df$cancellation_policy == "super_strict_60")] <- "super_strict_30"
+f_df$cancellation_policy <- factor(f_df$cancellation_policy,levels=c("flexible", "moderate", "strict", "super_strict_30"), order=T)
+```
+
+먼저 각각의 plot을 그려본다. (결과는 생략 eval=FALSE)
+
+```{r eval=FALSE}
+for (i in 1:(ncol(f_df)-1)) {
+plot(f_df$price_ratio~f_df[[i]],xlab=colnames(f_df)[i])
+}
+```
+
+대략적으로 눈으로 보기에 차이가 나타나는 것은 다음과 같다. (진한 것은 더욱 두드러 진 것)
+ 
+ - **room_type** 
+ - accommodates
+ - **bathrooms** 
+ - bed_type
+ - **cancellation_policy** 
+ - **cleaning_fee** 
+ - host_has_profile_pic
+ - host_identity_verified 
+ - **host_response_rate**
+ - instant_bookable 
+ - latitude
+ - longitude 
+ - number_of_reviews
+ - **review_scores_rating**
+ - bedrooms
+ - beds
+ 
+ 
+ 그런데 latitude와 longitude는 사실상 zipcode에 그 데이터에 의미가 어느정도 포함된다고 판단하여 제거하였다.
+ 
+ 또한 zipcode는 너무 자세하므로 분석의 편의상 앞의 2자리만 사용하였다. (city는 이 zipcode에 포함되므로 생략하였다.)
+ 
+ 그리고 host_has_profile_pic의 경우 f는 28개뿐으로 매우 적으므로 변수를 사용하지 않는다.
+ 
+```{r}
+summary( lm( price_ratio ~ latitude, data=f_df))
+summary( lm( price_ratio ~ longitude, data=f_df))
+f_df$zipcode <- as.factor(substr(f_airbnb$zipcode,1,2))
+
+table(f_df$host_has_profile_pic)
+```
+
+그래서 이를 제외한 다음을 분석변수로 한다.
+  
+
+- room_type 
+- property_type 
+- accommodates 
+- bathrooms 
+- bed_type 
+- cancellation_policy 
+- cleaning_fee 
+- host_identity_verified 
+- host_response_rate 
+- instant_bookable 
+- first_review 
+- number_of_reviews 
+- host_since 
+- review_scores_rating 
+- last_review 
+- bedrooms  
+- beds 
+- zipcode 
+
+ 정확히 하기 위해 trellis plot을 그려보았다.
+ 
+ 
+```{r warning=F}
+library(lattice)
+mypanel <- function(x, y) {
+  panel.xyplot(x, y)
+  panel.loess(x, y, col="red", lwd=2, lty=2) 
+}
+
+xyplot(price_ratio ~ room_type, data=f_df,panel=mypanel)
+xyplot(price_ratio ~ accommodates, data=f_df,panel=mypanel)
+xyplot(price_ratio ~ bathrooms, data=f_df,panel=mypanel)
+xyplot(price_ratio ~ bed_type, data=f_df,panel=mypanel)
+xyplot(price_ratio ~ cancellation_policy, data=f_df,panel=mypanel)
+xyplot(price_ratio ~ cleaning_fee, data=f_df,panel=mypanel)
+xyplot(price_ratio ~ host_identity_verified , data=f_df,panel=mypanel)
+xyplot(price_ratio ~ host_response_rate, data=f_df,panel=mypanel)
+xyplot(price_ratio ~ instant_bookable , data=f_df,panel=mypanel)
+xyplot(price_ratio ~ number_of_reviews, data=f_df,panel=mypanel)
+xyplot(price_ratio ~ review_scores_rating, data=f_df,panel=mypanel)
+xyplot(price_ratio ~ bedrooms, data=f_df,panel=mypanel)
+xyplot(price_ratio ~ beds, data=f_df,panel=mypanel)
+xyplot(price_ratio ~ zipcode, data=f_df,panel=mypanel)
+xyplot(price_ratio ~ last_review , data=f_df,panel=mypanel)
+xyplot(price_ratio ~ host_since , data=f_df,panel=mypanel)
+xyplot(price_ratio ~ first_review , data=f_df,panel=mypanel)
+xyplot(price_ratio ~ property_type , data=f_df,panel=mypanel)
+```
+
+이제 18개의 값들을 이용해 선형회귀분석을 실시한다. 그전에 결측치NA가 포함된 행은 제거하고 실시한다.
+
+```{r}
+f_df = na.omit(f_df)
+
+lm1 = lm(price_ratio ~ room_type + property_type + accommodates + bathrooms + bed_type + cancellation_policy + cleaning_fee + host_identity_verified + host_response_rate + instant_bookable + first_review + number_of_reviews + host_since + review_scores_rating + last_review + bedrooms  + beds + zipcode , data = f_df)
+
+summary(lm1)
+```
+
+
+위를 보면 유의미하지 않은 p-value가 많다. 이제 stepwise를 해서 제거한다. 
+
+```{r}
+lm2 = step(lm1, direction = 'both')
+
+summary(lm2)
+```
+
+이후 분석에서 p-value가 유의미하지 않은 last_review 를 제거하고 실시한다.
+
+
+---
+
+# 회귀진단
+
+```{r}
+
+plot(lm2,which=1)
+plot(lm2,which=2)
+
+```
+
+잔차에서 메가폰 형태가 나타남을 알수 있다. 또한 QQ플랏도 문제가 있음을 알 수 있다. Y변수의 변환의 필요성이 있으므로 Y'=logY로 변환하였다.
+
+```{r}
+
+f_df$log_price_ratio <- log(f_df$price_ratio)
+
+lm3 = lm(log_price_ratio ~ room_type + property_type + accommodates + 
+    bathrooms + cancellation_policy + cleaning_fee + host_identity_verified + 
+    host_response_rate + instant_bookable + number_of_reviews + 
+    review_scores_rating + bedrooms + beds + zipcode, 
+    data = f_df)
+
+lm4 = step(lm3, direction = 'both')
+
+```
+
+그 결과는 아래와 같다.
+
+
+```{r}
+summary(lm4)
+plot(lm4,which=1)
+plot(lm4,which=2)
+```
+
+
+잔차의 패턴이 어느정도 감소함을 알 수 있다. 
+```{r}
+summary(lm3)
+```
+
+다만 p-value를 구해보면 유의미하지 않은 변수가 다시 나타나므로 stepwise를 실시해 본다. 그전에 number_of_reviews가 유의미 하지 않는 다고 나온다. 하지만 number_of_reviews는 다른 숫자자료에 비해 분산이 크다. 실제로 number_of_reviews와 비교해보면 10배 정도 차이가 난다. 이를 보정해 주기 위해 나눈값을 해봐도 결과는 동일하게 유의미 하지 않는다고 나온다.
+
+```{r}
+
+sd(f_df$review_scores_rating, na.rm=TRUE)
+sd(f_df$number_of_reviews) 
+
+
+f_df$standard_number_of_reviews <- f_df$number_of_reviews/sd(f_df$review_scores_rating, na.rm=TRUE)
+
+
+temp_lm = lm(log_price_ratio ~ room_type + accommodates + bathrooms + 
+    cancellation_policy + cleaning_fee + host_response_rate + 
+    instant_bookable + standard_number_of_reviews + review_scores_rating + 
+    bedrooms + beds, data = f_df)
+
+summary(temp_lm)
+
+```
+
+이제 기존의 변수를 활용하여 stepwise를 실시해 본다
+
+```{r}
+
+lm4 = step(lm3, direction = 'both')
+
+```
+
+그 결과는 다음과 같다.
+
+```{r}
+summary(lm4)
+
+plot(lm4,which=1)
+plot(lm4,which=2)
+
+```
+
+정규성과 등분산성에 문제가 없다. Y 변수가 아닌 잔차를 바탕으로 trellis plot을 그려보면 큰 문제는 보이지 않는다.  (결과는 생략 eval=FALSE)
+
+```{r eval=FALSE}
+xyplot(lm4$residuals ~ room_type, data=f_df,panel=mypanel)
+xyplot(lm4$residuals ~ cancellation_policy, data=f_df,panel=mypanel)
+
+xyplot(lm4$residuals ~ property_type, data=f_df,panel=mypanel)
+xyplot(lm4$residuals ~ accommodates, data=f_df,panel=mypanel)
+xyplot(lm4$residuals ~ bathrooms, data=f_df,panel=mypanel)
+xyplot(lm4$residuals ~ host_identity_verified, data=f_df,panel=mypanel)
+xyplot(lm4$residuals ~ host_response_rate, data=f_df,panel=mypanel)
+xyplot(lm4$residuals ~ instant_bookable , data=f_df,panel=mypanel)
+xyplot(lm4$residuals ~ review_scores_rating, data=f_df,panel=mypanel)
+xyplot(lm4$residuals ~ bedrooms, data=f_df,panel=mypanel)
+xyplot(lm4$residuals ~ beds, data=f_df,panel=mypanel)
+xyplot(lm4$residuals ~ zipcode, data=f_df,panel=mypanel)
+```
+
+즉 우리는 교호작용 없이 총 12개의 변수를 이용해 회귀분석 하였다.
+
+ - room_type 
+ - property_type 
+ - accommodates 
+ - bathrooms 
+ - cancellation_policy 
+ - host_identity_verified 
+ - host_response_rate 
+ - instant_bookable 
+ - review_scores_rating 
+ - bedrooms 
+ - beds 
+ - zipcode
+
+이제 오버피팅을 막기 위해 데이터를 train set과  test set으로 나누어 모형 만들어 평가해 보도록 한다.
+
+```{r}
+nobs=nrow(f_df)
+
+set.seed(1234)
+i = sample(1:nobs, round(nobs*0.6)) #60% for training data, 40% for testdata
+train_df = f_df[i,] 
+test_df = f_df[-i,]
+
+lm5 = lm(log_price_ratio ~ room_type + property_type + accommodates + bathrooms 
+          + cancellation_policy + host_identity_verified + host_response_rate + instant_bookable + 
+            review_scores_rating + bedrooms + beds + zipcode, data = f_df)
+
+summary(lm5)
+plot(lm5,which=1)
+plot(lm5,which=2)
+```
+
+p-value도 유의미하며(일부 zipcode는 유의미 하지 않으나 대부분이 유의미하므로 그대로 사용한다. 하지만 해당 zipcode에 대해서는 해석에 유의할 필요가 있다.), Adjusted R-squared도 0.6584이다. 잔차도 문제 없으므로 test데이터와 비교를 해본다.
+
+그 결과 예측결정계수,평균절대오차, MAPE는 순서대로 다음과 같다.
+
+```{r}
+## predicted values
+pred = predict(lm5, newdata=test_df, type='response')
+# predictive R^2
+cor(test_df$log_price_ratio, pred)^2
+# MAE
+mean(abs(test_df$log_price_ratio - pred))
+# MAPE
+mean(abs(test_df$log_price_ratio - pred)/abs(test_df$log_price_ratio))*100
+```
+
+# 최종 결과
+
+마지막으로 우리의 최종 모형을 설명하고자 한다.
+
+```{r}
+
+summary(lm5)
+
+```
+
+### Y변수 : log_price_ratio (가격비에 log를 취한 값) 
+ 
+### X변수 : room_type + property_type + accommodates + bathrooms + cancellation_policy + host_identity_verified + host_response_rate + instant_bookable + review_scores_rating + bedrooms + beds + zipcod  
+ 
+위의 Coefficients의 Estimate를 보면 그 결과를 알 수 있으나 간단히 설명하면 다음과 같다. 
+
+
+ - cancellation_policy가 "super_strict_30"에서 "flexible"으로 변하면 0.2750713만큼 log_price_ratio가 증가한다. 
+ - cancellation_policy가 "super_strict_30"에서 "moderate"으로 변하면  0.1480741만큼 log_price_ratio가 증가한다.  
+ - cancellation_policy가 "super_strict_30"에서 "strict"으로 변하면 0.0603244만큼 log_price_ratio가 증가한다. 
+  
+ - room_type가 Entire home/apt에서 "Private room"으로 변하면 0.5854706만큼 log_price_ratio가 **감소**한다. 
+ - room_type가 Entire home/apt에서 "Shared room"으로 변하면 1.1371925만큼 log_price_ratio가 **감소**한다. 
+  
+ - property_type가 "Apartment"에서 "House"으로 변하면 0.0184556만큼 log_price_ratio가 **감소**한다. 
+ - property_type가 "Apartment"에서 "Other"으로 변하면 0.0422110만큼 log_price_ratio가 증가한다. 
+  
+ - host_identity_verified가 "f"에서 "t"으로 변하면 0.0162358만큼 log_price_ratio가 증가한다. 
+  
+ - bedrooms의 개수가 1개 증가할 수록 0.1718274만큼 log_price_ratio가 증가한다. 
+ - beds의 수가 1개 증가할수록 0.0392406만큼 log_price_ratio가 **감소**한다. 
+ - bathrooms의 개수가 1개 증가할 수록 0.1208864만큼 log_price_ratio가 증가한다. 
+  
+ - accommodate가 1 증가할 수록 0.0670576만큼 log_price_ratio가 증가한다. 
+ - host_response_rate가 1 증가할 수록 0.1385022만큼 log_price_ratio가 **감소**한다. 
+ - instant_bookablet가 1 증가할 수록 0.0365038만큼 log_price_ratio가 **감소**한다. 
+ - review_scores_rating가 1 증가할 수록 0.0188218만큼 log_price_ratio가 증가한다. 
+  
+ - zipcode의 경우 10###에서 각 해당 코드로 변했을떄 log_price_ratio가 얼마나 감소했는지를 의미한다. 다만 zipcode1m###과 zipcode24###는 설명하지 않는다.   
