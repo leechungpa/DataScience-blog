@@ -1,0 +1,1039 @@
+---
+title: 데이터마이닝 - 로지스틱 회귀분석
+author: 이청파
+date: 2020-04-05
+slug: 'report/1'
+categories:
+  - R
+  - data mining
+tags:
+  - R Markdown
+  - 로지스틱
+---
+
+
+
+<hr />
+<div id="자료-불러오기" class="section level1">
+<h1>자료 불러오기</h1>
+<pre class="r"><code>library(readxl)
+airbnb &lt;- read_excel(&quot;data/airbnb.xlsx&quot;)
+str(airbnb)</code></pre>
+<pre><code>## tibble [74,111 x 29] (S3: tbl_df/tbl/data.frame)
+##  $ id                    : num [1:74111] 6901257 6304928 7919400 13418779 3808709 ...
+##  $ log_price             : num [1:74111] 5.01 5.13 4.98 6.62 4.74 ...
+##  $ property_type         : chr [1:74111] &quot;Apartment&quot; &quot;Apartment&quot; &quot;Apartment&quot; &quot;House&quot; ...
+##  $ room_type             : chr [1:74111] &quot;Entire home/apt&quot; &quot;Entire home/apt&quot; &quot;Entire home/apt&quot; &quot;Entire home/apt&quot; ...
+##  $ amenities             : chr [1:74111] &quot;{\&quot;Wireless Internet\&quot;,\&quot;Air conditioning\&quot;,Kitchen,Heating,\&quot;Family/kid friendly\&quot;,Essentials,\&quot;Hair dryer\&quot;,I&quot;| __truncated__ &quot;{\&quot;Wireless Internet\&quot;,\&quot;Air conditioning\&quot;,Kitchen,Heating,\&quot;Family/kid friendly\&quot;,Washer,Dryer,\&quot;Smoke detect&quot;| __truncated__ &quot;{TV,\&quot;Cable TV\&quot;,\&quot;Wireless Internet\&quot;,\&quot;Air conditioning\&quot;,Kitchen,Breakfast,\&quot;Buzzer/wireless intercom\&quot;,Heat&quot;| __truncated__ &quot;{TV,\&quot;Cable TV\&quot;,Internet,\&quot;Wireless Internet\&quot;,Kitchen,\&quot;Indoor fireplace\&quot;,\&quot;Buzzer/wireless intercom\&quot;,Heati&quot;| __truncated__ ...
+##  $ accommodates          : num [1:74111] 3 7 5 4 2 2 3 2 2 2 ...
+##  $ bathrooms             : num [1:74111] 1 1 1 1 1 1 1 1 1 1 ...
+##  $ bed_type              : chr [1:74111] &quot;Real Bed&quot; &quot;Real Bed&quot; &quot;Real Bed&quot; &quot;Real Bed&quot; ...
+##  $ cancellation_policy   : chr [1:74111] &quot;strict&quot; &quot;strict&quot; &quot;moderate&quot; &quot;flexible&quot; ...
+##  $ cleaning_fee          : logi [1:74111] TRUE TRUE TRUE TRUE TRUE TRUE ...
+##  $ city                  : chr [1:74111] &quot;NYC&quot; &quot;NYC&quot; &quot;NYC&quot; &quot;SF&quot; ...
+##  $ description           : chr [1:74111] &quot;Beautiful, sunlit brownstone 1-bedroom in the loveliest neighborhood in Brooklyn. Blocks from the promenade and&quot;| __truncated__ &quot;Enjoy travelling during your stay in Manhattan. My place is centrally located near Times Square and Central Par&quot;| __truncated__ &quot;The Oasis comes complete with a full backyard with outdoor furniture to make the most of this summer vacation!!&quot;| __truncated__ &quot;This light-filled home-away-from-home is super clean and comes with all of the modern amenities travelers could&quot;| __truncated__ ...
+##  $ first_review          : POSIXct[1:74111], format: &quot;2018-06-16&quot; &quot;2005-08-17&quot; ...
+##  $ host_has_profile_pic  : chr [1:74111] &quot;t&quot; &quot;t&quot; &quot;t&quot; &quot;t&quot; ...
+##  $ host_identity_verified: chr [1:74111] &quot;t&quot; &quot;f&quot; &quot;t&quot; &quot;t&quot; ...
+##  $ host_response_rate    : num [1:74111] NA 1 1 NA 1 1 1 1 1 1 ...
+##  $ host_since            : POSIXct[1:74111], format: &quot;2026-03-12&quot; &quot;2019-06-17&quot; ...
+##  $ instant_bookable      : chr [1:74111] &quot;f&quot; &quot;t&quot; &quot;t&quot; &quot;f&quot; ...
+##  $ last_review           : POSIXct[1:74111], format: &quot;2018-07-16&quot; &quot;2023-09-17&quot; ...
+##  $ latitude              : num [1:74111] 40.7 40.8 40.8 37.8 38.9 ...
+##  $ longitude             : num [1:74111] -74 -74 -73.9 -122.4 -77 ...
+##  $ name                  : chr [1:74111] &quot;Beautiful brownstone 1-bedroom&quot; &quot;Superb 3BR Apt Located Near Times Square&quot; &quot;The Garden Oasis&quot; &quot;Beautiful Flat in the Heart of SF!&quot; ...
+##  $ neighbourhood         : chr [1:74111] &quot;Brooklyn Heights&quot; &quot;Hell&#39;s Kitchen&quot; &quot;Harlem&quot; &quot;Lower Haight&quot; ...
+##  $ number_of_reviews     : num [1:74111] 2 6 10 0 4 3 15 9 159 2 ...
+##  $ review_scores_rating  : num [1:74111] 100 93 92 NA 40 100 97 93 99 90 ...
+##  $ thumbnail_url         : chr [1:74111] &quot;https://a0.muscache.com/im/pictures/6d7cbbf7-c034-459c-bc82-6522c957627c.jpg?aki_policy=small&quot; &quot;https://a0.muscache.com/im/pictures/348a55fe-4b65-452a-b48a-bfecb3b58a66.jpg?aki_policy=small&quot; &quot;https://a0.muscache.com/im/pictures/6fae5362-9e3a-4fa9-aa54-bbd5ea26538d.jpg?aki_policy=small&quot; &quot;https://a0.muscache.com/im/pictures/72208dad-9c86-41ea-a735-43d933111063.jpg?aki_policy=small&quot; ...
+##  $ zipcode               : chr [1:74111] &quot;11201&quot; &quot;10019&quot; &quot;10027&quot; &quot;94117&quot; ...
+##  $ bedrooms              : num [1:74111] 1 3 1 2 0 1 1 1 1 1 ...
+##  $ beds                  : num [1:74111] 1 3 3 2 1 1 1 1 1 1 ...</code></pre>
+<hr />
+</div>
+<div id="데이터-전처리" class="section level1">
+<h1>데이터 전처리</h1>
+<div id="property_type은-house-apartment-other-등의-3범주로-변환하시오." class="section level3">
+<h3>“property_type”은 ‘House’, ‘Apartment’, ’Other’ 등의 3범주로 변환하시오.</h3>
+<pre class="r"><code>attach(airbnb)
+airbnb$property_type[!(property_type==&#39;House&#39;| property_type==&#39;Apartment&#39;)] = &quot;Other&quot;
+airbnb$property_type &lt;- as.factor(airbnb$property_type)
+levels(airbnb$property_type)</code></pre>
+<pre><code>## [1] &quot;Apartment&quot; &quot;House&quot;     &quot;Other&quot;</code></pre>
+</div>
+<div id="bed_type은-bed-other-등의-2범주로-변환하시오." class="section level3">
+<h3>“bed_type”은 ‘Bed’, ‘Other’ 등의 2범주로 변환하시오.</h3>
+<p>Real Bed와 Airbed 는 Bed로, 나머지는 Other로 변환하였다.</p>
+<pre class="r"><code>airbnb$bed_type[(bed_type==&#39;Airbed&#39;| bed_type==&#39;Real Bed&#39;)] = &quot;Bed&quot;
+airbnb$bed_type[!(bed_type==&#39;Airbed&#39;| bed_type==&#39;Real Bed&#39;)] = &quot;Other&quot;
+airbnb$bed_type &lt;- as.factor(airbnb$bed_type)
+levels(airbnb$bed_type)</code></pre>
+<pre><code>## [1] &quot;Bed&quot;   &quot;Other&quot;</code></pre>
+<pre class="r"><code>detach(airbnb)</code></pre>
+</div>
+<div id="number_of_reviews가-11개-이상인-데이터만-추출해서-분석에-사용하시오." class="section level3">
+<h3>“number_of_reviews”가 11개 이상인 데이터만 추출해서 분석에 사용하시오.</h3>
+<pre class="r"><code>airbnb &lt;- airbnb[airbnb$number_of_reviews&gt;=11 , 1:ncol(airbnb)]</code></pre>
+</div>
+<div id="가격비price_ratio-변수를-생성하시오." class="section level3">
+<h3>‘가격비(price_ratio)’ 변수를 생성하시오.</h3>
+<pre class="r"><code>airbnb$log_price &lt;- exp(airbnb$log_price)
+mean_price &lt;- aggregate(log_price ~ city, airbnb, mean)
+names(mean_price) &lt;-c (&quot;city&quot;,&quot;mean_price&quot;)
+f_airbnb &lt;- merge(x =airbnb,y=mean_price,by=&quot;city&quot;,all.x=T)
+f_airbnb$price_ratio &lt;- f_airbnb$log_price/f_airbnb$mean_price*100</code></pre>
+<hr />
+</div>
+</div>
+<div id="데이터-분석" class="section level1">
+<h1>데이터 분석</h1>
+<div id="가격비price_ratio-변수의-평균과-표준편차를-답하시오." class="section level2">
+<h2>1. “가격비(price_ratio)” 변수의 평균과 표준편차를 답하시오.</h2>
+<pre class="r"><code>mean(f_airbnb$price_ratio)</code></pre>
+<pre><code>## [1] 100</code></pre>
+<pre class="r"><code>sd(f_airbnb$price_ratio)</code></pre>
+<pre><code>## [1] 83.72338</code></pre>
+</div>
+<div id="가격비price_ratio를-종속변수로-하여-선형회귀분석을-수행하시오." class="section level2">
+<h2>2. “가격비(price_ratio)”를 종속변수로 하여 선형회귀분석을 수행하시오.</h2>
+<p>먼저 시행에 앞서 불필요한 변수를 제거한다. 제거한 것들은 아래와 같다.
+<em>amenities나 description의 경우 길이로 변환하여 분석하였으나 큰 의미가 없어 제거하고 분석하였다.</em>
+(y변수 계산에 필요했던 것들 및 url이나 설명같이 의미없는 것들을 제외한다.)</p>
+<ul>
+<li><p>description</p></li>
+<li><p>amenities</p></li>
+<li><p>name</p></li>
+<li><p>neighbourhood</p></li>
+<li><p>thumbnail_url</p></li>
+<li><p>id</p></li>
+<li><p>log_price</p></li>
+<li><p>mean_price</p></li>
+</ul>
+<pre class="r"><code>f_df &lt;- subset(f_airbnb, select = -c(description, amenities, name, neighbourhood, thumbnail_url, id, log_price, mean_price))</code></pre>
+<p>character를 factor로 변환한다.
+순서가 있는 cancellation_policy의 경우 순서를 준다.</p>
+<pre class="r"><code>find_char_col&lt;-NA
+for (i in 1:ncol(f_df)){
+  find_char_col[i] &lt;- is.character(f_df[,i])
+}
+char_col &lt;- colnames(f_df)[find_char_col]
+f_df[char_col] &lt;- lapply(f_df[char_col] , factor)
+
+f_df$cleaning_fee &lt;- as.factor(f_df$cleaning_fee)</code></pre>
+<p>cancellation_policy에서도 “super_strict_60”는 2개뿐이므로“super_strict_30”에 포함시켰다. (즉 super_strict_30는 super_strict_30+를 의미한다.)</p>
+<pre class="r"><code>which(f_df$cancellation_policy == &quot;super_strict_60&quot;)</code></pre>
+<pre><code>## [1]  6558 13642</code></pre>
+<pre class="r"><code>f_df$cancellation_policy[which(f_df$cancellation_policy == &quot;super_strict_60&quot;)] &lt;- &quot;super_strict_30&quot;
+f_df$cancellation_policy &lt;- factor(f_df$cancellation_policy,levels=c(&quot;flexible&quot;, &quot;moderate&quot;, &quot;strict&quot;, &quot;super_strict_30&quot;), order=T)</code></pre>
+<p>먼저 각각의 plot을 그려본다. (결과는 생략 eval=FALSE)</p>
+<pre class="r"><code>for (i in 1:(ncol(f_df)-1)) {
+plot(f_df$price_ratio~f_df[[i]],xlab=colnames(f_df)[i])
+}</code></pre>
+<p>대략적으로 눈으로 보기에 차이가 나타나는 것은 다음과 같다. (진한 것은 더욱 두드러 진 것)</p>
+<ul>
+<li><strong>room_type</strong></li>
+<li>accommodates</li>
+<li><strong>bathrooms</strong></li>
+<li>bed_type</li>
+<li><strong>cancellation_policy</strong></li>
+<li><strong>cleaning_fee</strong></li>
+<li>host_has_profile_pic</li>
+<li>host_identity_verified</li>
+<li><strong>host_response_rate</strong></li>
+<li>instant_bookable</li>
+<li>latitude</li>
+<li>longitude</li>
+<li>number_of_reviews</li>
+<li><strong>review_scores_rating</strong></li>
+<li>bedrooms</li>
+<li>beds</li>
+</ul>
+<p>그런데 latitude와 longitude는 사실상 zipcode에 그 데이터에 의미가 어느정도 포함된다고 판단하여 제거하였다.</p>
+<p>또한 zipcode는 너무 자세하므로 분석의 편의상 앞의 2자리만 사용하였다. (city는 이 zipcode에 포함되므로 생략하였다.)</p>
+<p>그리고 host_has_profile_pic의 경우 f는 28개뿐으로 매우 적으므로 변수를 사용하지 않는다.</p>
+<pre class="r"><code>summary( lm( price_ratio ~ latitude, data=f_df))</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = price_ratio ~ latitude, data = f_df)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+##  -92.71  -47.41  -22.56   19.19 1323.76 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 9.996e+01  6.061e+00  16.492   &lt;2e-16 ***
+## latitude    9.344e-04  1.574e-01   0.006    0.995    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 83.72 on 29014 degrees of freedom
+## Multiple R-squared:  1.215e-09,  Adjusted R-squared:  -3.446e-05 
+## F-statistic: 3.525e-05 on 1 and 29014 DF,  p-value: 0.9953</code></pre>
+<pre class="r"><code>summary( lm( price_ratio ~ longitude, data=f_df))</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = price_ratio ~ longitude, data = f_df)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+##  -92.67  -47.36  -22.63   19.12 1323.69 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 99.765008   2.164951  46.082   &lt;2e-16 ***
+## longitude   -0.002513   0.022547  -0.111    0.911    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 83.72 on 29014 degrees of freedom
+## Multiple R-squared:  4.281e-07,  Adjusted R-squared:  -3.404e-05 
+## F-statistic: 0.01242 on 1 and 29014 DF,  p-value: 0.9113</code></pre>
+<pre class="r"><code>f_df$zipcode &lt;- as.factor(substr(f_airbnb$zipcode,1,2))
+
+table(f_df$host_has_profile_pic)</code></pre>
+<pre><code>## 
+##     f     t 
+##    28 28924</code></pre>
+<p>그래서 이를 제외한 다음을 분석변수로 한다.</p>
+<ul>
+<li>room_type</li>
+<li>property_type</li>
+<li>accommodates</li>
+<li>bathrooms</li>
+<li>bed_type</li>
+<li>cancellation_policy</li>
+<li>cleaning_fee</li>
+<li>host_identity_verified</li>
+<li>host_response_rate</li>
+<li>instant_bookable</li>
+<li>first_review</li>
+<li>number_of_reviews</li>
+<li>host_since</li>
+<li>review_scores_rating</li>
+<li>last_review</li>
+<li>bedrooms<br />
+</li>
+<li>beds</li>
+<li>zipcode</li>
+</ul>
+<p>정확히 하기 위해 trellis plot을 그려보았다.</p>
+<pre class="r"><code>library(lattice)
+mypanel &lt;- function(x, y) {
+  panel.xyplot(x, y)
+  panel.loess(x, y, col=&quot;red&quot;, lwd=2, lty=2) 
+}
+
+xyplot(price_ratio ~ room_type, data=f_df,panel=mypanel)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre class="r"><code>xyplot(price_ratio ~ accommodates, data=f_df,panel=mypanel)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-2.png" width="672" /></p>
+<pre class="r"><code>xyplot(price_ratio ~ bathrooms, data=f_df,panel=mypanel)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-3.png" width="672" /></p>
+<pre class="r"><code>xyplot(price_ratio ~ bed_type, data=f_df,panel=mypanel)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-4.png" width="672" /></p>
+<pre class="r"><code>xyplot(price_ratio ~ cancellation_policy, data=f_df,panel=mypanel)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-5.png" width="672" /></p>
+<pre class="r"><code>xyplot(price_ratio ~ cleaning_fee, data=f_df,panel=mypanel)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-6.png" width="672" /></p>
+<pre class="r"><code>xyplot(price_ratio ~ host_identity_verified , data=f_df,panel=mypanel)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-7.png" width="672" /></p>
+<pre class="r"><code>xyplot(price_ratio ~ host_response_rate, data=f_df,panel=mypanel)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-8.png" width="672" /></p>
+<pre class="r"><code>xyplot(price_ratio ~ instant_bookable , data=f_df,panel=mypanel)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-9.png" width="672" /></p>
+<pre class="r"><code>xyplot(price_ratio ~ number_of_reviews, data=f_df,panel=mypanel)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-10.png" width="672" /></p>
+<pre class="r"><code>xyplot(price_ratio ~ review_scores_rating, data=f_df,panel=mypanel)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-11.png" width="672" /></p>
+<pre class="r"><code>xyplot(price_ratio ~ bedrooms, data=f_df,panel=mypanel)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-12.png" width="672" /></p>
+<pre class="r"><code>xyplot(price_ratio ~ beds, data=f_df,panel=mypanel)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-13.png" width="672" /></p>
+<pre class="r"><code>xyplot(price_ratio ~ zipcode, data=f_df,panel=mypanel)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-14.png" width="672" /></p>
+<pre class="r"><code>xyplot(price_ratio ~ last_review , data=f_df,panel=mypanel)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-15.png" width="672" /></p>
+<pre class="r"><code>xyplot(price_ratio ~ host_since , data=f_df,panel=mypanel)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-16.png" width="672" /></p>
+<pre class="r"><code>xyplot(price_ratio ~ first_review , data=f_df,panel=mypanel)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-17.png" width="672" /></p>
+<pre class="r"><code>xyplot(price_ratio ~ property_type , data=f_df,panel=mypanel)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-18.png" width="672" /></p>
+<p>이제 18개의 값들을 이용해 선형회귀분석을 실시한다. 그전에 결측치NA가 포함된 행은 제거하고 실시한다.</p>
+<pre class="r"><code>f_df = na.omit(f_df)
+
+lm1 = lm(price_ratio ~ room_type + property_type + accommodates + bathrooms + bed_type + cancellation_policy + cleaning_fee + host_identity_verified + host_response_rate + instant_bookable + first_review + number_of_reviews + host_since + review_scores_rating + last_review + bedrooms  + beds + zipcode , data = f_df)
+
+summary(lm1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = price_ratio ~ room_type + property_type + accommodates + 
+##     bathrooms + bed_type + cancellation_policy + cleaning_fee + 
+##     host_identity_verified + host_response_rate + instant_bookable + 
+##     first_review + number_of_reviews + host_since + review_scores_rating + 
+##     last_review + bedrooms + beds + zipcode, data = f_df)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -310.42  -25.81   -2.43   18.11  995.55 
+## 
+## Coefficients:
+##                           Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)             -9.898e+01  8.209e+00 -12.058  &lt; 2e-16 ***
+## room_typePrivate room   -4.603e+01  8.669e-01 -53.089  &lt; 2e-16 ***
+## room_typeShared room    -7.641e+01  2.538e+00 -30.105  &lt; 2e-16 ***
+## property_typeHouse       4.183e+00  9.150e-01   4.572 4.85e-06 ***
+## property_typeOther       6.771e+00  1.112e+00   6.087 1.17e-09 ***
+## accommodates             8.450e+00  3.292e-01  25.671  &lt; 2e-16 ***
+## bathrooms                3.515e+01  7.626e-01  46.087  &lt; 2e-16 ***
+## bed_typeOther            1.908e+00  2.279e+00   0.837 0.402372    
+## cancellation_policy.L    5.800e+01  6.962e+00   8.330  &lt; 2e-16 ***
+## cancellation_policy.Q    3.702e+01  5.201e+00   7.117 1.13e-12 ***
+## cancellation_policy.C    1.434e+01  2.375e+00   6.039 1.57e-09 ***
+## cleaning_feeTRUE        -3.377e+00  1.006e+00  -3.357 0.000789 ***
+## host_identity_verifiedt  2.158e+00  8.533e-01   2.529 0.011431 *  
+## host_response_rate      -1.935e+01  3.508e+00  -5.516 3.50e-08 ***
+## instant_bookablet       -4.545e+00  7.645e-01  -5.944 2.81e-09 ***
+## first_review            -3.548e-11  5.496e-10  -0.065 0.948532    
+## number_of_reviews       -4.118e-02  7.218e-03  -5.705 1.17e-08 ***
+## host_since               1.791e-10  5.406e-10   0.331 0.740412    
+## review_scores_rating     2.022e+00  7.722e-02  26.187  &lt; 2e-16 ***
+## last_review              7.622e-10  4.587e-10   1.662 0.096593 .  
+## bedrooms                 2.588e+01  6.572e-01  39.373  &lt; 2e-16 ***
+## beds                    -3.614e+00  4.786e-01  -7.551 4.46e-14 ***
+## zipcode11               -4.252e+01  1.112e+00 -38.245  &lt; 2e-16 ***
+## zipcode1m               -3.478e+01  5.632e+01  -0.617 0.536912    
+## zipcode20               -4.165e+01  1.547e+00 -26.924  &lt; 2e-16 ***
+## zipcode21               -3.428e+01  1.739e+00 -19.714  &lt; 2e-16 ***
+## zipcode22               -1.917e+01  8.438e+00  -2.272 0.023073 *  
+## zipcode24               -4.208e+01  5.633e+01  -0.747 0.454991    
+## zipcode60               -4.246e+01  1.562e+00 -27.184  &lt; 2e-16 ***
+## zipcode90               -3.486e+01  1.107e+00 -31.483  &lt; 2e-16 ***
+## zipcode91               -5.649e+01  1.742e+00 -32.428  &lt; 2e-16 ***
+## zipcode92               -6.254e+01  5.634e+01  -1.110 0.266986    
+## zipcode93               -7.250e+01  1.567e+01  -4.628 3.71e-06 ***
+## zipcode94               -3.287e+01  1.418e+00 -23.189  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 56.31 on 27002 degrees of freedom
+## Multiple R-squared:  0.5462, Adjusted R-squared:  0.5456 
+## F-statistic: 984.8 on 33 and 27002 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>위를 보면 유의미하지 않은 p-value가 많다. 이제 stepwise를 해서 제거한다.</p>
+<pre class="r"><code>lm2 = step(lm1, direction = &#39;both&#39;)</code></pre>
+<pre><code>## Start:  AIC=217990.5
+## price_ratio ~ room_type + property_type + accommodates + bathrooms + 
+##     bed_type + cancellation_policy + cleaning_fee + host_identity_verified + 
+##     host_response_rate + instant_bookable + first_review + number_of_reviews + 
+##     host_since + review_scores_rating + last_review + bedrooms + 
+##     beds + zipcode
+## 
+##                          Df Sum of Sq      RSS    AIC
+## - first_review            1        13 85615864 217989
+## - host_since              1       348 85616199 217989
+## - bed_type                1      2223 85618074 217989
+## &lt;none&gt;                                85615851 217990
+## - last_review             1      8755 85624606 217991
+## - host_identity_verified  1     20286 85636137 217995
+## - cleaning_fee            1     35736 85651586 218000
+## - host_response_rate      1     96468 85712319 218019
+## - number_of_reviews       1    103211 85719062 218021
+## - instant_bookable        1    112043 85727894 218024
+## - property_type           2    144262 85760113 218032
+## - beds                    1    180785 85796636 218046
+## - cancellation_policy     3    503380 86119231 218143
+## - accommodates            1   2089553 87705404 218640
+## - review_scores_rating    1   2174363 87790214 218667
+## - bedrooms                1   4915304 90531154 219498
+## - zipcode                12   6500593 92116444 219945
+## - bathrooms               1   6734757 92350607 220036
+## - room_type               2  10116125 95731976 221006
+## 
+## Step:  AIC=217988.5
+## price_ratio ~ room_type + property_type + accommodates + bathrooms + 
+##     bed_type + cancellation_policy + cleaning_fee + host_identity_verified + 
+##     host_response_rate + instant_bookable + number_of_reviews + 
+##     host_since + review_scores_rating + last_review + bedrooms + 
+##     beds + zipcode
+## 
+##                          Df Sum of Sq      RSS    AIC
+## - host_since              1       349 85616213 217987
+## - bed_type                1      2224 85618088 217987
+## &lt;none&gt;                                85615864 217989
+## - last_review             1      8763 85624627 217989
+## + first_review            1        13 85615851 217990
+## - host_identity_verified  1     20283 85636147 217993
+## - cleaning_fee            1     35747 85651611 217998
+## - host_response_rate      1     96497 85712361 218017
+## - number_of_reviews       1    103228 85719092 218019
+## - instant_bookable        1    112052 85727916 218022
+## - property_type           2    144250 85760114 218030
+## - beds                    1    180804 85796668 218044
+## - cancellation_policy     3    503371 86119235 218141
+## - accommodates            1   2089584 87705448 218638
+## - review_scores_rating    1   2174743 87790607 218665
+## - bedrooms                1   4915310 90531174 219496
+## - zipcode                12   6500955 92116819 219943
+## - bathrooms               1   6734768 92350632 220034
+## - room_type               2  10116180 95732044 221004
+## 
+## Step:  AIC=217986.6
+## price_ratio ~ room_type + property_type + accommodates + bathrooms + 
+##     bed_type + cancellation_policy + cleaning_fee + host_identity_verified + 
+##     host_response_rate + instant_bookable + number_of_reviews + 
+##     review_scores_rating + last_review + bedrooms + beds + zipcode
+## 
+##                          Df Sum of Sq      RSS    AIC
+## - bed_type                1      2238 85618451 217985
+## &lt;none&gt;                                85616213 217987
+## - last_review             1      8739 85624953 217987
+## + host_since              1       349 85615864 217989
+## + first_review            1        14 85616199 217989
+## - host_identity_verified  1     20254 85636467 217991
+## - cleaning_fee            1     35785 85651998 217996
+## - host_response_rate      1     96522 85712735 218015
+## - number_of_reviews       1    103088 85719301 218017
+## - instant_bookable        1    112180 85728393 218020
+## - property_type           2    144324 85760538 218028
+## - beds                    1    180830 85797044 218042
+## - cancellation_policy     3    503161 86119374 218139
+## - accommodates            1   2089343 87705556 218636
+## - review_scores_rating    1   2174719 87790932 218663
+## - bedrooms                1   4916145 90532358 219494
+## - zipcode                12   6500763 92116976 219941
+## - bathrooms               1   6734710 92350923 220032
+## - room_type               2  10120958 95737171 221003
+## 
+## Step:  AIC=217985.3
+## price_ratio ~ room_type + property_type + accommodates + bathrooms + 
+##     cancellation_policy + cleaning_fee + host_identity_verified + 
+##     host_response_rate + instant_bookable + number_of_reviews + 
+##     review_scores_rating + last_review + bedrooms + beds + zipcode
+## 
+##                          Df Sum of Sq      RSS    AIC
+## &lt;none&gt;                                85618451 217985
+## - last_review             1      8687 85627138 217986
+## + bed_type                1      2238 85616213 217987
+## + host_since              1       363 85618088 217987
+## + first_review            1        15 85618435 217987
+## - host_identity_verified  1     20365 85638815 217990
+## - cleaning_fee            1     35751 85654202 217995
+## - host_response_rate      1     96483 85714934 218014
+## - number_of_reviews       1    102833 85721284 218016
+## - instant_bookable        1    113036 85731487 218019
+## - property_type           2    144046 85762497 218027
+## - beds                    1    182147 85800598 218041
+## - cancellation_policy     3    501866 86120317 218137
+## - accommodates            1   2090219 87708670 218635
+## - review_scores_rating    1   2175653 87794104 218662
+## - bedrooms                1   4917159 90535610 219493
+## - zipcode                12   6501272 92119723 219940
+## - bathrooms               1   6732473 92350924 220030
+## - room_type               2  10195031 95813482 221023</code></pre>
+<pre class="r"><code>summary(lm2)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = price_ratio ~ room_type + property_type + accommodates + 
+##     bathrooms + cancellation_policy + cleaning_fee + host_identity_verified + 
+##     host_response_rate + instant_bookable + number_of_reviews + 
+##     review_scores_rating + last_review + bedrooms + beds + zipcode, 
+##     data = f_df)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -310.29  -25.79   -2.43   18.08  995.53 
+## 
+## Coefficients:
+##                           Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)             -9.878e+01  8.141e+00 -12.134  &lt; 2e-16 ***
+## room_typePrivate room   -4.600e+01  8.659e-01 -53.122  &lt; 2e-16 ***
+## room_typeShared room    -7.604e+01  2.499e+00 -30.431  &lt; 2e-16 ***
+## property_typeHouse       4.171e+00  9.148e-01   4.560 5.13e-06 ***
+## property_typeOther       6.772e+00  1.112e+00   6.088 1.16e-09 ***
+## accommodates             8.451e+00  3.291e-01  25.676  &lt; 2e-16 ***
+## bathrooms                3.513e+01  7.624e-01  46.081  &lt; 2e-16 ***
+## cancellation_policy.L    5.795e+01  6.961e+00   8.324  &lt; 2e-16 ***
+## cancellation_policy.Q    3.698e+01  5.200e+00   7.112 1.17e-12 ***
+## cancellation_policy.C    1.434e+01  2.374e+00   6.039 1.57e-09 ***
+## cleaning_feeTRUE        -3.377e+00  1.006e+00  -3.358 0.000786 ***
+## host_identity_verifiedt  2.162e+00  8.532e-01   2.534 0.011269 *  
+## host_response_rate      -1.935e+01  3.507e+00  -5.516 3.49e-08 ***
+## instant_bookablet       -4.563e+00  7.642e-01  -5.971 2.39e-09 ***
+## number_of_reviews       -4.110e-02  7.216e-03  -5.695 1.25e-08 ***
+## review_scores_rating     2.023e+00  7.721e-02  26.196  &lt; 2e-16 ***
+## last_review              7.592e-10  4.587e-10   1.655 0.097875 .  
+## bedrooms                 2.588e+01  6.572e-01  39.382  &lt; 2e-16 ***
+## beds                    -3.626e+00  4.784e-01  -7.580 3.58e-14 ***
+## zipcode11               -4.252e+01  1.112e+00 -38.246  &lt; 2e-16 ***
+## zipcode1m               -3.483e+01  5.632e+01  -0.618 0.536327    
+## zipcode20               -4.165e+01  1.547e+00 -26.930  &lt; 2e-16 ***
+## zipcode21               -3.428e+01  1.739e+00 -19.714  &lt; 2e-16 ***
+## zipcode22               -1.922e+01  8.438e+00  -2.278 0.022721 *  
+## zipcode24               -4.215e+01  5.632e+01  -0.748 0.454229    
+## zipcode60               -4.248e+01  1.562e+00 -27.202  &lt; 2e-16 ***
+## zipcode90               -3.486e+01  1.107e+00 -31.487  &lt; 2e-16 ***
+## zipcode91               -5.649e+01  1.742e+00 -32.430  &lt; 2e-16 ***
+## zipcode92               -6.251e+01  5.634e+01  -1.110 0.267158    
+## zipcode93               -7.254e+01  1.566e+01  -4.631 3.66e-06 ***
+## zipcode94               -3.287e+01  1.417e+00 -23.192  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 56.31 on 27005 degrees of freedom
+## Multiple R-squared:  0.5462, Adjusted R-squared:  0.5457 
+## F-statistic:  1083 on 30 and 27005 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>이후 분석에서 p-value가 유의미하지 않은 last_review 를 제거하고 실시한다.</p>
+<hr />
+</div>
+</div>
+<div id="회귀진단" class="section level1">
+<h1>회귀진단</h1>
+<pre class="r"><code>plot(lm2,which=1)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<pre class="r"><code>plot(lm2,which=2)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-15-2.png" width="672" /></p>
+<p>잔차에서 메가폰 형태가 나타남을 알수 있다. 또한 QQ플랏도 문제가 있음을 알 수 있다. Y변수의 변환의 필요성이 있으므로 Y’=logY로 변환하였다.</p>
+<pre class="r"><code>f_df$log_price_ratio &lt;- log(f_df$price_ratio)
+
+lm3 = lm(log_price_ratio ~ room_type + property_type + accommodates + 
+    bathrooms + cancellation_policy + cleaning_fee + host_identity_verified + 
+    host_response_rate + instant_bookable + number_of_reviews + 
+    review_scores_rating + bedrooms + beds + zipcode, 
+    data = f_df)
+
+lm4 = step(lm3, direction = &#39;both&#39;)</code></pre>
+<pre><code>## Start:  AIC=-54314.95
+## log_price_ratio ~ room_type + property_type + accommodates + 
+##     bathrooms + cancellation_policy + cleaning_fee + host_identity_verified + 
+##     host_response_rate + instant_bookable + number_of_reviews + 
+##     review_scores_rating + bedrooms + beds + zipcode
+## 
+##                          Df Sum of Sq    RSS    AIC
+## - cleaning_fee            1      0.00 3618.2 -54317
+## - number_of_reviews       1      0.08 3618.2 -54316
+## &lt;none&gt;                                3618.2 -54315
+## - host_identity_verified  1      1.21 3619.4 -54308
+## - host_response_rate      1      4.82 3623.0 -54281
+## - instant_bookable        1      7.14 3625.3 -54264
+## - property_type           2      7.92 3626.1 -54260
+## - cancellation_policy     3     21.45 3639.6 -54161
+## - beds                    1     21.10 3639.3 -54160
+## - bathrooms               1     79.59 3697.7 -53729
+## - accommodates            1    131.11 3749.3 -53355
+## - review_scores_rating    1    188.21 3806.4 -52946
+## - bedrooms                1    216.57 3834.7 -52745
+## - zipcode                12    462.42 4080.6 -51087
+## - room_type               2   1779.04 5397.2 -43507
+## 
+## Step:  AIC=-54316.91
+## log_price_ratio ~ room_type + property_type + accommodates + 
+##     bathrooms + cancellation_policy + host_identity_verified + 
+##     host_response_rate + instant_bookable + number_of_reviews + 
+##     review_scores_rating + bedrooms + beds + zipcode
+## 
+##                          Df Sum of Sq    RSS    AIC
+## - number_of_reviews       1      0.08 3618.2 -54318
+## &lt;none&gt;                                3618.2 -54317
+## + cleaning_fee            1      0.00 3618.2 -54315
+## - host_identity_verified  1      1.21 3619.4 -54310
+## - host_response_rate      1      4.84 3623.0 -54283
+## - instant_bookable        1      7.16 3625.3 -54265
+## - property_type           2      7.92 3626.1 -54262
+## - beds                    1     21.11 3639.3 -54162
+## - cancellation_policy     3     21.72 3639.9 -54161
+## - bathrooms               1     79.62 3697.8 -53730
+## - accommodates            1    131.42 3749.6 -53354
+## - review_scores_rating    1    188.30 3806.5 -52947
+## - bedrooms                1    216.56 3834.7 -52747
+## - zipcode                12    462.51 4080.7 -51089
+## - room_type               2   1827.08 5445.2 -43269
+## 
+## Step:  AIC=-54318.33
+## log_price_ratio ~ room_type + property_type + accommodates + 
+##     bathrooms + cancellation_policy + host_identity_verified + 
+##     host_response_rate + instant_bookable + review_scores_rating + 
+##     bedrooms + beds + zipcode
+## 
+##                          Df Sum of Sq    RSS    AIC
+## &lt;none&gt;                                3618.2 -54318
+## + number_of_reviews       1      0.08 3618.2 -54317
+## + cleaning_fee            1      0.00 3618.2 -54316
+## - host_identity_verified  1      1.16 3619.4 -54312
+## - host_response_rate      1      4.95 3623.2 -54283
+## - instant_bookable        1      7.27 3625.5 -54266
+## - property_type           2      7.97 3626.2 -54263
+## - cancellation_policy     3     21.66 3639.9 -54163
+## - beds                    1     21.15 3639.4 -54163
+## - bathrooms               1     79.88 3698.1 -53730
+## - accommodates            1    131.34 3749.6 -53356
+## - review_scores_rating    1    188.57 3806.8 -52947
+## - bedrooms                1    218.14 3836.4 -52738
+## - zipcode                12    462.64 4080.9 -51089
+## - room_type               2   1828.54 5446.8 -43264</code></pre>
+<p>그 결과는 아래와 같다.</p>
+<pre class="r"><code>summary(lm4)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = log_price_ratio ~ room_type + property_type + accommodates + 
+##     bathrooms + cancellation_policy + host_identity_verified + 
+##     host_response_rate + instant_bookable + review_scores_rating + 
+##     bedrooms + beds + zipcode, data = f_df)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.51557 -0.22551 -0.00287  0.22588  2.52586 
+## 
+## Coefficients:
+##                           Estimate Std. Error  t value Pr(&gt;|t|)    
+## (Intercept)              2.8112298  0.0525988   53.447  &lt; 2e-16 ***
+## room_typePrivate room   -0.5855993  0.0055699 -105.136  &lt; 2e-16 ***
+## room_typeShared room    -1.1375240  0.0161312  -70.517  &lt; 2e-16 ***
+## property_typeHouse      -0.0183360  0.0059407   -3.087  0.00203 ** 
+## property_typeOther       0.0422432  0.0072288    5.844 5.16e-09 ***
+## accommodates             0.0668736  0.0021358   31.311  &lt; 2e-16 ***
+## bathrooms                0.1209281  0.0049524   24.418  &lt; 2e-16 ***
+## cancellation_policy.L    0.2933262  0.0452494    6.482 9.18e-11 ***
+## cancellation_policy.Q    0.1616865  0.0337823    4.786 1.71e-06 ***
+## cancellation_policy.C    0.0664165  0.0154332    4.303 1.69e-05 ***
+## host_identity_verifiedt  0.0162382  0.0055087    2.948  0.00320 ** 
+## host_response_rate      -0.1381528  0.0227264   -6.079 1.23e-09 ***
+## instant_bookablet       -0.0365163  0.0049570   -7.367 1.80e-13 ***
+## review_scores_rating     0.0188152  0.0005015   37.518  &lt; 2e-16 ***
+## bedrooms                 0.1719812  0.0042620   40.352  &lt; 2e-16 ***
+## beds                    -0.0390361  0.0031066  -12.566  &lt; 2e-16 ***
+## zipcode11               -0.3585074  0.0072259  -49.614  &lt; 2e-16 ***
+## zipcode1m               -0.3950436  0.3661121   -1.079  0.28059    
+## zipcode20               -0.2976181  0.0100374  -29.651  &lt; 2e-16 ***
+## zipcode21               -0.2358253  0.0112927  -20.883  &lt; 2e-16 ***
+## zipcode22               -0.1539659  0.0548451   -2.807  0.00500 ** 
+## zipcode24               -0.6528374  0.3661251   -1.783  0.07458 .  
+## zipcode60               -0.3329465  0.0101308  -32.865  &lt; 2e-16 ***
+## zipcode90               -0.2835116  0.0071819  -39.476  &lt; 2e-16 ***
+## zipcode91               -0.5014514  0.0112977  -44.385  &lt; 2e-16 ***
+## zipcode92               -0.8951543  0.3661830   -2.445  0.01451 *  
+## zipcode93               -0.6850067  0.1017839   -6.730 1.73e-11 ***
+## zipcode94               -0.2315125  0.0091763  -25.229  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.366 on 27008 degrees of freedom
+## Multiple R-squared:  0.6588, Adjusted R-squared:  0.6584 
+## F-statistic:  1931 on 27 and 27008 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>plot(lm4,which=1)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<pre class="r"><code>plot(lm4,which=2)</code></pre>
+<pre><code>## Warning: not plotting observations with leverage one:
+##   1413, 8437, 20636</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-17-2.png" width="672" /></p>
+<p>잔차의 패턴이 어느정도 감소함을 알 수 있다.</p>
+<pre class="r"><code>summary(lm3)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = log_price_ratio ~ room_type + property_type + accommodates + 
+##     bathrooms + cancellation_policy + cleaning_fee + host_identity_verified + 
+##     host_response_rate + instant_bookable + number_of_reviews + 
+##     review_scores_rating + bedrooms + beds + zipcode, data = f_df)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.51722 -0.22532 -0.00299  0.22586  2.52411 
+## 
+## Coefficients:
+##                           Estimate Std. Error  t value Pr(&gt;|t|)    
+## (Intercept)              2.813e+00  5.270e-02   53.368  &lt; 2e-16 ***
+## room_typePrivate room   -5.856e-01  5.629e-03 -104.034  &lt; 2e-16 ***
+## room_typeShared room    -1.138e+00  1.624e-02  -70.065  &lt; 2e-16 ***
+## property_typeHouse      -1.814e-02  5.946e-03   -3.051  0.00228 ** 
+## property_typeOther       4.224e-02  7.230e-03    5.842 5.21e-09 ***
+## accommodates             6.693e-02  2.140e-03   31.282  &lt; 2e-16 ***
+## bathrooms                1.208e-01  4.956e-03   24.374  &lt; 2e-16 ***
+## cancellation_policy.L    2.931e-01  4.525e-02    6.477 9.49e-11 ***
+## cancellation_policy.Q    1.610e-01  3.380e-02    4.764 1.91e-06 ***
+## cancellation_policy.C    6.631e-02  1.543e-02    4.296 1.74e-05 ***
+## cleaning_feeTRUE        -1.157e-03  6.536e-03   -0.177  0.85946    
+## host_identity_verifiedt  1.670e-02  5.546e-03    3.011  0.00261 ** 
+## host_response_rate      -1.368e-01  2.280e-02   -5.998 2.02e-09 ***
+## instant_bookablet       -3.627e-02  4.968e-03   -7.301 2.93e-13 ***
+## number_of_reviews       -3.647e-05  4.691e-05   -0.778  0.43683    
+## review_scores_rating     1.881e-02  5.018e-04   37.481  &lt; 2e-16 ***
+## bedrooms                 1.718e-01  4.272e-03   40.205  &lt; 2e-16 ***
+## beds                    -3.903e-02  3.110e-03  -12.549  &lt; 2e-16 ***
+## zipcode11               -3.585e-01  7.226e-03  -49.616  &lt; 2e-16 ***
+## zipcode1m               -3.950e-01  3.661e-01   -1.079  0.28064    
+## zipcode20               -2.975e-01  1.004e-02  -29.637  &lt; 2e-16 ***
+## zipcode21               -2.355e-01  1.130e-02  -20.839  &lt; 2e-16 ***
+## zipcode22               -1.539e-01  5.485e-02   -2.805  0.00503 ** 
+## zipcode24               -6.537e-01  3.661e-01   -1.785  0.07423 .  
+## zipcode60               -3.330e-01  1.014e-02  -32.848  &lt; 2e-16 ***
+## zipcode90               -2.834e-01  7.186e-03  -39.434  &lt; 2e-16 ***
+## zipcode91               -5.019e-01  1.131e-02  -44.361  &lt; 2e-16 ***
+## zipcode92               -8.944e-01  3.662e-01   -2.442  0.01460 *  
+## zipcode93               -6.861e-01  1.018e-01   -6.738 1.64e-11 ***
+## zipcode94               -2.309e-01  9.213e-03  -25.062  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.366 on 27006 degrees of freedom
+## Multiple R-squared:  0.6588, Adjusted R-squared:  0.6584 
+## F-statistic:  1798 on 29 and 27006 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>다만 p-value를 구해보면 유의미하지 않은 변수가 다시 나타나므로 stepwise를 실시해 본다. 그전에 number_of_reviews가 유의미 하지 않는 다고 나온다. 하지만 number_of_reviews는 다른 숫자자료에 비해 분산이 크다. 실제로 number_of_reviews와 비교해보면 10배 정도 차이가 난다. 이를 보정해 주기 위해 나눈값을 해봐도 결과는 동일하게 유의미 하지 않는다고 나온다.</p>
+<pre class="r"><code>sd(f_df$review_scores_rating, na.rm=TRUE)</code></pre>
+<pre><code>## [1] 4.655876</code></pre>
+<pre class="r"><code>sd(f_df$number_of_reviews) </code></pre>
+<pre><code>## [1] 48.80326</code></pre>
+<pre class="r"><code>f_df$standard_number_of_reviews &lt;- f_df$number_of_reviews/sd(f_df$review_scores_rating, na.rm=TRUE)
+
+
+temp_lm = lm(log_price_ratio ~ room_type + accommodates + bathrooms + 
+    cancellation_policy + cleaning_fee + host_response_rate + 
+    instant_bookable + standard_number_of_reviews + review_scores_rating + 
+    bedrooms + beds, data = f_df)
+
+summary(temp_lm)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = log_price_ratio ~ room_type + accommodates + bathrooms + 
+##     cancellation_policy + cleaning_fee + host_response_rate + 
+##     instant_bookable + standard_number_of_reviews + review_scores_rating + 
+##     bedrooms + beds, data = f_df)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.59858 -0.25391 -0.01335  0.24299  2.54936 
+## 
+## Coefficients:
+##                              Estimate Std. Error  t value Pr(&gt;|t|)    
+## (Intercept)                 2.8699063  0.0556688   51.553  &lt; 2e-16 ***
+## room_typePrivate room      -0.6022161  0.0057959 -103.904  &lt; 2e-16 ***
+## room_typeShared room       -1.1298223  0.0173091  -65.273  &lt; 2e-16 ***
+## accommodates                0.0634022  0.0022744   27.876  &lt; 2e-16 ***
+## bathrooms                   0.1074901  0.0052103   20.630  &lt; 2e-16 ***
+## cancellation_policy.L       0.3217257  0.0481716    6.679 2.46e-11 ***
+## cancellation_policy.Q       0.1491561  0.0359783    4.146 3.40e-05 ***
+## cancellation_policy.C       0.0559756  0.0164257    3.408 0.000656 ***
+## cleaning_feeTRUE            0.0046765  0.0069336    0.674 0.500018    
+## host_response_rate         -0.2032507  0.0242706   -8.374  &lt; 2e-16 ***
+## instant_bookablet          -0.0380744  0.0052724   -7.221 5.28e-13 ***
+## standard_number_of_reviews  0.0000952  0.0002299    0.414 0.678769    
+## review_scores_rating        0.0166253  0.0005285   31.456  &lt; 2e-16 ***
+## bedrooms                    0.1667024  0.0045023   37.026  &lt; 2e-16 ***
+## beds                       -0.0384741  0.0033131  -11.613  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.3907 on 27021 degrees of freedom
+## Multiple R-squared:  0.6111, Adjusted R-squared:  0.6109 
+## F-statistic:  3032 on 14 and 27021 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>이제 기존의 변수를 활용하여 stepwise를 실시해 본다</p>
+<pre class="r"><code>lm4 = step(lm3, direction = &#39;both&#39;)</code></pre>
+<pre><code>## Start:  AIC=-54314.95
+## log_price_ratio ~ room_type + property_type + accommodates + 
+##     bathrooms + cancellation_policy + cleaning_fee + host_identity_verified + 
+##     host_response_rate + instant_bookable + number_of_reviews + 
+##     review_scores_rating + bedrooms + beds + zipcode
+## 
+##                          Df Sum of Sq    RSS    AIC
+## - cleaning_fee            1      0.00 3618.2 -54317
+## - number_of_reviews       1      0.08 3618.2 -54316
+## &lt;none&gt;                                3618.2 -54315
+## - host_identity_verified  1      1.21 3619.4 -54308
+## - host_response_rate      1      4.82 3623.0 -54281
+## - instant_bookable        1      7.14 3625.3 -54264
+## - property_type           2      7.92 3626.1 -54260
+## - cancellation_policy     3     21.45 3639.6 -54161
+## - beds                    1     21.10 3639.3 -54160
+## - bathrooms               1     79.59 3697.7 -53729
+## - accommodates            1    131.11 3749.3 -53355
+## - review_scores_rating    1    188.21 3806.4 -52946
+## - bedrooms                1    216.57 3834.7 -52745
+## - zipcode                12    462.42 4080.6 -51087
+## - room_type               2   1779.04 5397.2 -43507
+## 
+## Step:  AIC=-54316.91
+## log_price_ratio ~ room_type + property_type + accommodates + 
+##     bathrooms + cancellation_policy + host_identity_verified + 
+##     host_response_rate + instant_bookable + number_of_reviews + 
+##     review_scores_rating + bedrooms + beds + zipcode
+## 
+##                          Df Sum of Sq    RSS    AIC
+## - number_of_reviews       1      0.08 3618.2 -54318
+## &lt;none&gt;                                3618.2 -54317
+## + cleaning_fee            1      0.00 3618.2 -54315
+## - host_identity_verified  1      1.21 3619.4 -54310
+## - host_response_rate      1      4.84 3623.0 -54283
+## - instant_bookable        1      7.16 3625.3 -54265
+## - property_type           2      7.92 3626.1 -54262
+## - beds                    1     21.11 3639.3 -54162
+## - cancellation_policy     3     21.72 3639.9 -54161
+## - bathrooms               1     79.62 3697.8 -53730
+## - accommodates            1    131.42 3749.6 -53354
+## - review_scores_rating    1    188.30 3806.5 -52947
+## - bedrooms                1    216.56 3834.7 -52747
+## - zipcode                12    462.51 4080.7 -51089
+## - room_type               2   1827.08 5445.2 -43269
+## 
+## Step:  AIC=-54318.33
+## log_price_ratio ~ room_type + property_type + accommodates + 
+##     bathrooms + cancellation_policy + host_identity_verified + 
+##     host_response_rate + instant_bookable + review_scores_rating + 
+##     bedrooms + beds + zipcode
+## 
+##                          Df Sum of Sq    RSS    AIC
+## &lt;none&gt;                                3618.2 -54318
+## + number_of_reviews       1      0.08 3618.2 -54317
+## + cleaning_fee            1      0.00 3618.2 -54316
+## - host_identity_verified  1      1.16 3619.4 -54312
+## - host_response_rate      1      4.95 3623.2 -54283
+## - instant_bookable        1      7.27 3625.5 -54266
+## - property_type           2      7.97 3626.2 -54263
+## - cancellation_policy     3     21.66 3639.9 -54163
+## - beds                    1     21.15 3639.4 -54163
+## - bathrooms               1     79.88 3698.1 -53730
+## - accommodates            1    131.34 3749.6 -53356
+## - review_scores_rating    1    188.57 3806.8 -52947
+## - bedrooms                1    218.14 3836.4 -52738
+## - zipcode                12    462.64 4080.9 -51089
+## - room_type               2   1828.54 5446.8 -43264</code></pre>
+<p>그 결과는 다음과 같다.</p>
+<pre class="r"><code>summary(lm4)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = log_price_ratio ~ room_type + property_type + accommodates + 
+##     bathrooms + cancellation_policy + host_identity_verified + 
+##     host_response_rate + instant_bookable + review_scores_rating + 
+##     bedrooms + beds + zipcode, data = f_df)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.51557 -0.22551 -0.00287  0.22588  2.52586 
+## 
+## Coefficients:
+##                           Estimate Std. Error  t value Pr(&gt;|t|)    
+## (Intercept)              2.8112298  0.0525988   53.447  &lt; 2e-16 ***
+## room_typePrivate room   -0.5855993  0.0055699 -105.136  &lt; 2e-16 ***
+## room_typeShared room    -1.1375240  0.0161312  -70.517  &lt; 2e-16 ***
+## property_typeHouse      -0.0183360  0.0059407   -3.087  0.00203 ** 
+## property_typeOther       0.0422432  0.0072288    5.844 5.16e-09 ***
+## accommodates             0.0668736  0.0021358   31.311  &lt; 2e-16 ***
+## bathrooms                0.1209281  0.0049524   24.418  &lt; 2e-16 ***
+## cancellation_policy.L    0.2933262  0.0452494    6.482 9.18e-11 ***
+## cancellation_policy.Q    0.1616865  0.0337823    4.786 1.71e-06 ***
+## cancellation_policy.C    0.0664165  0.0154332    4.303 1.69e-05 ***
+## host_identity_verifiedt  0.0162382  0.0055087    2.948  0.00320 ** 
+## host_response_rate      -0.1381528  0.0227264   -6.079 1.23e-09 ***
+## instant_bookablet       -0.0365163  0.0049570   -7.367 1.80e-13 ***
+## review_scores_rating     0.0188152  0.0005015   37.518  &lt; 2e-16 ***
+## bedrooms                 0.1719812  0.0042620   40.352  &lt; 2e-16 ***
+## beds                    -0.0390361  0.0031066  -12.566  &lt; 2e-16 ***
+## zipcode11               -0.3585074  0.0072259  -49.614  &lt; 2e-16 ***
+## zipcode1m               -0.3950436  0.3661121   -1.079  0.28059    
+## zipcode20               -0.2976181  0.0100374  -29.651  &lt; 2e-16 ***
+## zipcode21               -0.2358253  0.0112927  -20.883  &lt; 2e-16 ***
+## zipcode22               -0.1539659  0.0548451   -2.807  0.00500 ** 
+## zipcode24               -0.6528374  0.3661251   -1.783  0.07458 .  
+## zipcode60               -0.3329465  0.0101308  -32.865  &lt; 2e-16 ***
+## zipcode90               -0.2835116  0.0071819  -39.476  &lt; 2e-16 ***
+## zipcode91               -0.5014514  0.0112977  -44.385  &lt; 2e-16 ***
+## zipcode92               -0.8951543  0.3661830   -2.445  0.01451 *  
+## zipcode93               -0.6850067  0.1017839   -6.730 1.73e-11 ***
+## zipcode94               -0.2315125  0.0091763  -25.229  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.366 on 27008 degrees of freedom
+## Multiple R-squared:  0.6588, Adjusted R-squared:  0.6584 
+## F-statistic:  1931 on 27 and 27008 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>plot(lm4,which=1)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<pre class="r"><code>plot(lm4,which=2)</code></pre>
+<pre><code>## Warning: not plotting observations with leverage one:
+##   1413, 8437, 20636</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-21-2.png" width="672" /></p>
+<p>정규성과 등분산성에 문제가 없다. Y 변수가 아닌 잔차를 바탕으로 trellis plot을 그려보면 큰 문제는 보이지 않는다. (결과는 생략 eval=FALSE)</p>
+<pre class="r"><code>xyplot(lm4$residuals ~ room_type, data=f_df,panel=mypanel)
+xyplot(lm4$residuals ~ cancellation_policy, data=f_df,panel=mypanel)
+
+xyplot(lm4$residuals ~ property_type, data=f_df,panel=mypanel)
+xyplot(lm4$residuals ~ accommodates, data=f_df,panel=mypanel)
+xyplot(lm4$residuals ~ bathrooms, data=f_df,panel=mypanel)
+xyplot(lm4$residuals ~ host_identity_verified, data=f_df,panel=mypanel)
+xyplot(lm4$residuals ~ host_response_rate, data=f_df,panel=mypanel)
+xyplot(lm4$residuals ~ instant_bookable , data=f_df,panel=mypanel)
+xyplot(lm4$residuals ~ review_scores_rating, data=f_df,panel=mypanel)
+xyplot(lm4$residuals ~ bedrooms, data=f_df,panel=mypanel)
+xyplot(lm4$residuals ~ beds, data=f_df,panel=mypanel)
+xyplot(lm4$residuals ~ zipcode, data=f_df,panel=mypanel)</code></pre>
+<p>즉 우리는 교호작용 없이 총 12개의 변수를 이용해 회귀분석 하였다.</p>
+<ul>
+<li>room_type</li>
+<li>property_type</li>
+<li>accommodates</li>
+<li>bathrooms</li>
+<li>cancellation_policy</li>
+<li>host_identity_verified</li>
+<li>host_response_rate</li>
+<li>instant_bookable</li>
+<li>review_scores_rating</li>
+<li>bedrooms</li>
+<li>beds</li>
+<li>zipcode</li>
+</ul>
+<p>이제 오버피팅을 막기 위해 데이터를 train set과 test set으로 나누어 모형 만들어 평가해 보도록 한다.</p>
+<pre class="r"><code>nobs=nrow(f_df)
+
+set.seed(1234)
+i = sample(1:nobs, round(nobs*0.6)) #60% for training data, 40% for testdata
+train_df = f_df[i,] 
+test_df = f_df[-i,]
+
+lm5 = lm(log_price_ratio ~ room_type + property_type + accommodates + bathrooms 
+          + cancellation_policy + host_identity_verified + host_response_rate + instant_bookable + 
+            review_scores_rating + bedrooms + beds + zipcode, data = f_df)
+
+summary(lm5)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = log_price_ratio ~ room_type + property_type + accommodates + 
+##     bathrooms + cancellation_policy + host_identity_verified + 
+##     host_response_rate + instant_bookable + review_scores_rating + 
+##     bedrooms + beds + zipcode, data = f_df)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.51557 -0.22551 -0.00287  0.22588  2.52586 
+## 
+## Coefficients:
+##                           Estimate Std. Error  t value Pr(&gt;|t|)    
+## (Intercept)              2.8112298  0.0525988   53.447  &lt; 2e-16 ***
+## room_typePrivate room   -0.5855993  0.0055699 -105.136  &lt; 2e-16 ***
+## room_typeShared room    -1.1375240  0.0161312  -70.517  &lt; 2e-16 ***
+## property_typeHouse      -0.0183360  0.0059407   -3.087  0.00203 ** 
+## property_typeOther       0.0422432  0.0072288    5.844 5.16e-09 ***
+## accommodates             0.0668736  0.0021358   31.311  &lt; 2e-16 ***
+## bathrooms                0.1209281  0.0049524   24.418  &lt; 2e-16 ***
+## cancellation_policy.L    0.2933262  0.0452494    6.482 9.18e-11 ***
+## cancellation_policy.Q    0.1616865  0.0337823    4.786 1.71e-06 ***
+## cancellation_policy.C    0.0664165  0.0154332    4.303 1.69e-05 ***
+## host_identity_verifiedt  0.0162382  0.0055087    2.948  0.00320 ** 
+## host_response_rate      -0.1381528  0.0227264   -6.079 1.23e-09 ***
+## instant_bookablet       -0.0365163  0.0049570   -7.367 1.80e-13 ***
+## review_scores_rating     0.0188152  0.0005015   37.518  &lt; 2e-16 ***
+## bedrooms                 0.1719812  0.0042620   40.352  &lt; 2e-16 ***
+## beds                    -0.0390361  0.0031066  -12.566  &lt; 2e-16 ***
+## zipcode11               -0.3585074  0.0072259  -49.614  &lt; 2e-16 ***
+## zipcode1m               -0.3950436  0.3661121   -1.079  0.28059    
+## zipcode20               -0.2976181  0.0100374  -29.651  &lt; 2e-16 ***
+## zipcode21               -0.2358253  0.0112927  -20.883  &lt; 2e-16 ***
+## zipcode22               -0.1539659  0.0548451   -2.807  0.00500 ** 
+## zipcode24               -0.6528374  0.3661251   -1.783  0.07458 .  
+## zipcode60               -0.3329465  0.0101308  -32.865  &lt; 2e-16 ***
+## zipcode90               -0.2835116  0.0071819  -39.476  &lt; 2e-16 ***
+## zipcode91               -0.5014514  0.0112977  -44.385  &lt; 2e-16 ***
+## zipcode92               -0.8951543  0.3661830   -2.445  0.01451 *  
+## zipcode93               -0.6850067  0.1017839   -6.730 1.73e-11 ***
+## zipcode94               -0.2315125  0.0091763  -25.229  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.366 on 27008 degrees of freedom
+## Multiple R-squared:  0.6588, Adjusted R-squared:  0.6584 
+## F-statistic:  1931 on 27 and 27008 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>plot(lm5,which=1)</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<pre class="r"><code>plot(lm5,which=2)</code></pre>
+<pre><code>## Warning: not plotting observations with leverage one:
+##   1413, 8437, 20636</code></pre>
+<p><img src="/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-23-2.png" width="672" /></p>
+<p>p-value도 유의미하며(일부 zipcode는 유의미 하지 않으나 대부분이 유의미하므로 그대로 사용한다. 하지만 해당 zipcode에 대해서는 해석에 유의할 필요가 있다.), Adjusted R-squared도 0.6584이다. 잔차도 문제 없으므로 test데이터와 비교를 해본다.</p>
+<p>그 결과 예측결정계수,평균절대오차, MAPE는 순서대로 다음과 같다.</p>
+<pre class="r"><code>## predicted values
+pred = predict(lm5, newdata=test_df, type=&#39;response&#39;)
+# predictive R^2
+cor(test_df$log_price_ratio, pred)^2</code></pre>
+<pre><code>## [1] 0.6595498</code></pre>
+<pre class="r"><code># MAE
+mean(abs(test_df$log_price_ratio - pred))</code></pre>
+<pre><code>## [1] 0.280805</code></pre>
+<pre class="r"><code># MAPE
+mean(abs(test_df$log_price_ratio - pred)/abs(test_df$log_price_ratio))*100</code></pre>
+<pre><code>## [1] 6.538482</code></pre>
+</div>
+<div id="최종-결과" class="section level1">
+<h1>최종 결과</h1>
+<p>마지막으로 우리의 최종 모형을 설명하고자 한다.</p>
+<pre class="r"><code>summary(lm5)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = log_price_ratio ~ room_type + property_type + accommodates + 
+##     bathrooms + cancellation_policy + host_identity_verified + 
+##     host_response_rate + instant_bookable + review_scores_rating + 
+##     bedrooms + beds + zipcode, data = f_df)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.51557 -0.22551 -0.00287  0.22588  2.52586 
+## 
+## Coefficients:
+##                           Estimate Std. Error  t value Pr(&gt;|t|)    
+## (Intercept)              2.8112298  0.0525988   53.447  &lt; 2e-16 ***
+## room_typePrivate room   -0.5855993  0.0055699 -105.136  &lt; 2e-16 ***
+## room_typeShared room    -1.1375240  0.0161312  -70.517  &lt; 2e-16 ***
+## property_typeHouse      -0.0183360  0.0059407   -3.087  0.00203 ** 
+## property_typeOther       0.0422432  0.0072288    5.844 5.16e-09 ***
+## accommodates             0.0668736  0.0021358   31.311  &lt; 2e-16 ***
+## bathrooms                0.1209281  0.0049524   24.418  &lt; 2e-16 ***
+## cancellation_policy.L    0.2933262  0.0452494    6.482 9.18e-11 ***
+## cancellation_policy.Q    0.1616865  0.0337823    4.786 1.71e-06 ***
+## cancellation_policy.C    0.0664165  0.0154332    4.303 1.69e-05 ***
+## host_identity_verifiedt  0.0162382  0.0055087    2.948  0.00320 ** 
+## host_response_rate      -0.1381528  0.0227264   -6.079 1.23e-09 ***
+## instant_bookablet       -0.0365163  0.0049570   -7.367 1.80e-13 ***
+## review_scores_rating     0.0188152  0.0005015   37.518  &lt; 2e-16 ***
+## bedrooms                 0.1719812  0.0042620   40.352  &lt; 2e-16 ***
+## beds                    -0.0390361  0.0031066  -12.566  &lt; 2e-16 ***
+## zipcode11               -0.3585074  0.0072259  -49.614  &lt; 2e-16 ***
+## zipcode1m               -0.3950436  0.3661121   -1.079  0.28059    
+## zipcode20               -0.2976181  0.0100374  -29.651  &lt; 2e-16 ***
+## zipcode21               -0.2358253  0.0112927  -20.883  &lt; 2e-16 ***
+## zipcode22               -0.1539659  0.0548451   -2.807  0.00500 ** 
+## zipcode24               -0.6528374  0.3661251   -1.783  0.07458 .  
+## zipcode60               -0.3329465  0.0101308  -32.865  &lt; 2e-16 ***
+## zipcode90               -0.2835116  0.0071819  -39.476  &lt; 2e-16 ***
+## zipcode91               -0.5014514  0.0112977  -44.385  &lt; 2e-16 ***
+## zipcode92               -0.8951543  0.3661830   -2.445  0.01451 *  
+## zipcode93               -0.6850067  0.1017839   -6.730 1.73e-11 ***
+## zipcode94               -0.2315125  0.0091763  -25.229  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.366 on 27008 degrees of freedom
+## Multiple R-squared:  0.6588, Adjusted R-squared:  0.6584 
+## F-statistic:  1931 on 27 and 27008 DF,  p-value: &lt; 2.2e-16</code></pre>
+<div id="y변수-log_price_ratio-가격비에-log를-취한-값" class="section level3">
+<h3>Y변수 : log_price_ratio (가격비에 log를 취한 값)</h3>
+</div>
+<div id="x변수-room_type-property_type-accommodates-bathrooms-cancellation_policy-host_identity_verified-host_response_rate-instant_bookable-review_scores_rating-bedrooms-beds-zipcod" class="section level3">
+<h3>X변수 : room_type + property_type + accommodates + bathrooms + cancellation_policy + host_identity_verified + host_response_rate + instant_bookable + review_scores_rating + bedrooms + beds + zipcod</h3>
+<p>위의 Coefficients의 Estimate를 보면 그 결과를 알 수 있으나 간단히 설명하면 다음과 같다.</p>
+<ul>
+<li><p>cancellation_policy가 “super_strict_30”에서 “flexible”으로 변하면 0.2750713만큼 log_price_ratio가 증가한다.</p></li>
+<li><p>cancellation_policy가 “super_strict_30”에서 “moderate”으로 변하면 0.1480741만큼 log_price_ratio가 증가한다.<br />
+</p></li>
+<li><p>cancellation_policy가 “super_strict_30”에서 “strict”으로 변하면 0.0603244만큼 log_price_ratio가 증가한다.</p></li>
+<li><p>room_type가 Entire home/apt에서 “Private room”으로 변하면 0.5854706만큼 log_price_ratio가 <strong>감소</strong>한다.</p></li>
+<li><p>room_type가 Entire home/apt에서 “Shared room”으로 변하면 1.1371925만큼 log_price_ratio가 <strong>감소</strong>한다.</p></li>
+<li><p>property_type가 “Apartment”에서 “House”으로 변하면 0.0184556만큼 log_price_ratio가 <strong>감소</strong>한다.</p></li>
+<li><p>property_type가 “Apartment”에서 “Other”으로 변하면 0.0422110만큼 log_price_ratio가 증가한다.</p></li>
+<li><p>host_identity_verified가 “f”에서 “t”으로 변하면 0.0162358만큼 log_price_ratio가 증가한다.</p></li>
+<li><p>bedrooms의 개수가 1개 증가할 수록 0.1718274만큼 log_price_ratio가 증가한다.</p></li>
+<li><p>beds의 수가 1개 증가할수록 0.0392406만큼 log_price_ratio가 <strong>감소</strong>한다.</p></li>
+<li><p>bathrooms의 개수가 1개 증가할 수록 0.1208864만큼 log_price_ratio가 증가한다.</p></li>
+<li><p>accommodate가 1 증가할 수록 0.0670576만큼 log_price_ratio가 증가한다.</p></li>
+<li><p>host_response_rate가 1 증가할 수록 0.1385022만큼 log_price_ratio가 <strong>감소</strong>한다.</p></li>
+<li><p>instant_bookablet가 1 증가할 수록 0.0365038만큼 log_price_ratio가 <strong>감소</strong>한다.</p></li>
+<li><p>review_scores_rating가 1 증가할 수록 0.0188218만큼 log_price_ratio가 증가한다.</p></li>
+<li><p>zipcode의 경우 10###에서 각 해당 코드로 변했을떄 log_price_ratio가 얼마나 감소했는지를 의미한다. 다만 zipcode1m###과 zipcode24###는 설명하지 않는다.</p></li>
+</ul>
+</div>
+</div>
