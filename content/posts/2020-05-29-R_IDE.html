@@ -13,9 +13,13 @@ tags:
 editor_options: 
   chunk_output_type: inline
 output: 
-  html_document: 
-    highlight: tango
+  html_document:
     toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: show
+    number_section: true
+    self_contained: true
 ---
 
 
@@ -93,9 +97,9 @@ output:
 ##  [1] compiler_4.0.0  magrittr_1.5    bookdown_0.19   tools_4.0.0    
 ##  [5] htmltools_0.4.0 yaml_2.2.1      Rcpp_1.0.4.6    stringi_1.4.6  
 ##  [9] rmarkdown_2.1   blogdown_0.19   knitr_1.28      stringr_1.4.0  
-## [13] digest_0.6.25   xfun_0.13       rlang_0.4.6     evaluate_0.14</code></pre>
+## [13] digest_0.6.25   xfun_0.14       rlang_0.4.6     evaluate_0.14</code></pre>
 <pre class="r"><code>getwd()</code></pre>
-<pre><code>## [1] &quot;D:/git/blog/content/posts&quot;</code></pre>
+<pre><code>## [1] &quot;C:/Users/User/Documents/git/blog/content/posts&quot;</code></pre>
 <p>경고표시나 중간중간 한글을 사용하면 문제가 많다. 그러는 경우 locale을 바꿔야 한다.</p>
 <pre class="r"><code>Sys.getlocale()</code></pre>
 <pre><code>## [1] &quot;LC_COLLATE=Korean_Korea.949;LC_CTYPE=Korean_Korea.949;LC_MONETARY=Korean_Korea.949;LC_NUMERIC=C;LC_TIME=Korean_Korea.949&quot;</code></pre>

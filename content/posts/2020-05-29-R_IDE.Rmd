@@ -13,9 +13,13 @@ tags:
 editor_options: 
   chunk_output_type: inline
 output: 
-  html_document: 
-    highlight: tango
+  html_document:
     toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: show
+    number_section: true
+    self_contained: true
 ---
 
 

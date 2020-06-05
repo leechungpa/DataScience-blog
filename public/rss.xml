@@ -10,7 +10,7 @@
         <title>Leechungpa&#39;s Data Science blog</title>
         <link>/</link>
         <description>Blog for Data Science by Leechungpa.</description>
-        <generator>Hugo 0.72.0 https://gohugo.io/</generator>
+        <generator>Hugo 0.71.1 https://gohugo.io/</generator>
         
             <language>en-us</language>
         
@@ -23,7 +23,7 @@
         
             <copyright>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</copyright>
         
-        <lastBuildDate>Mon, 01 Jun 2020 22:37:18 &#43;0900</lastBuildDate>
+        <lastBuildDate>Fri, 05 Jun 2020 15:47:02 &#43;0900</lastBuildDate>
         
             <atom:link rel="self" type="application/rss&#43;xml" href="/rss.xml" />
         
@@ -114,9 +114,9 @@
 ##  [1] compiler_4.0.0  magrittr_1.5    bookdown_0.19   tools_4.0.0    
 ##  [5] htmltools_0.4.0 yaml_2.2.1      Rcpp_1.0.4.6    stringi_1.4.6  
 ##  [9] rmarkdown_2.1   blogdown_0.19   knitr_1.28      stringr_1.4.0  
-## [13] digest_0.6.25   xfun_0.13       rlang_0.4.6     evaluate_0.14&lt;/code&gt;&lt;/pre&gt;
+## [13] digest_0.6.25   xfun_0.14       rlang_0.4.6     evaluate_0.14&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;getwd()&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;D:/git/blog/content/posts&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;C:/Users/User/Documents/git/blog/content/posts&amp;quot;&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;경고표시나 중간중간 한글을 사용하면 문제가 많다. 그러는 경우 locale을 바꿔야 한다.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Sys.getlocale()&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## [1] &amp;quot;LC_COLLATE=Korean_Korea.949;LC_CTYPE=Korean_Korea.949;LC_MONETARY=Korean_Korea.949;LC_NUMERIC=C;LC_TIME=Korean_Korea.949&amp;quot;&lt;/code&gt;&lt;/pre&gt;
@@ -183,8 +183,8 @@ installr::install.R()&lt;/code&gt;&lt;/pre&gt;
         
             <item>
                 <title>데이터마이닝 - Decision Tree</title>
-                <link>/posts/report/2/</link>
-                <guid isPermaLink="true">/posts/report/2/</guid>
+                <link>/posts/data_mining/2/</link>
+                <guid isPermaLink="true">/posts/data_mining/2/</guid>
                 <pubDate>Fri, 15 May 2020 00:00:00 &#43;0000</pubDate>
                 
                     <author>leechungpa@naver.com (Lee Chung Pa)</author>
@@ -202,14 +202,15 @@ installr::install.R()&lt;/code&gt;&lt;/pre&gt;
 &lt;script src=&#34;/rmarkdown-libs/plotly-main/plotly-latest.min.js&#34;&gt;&lt;/script&gt;
 
 
+&lt;p&gt;데이터마이닝 연습으로 Decision Tree 모델을 사용한 예제이다.&lt;/p&gt;
 &lt;p&gt;먼저 사용한 페키지이다.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## -- Attaching packages ----------------------------------------------------------------------------------------------------- tidyverse 1.3.0 --&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## √ ggplot2 3.3.0     √ purrr   0.3.4
-## √ tibble  3.0.1     √ dplyr   0.8.5
-## √ tidyr   1.0.3     √ stringr 1.4.0
+&lt;pre&gt;&lt;code&gt;## -- Attaching packages --------------------------------------------------------------- tidyverse 1.3.0 --&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## √ ggplot2 3.3.1     √ purrr   0.3.4
+## √ tibble  3.0.1     √ dplyr   1.0.0
+## √ tidyr   1.1.0     √ stringr 1.4.0
 ## √ readr   1.3.1     √ forcats 0.5.0&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## -- Conflicts -------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
+&lt;pre&gt;&lt;code&gt;## -- Conflicts ------------------------------------------------------------------ tidyverse_conflicts() --
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(rpart)
@@ -217,13 +218,13 @@ library(rpart.plot)
 library(pROC)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## Type &amp;#39;citation(&amp;quot;pROC&amp;quot;)&amp;#39; for a citation.&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## 
-## 다음의 패키지를 부착합니다: &amp;#39;pROC&amp;#39;&lt;/code&gt;&lt;/pre&gt;
+## Attaching package: &amp;#39;pROC&amp;#39;&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## The following objects are masked from &amp;#39;package:stats&amp;#39;:
 ## 
 ##     cov, smooth, var&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(plotly)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## 
-## 다음의 패키지를 부착합니다: &amp;#39;plotly&amp;#39;&lt;/code&gt;&lt;/pre&gt;
+## Attaching package: &amp;#39;plotly&amp;#39;&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## The following object is masked from &amp;#39;package:ggplot2&amp;#39;:
 ## 
 ##     last_plot&lt;/code&gt;&lt;/pre&gt;
@@ -233,7 +234,7 @@ library(pROC)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## The following object is masked from &amp;#39;package:graphics&amp;#39;:
 ## 
 ##     layout&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;다음으로 우리가 사용할 데이터이다. 데이터는 숙제 주소 중 하나인 &lt;a href=&#34;https://www.openml.org/d/29&#34; class=&#34;uri&#34;&gt;https://www.openml.org/d/29&lt;/a&gt; 에서 가져왔다.&lt;/p&gt;
+&lt;p&gt;다음으로 우리가 사용할 데이터이다. 데이터는 &lt;a href=&#34;https://www.openml.org/d/29&#34; class=&#34;uri&#34;&gt;https://www.openml.org/d/29&lt;/a&gt; 에서 가져왔다.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;raw_hw_tb = read_csv(&amp;quot;data/dataset_29_credit-a.csv&amp;quot;,na=&amp;quot;?&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## Parsed with column specification:
 ## cols(
@@ -282,26 +283,44 @@ library(pROC)&lt;/code&gt;&lt;/pre&gt;
 ##  $ A13  : Factor w/ 3 levels &amp;quot;g&amp;quot;,&amp;quot;p&amp;quot;,&amp;quot;s&amp;quot;: 1 1 1 1 3 1 1 1 1 1 ...
 ##  $ A14  : num [1:690] 202 43 280 100 120 360 164 80 180 52 ...
 ##  $ A15  : num [1:690] 0 560 824 3 0 ...
-##  $ class: Factor w/ 2 levels &amp;quot;-&amp;quot;,&amp;quot;+&amp;quot;: 2 2 2 2 2 2 2 2 2 2 ...&lt;/code&gt;&lt;/pre&gt;
+##  $ class: Factor w/ 2 levels &amp;quot;-&amp;quot;,&amp;quot;+&amp;quot;: 2 2 2 2 2 2 2 2 2 2 ...
+##  - attr(*, &amp;quot;spec&amp;quot;)=
+##   .. cols(
+##   ..   A1 = col_character(),
+##   ..   A2 = col_double(),
+##   ..   A3 = col_double(),
+##   ..   A4 = col_character(),
+##   ..   A5 = col_character(),
+##   ..   A6 = col_character(),
+##   ..   A7 = col_character(),
+##   ..   A8 = col_double(),
+##   ..   A9 = col_logical(),
+##   ..   A10 = col_logical(),
+##   ..   A11 = col_character(),
+##   ..   A12 = col_logical(),
+##   ..   A13 = col_character(),
+##   ..   A14 = col_character(),
+##   ..   A15 = col_double(),
+##   ..   class = col_character()
+##   .. )&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;nrow(hw_tb)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## [1] 690&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;#1
-##1. Training 데이터와 Test 데이터를 50:50의 비율로 분할하시오. (단, 시드번호는 학번의 뒤자리수 4개를 사용하시오)&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;set.seed(2010)
+&lt;p&gt;#1. Training 데이터와 Test 데이터를 50:50의 비율로 분할하시오.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;set.seed(1234)
 n = sample(1:nrow(hw_tb), round(nrow(hw_tb)/2)) 
 train = hw_tb[n,] 
 test = hw_tb[-n,]
 c(nrow(train), nrow(test))&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## [1] 345 345&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;#2~4
-##2. R 프로그램의 ‘rpart’ 명령어를 사용하여 의사결정나무를 수행하고자 한다.
-###단, hyper-parameter는 아래와 같이 조정한다.
-###A. minsplit = 1 ~ 46 (5의 간격으로)
-###B. cp = 0.001 ~ 0.01 (0.001의 간격으로)
-###C. xval = 0 으로 고정 (pruning 없음)
-###D. 그외 parameter 값들은 default 값을 사용
-##3. 위 2번의 조건에 맞는 의사결정나무를 training 데이터를 이용하여 생성하고, test 데이터를 이용하여 예측 정확도를 계산하고자 한다. 이때 예측정확도는 AUROC 값을 사용한다.
-##4. 3번의 결과, 총 110개의 AUROC 값을 구할 수 있다. 이를 minsplit과 cp 값의 조합에 따라 AUROC 값으로 3차원 포물선 그래프를 생성하시오. (3D surface plot)&lt;/p&gt;
+&lt;p&gt;#2. R 프로그램의 ‘rpart’ 명령어를 사용하여 의사결정나무를 수행하고자 한다. 단, hyper-parameter는 아래와 같이 조정한다.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;A. minsplit = 1 ~ 46 (5의 간격으로)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;B. cp = 0.001 ~ 0.01 (0.001의 간격으로)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;C. xval = 0 으로 고정 (pruning 없음)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;D. 그외 parameter 값들은 default 값을 사용&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div id=&#34;위-2번의-조건에-맞는-의사결정나무를-training-데이터를-이용하여-생성하고-test-데이터를-이용하여-예측-정확도를-계산하고자-한다.-이때-예측정확도는-auroc-값을-사용한다.-그-결과-총-110개의-auroc-값을-구할-수-있다.-이를-minsplit과-cp-값의-조합에-따라-auroc-값으로-3차원-포물선-그래프3d-surface-plot를-생성하시오.&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;3. 위 2번의 조건에 맞는 의사결정나무를 training 데이터를 이용하여 생성하고, test 데이터를 이용하여 예측 정확도를 계산하고자 한다. 이때 예측정확도는 AUROC 값을 사용한다. 그 결과, 총 110개의 AUROC 값을 구할 수 있다. 이를 minsplit과 cp 값의 조합에 따라 AUROC 값으로 3차원 포물선 그래프(3D surface plot)를 생성하시오.&lt;/h1&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;auc = matrix(NA,nrow=10,ncol=10)
 
 for(i1 in 1:10){
@@ -513,8 +532,12 @@ for(i1 in 1:10){
 &lt;pre&gt;&lt;code&gt;## Setting direction: controls &amp;lt; cases&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## Setting levels: control = -, case = +&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## Setting direction: controls &amp;lt; cases&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;2번 3번 4번 중간에 결과는 아래와 같은 객체를 통해 확인할 수 있다. 그 결과는 생략한다.&lt;/p&gt;
-&lt;p&gt;각각의 모형(2번) : tree_(minsplit값)_(cp값*1000) 각각의 예측(3번) : prob_(minsplit값)_(cp값*1000) 각각의 roc(4번) : roc_(minsplit값)_(cp값*1000)&lt;/p&gt;
+&lt;p&gt;코드 실행 결과는 아래와 같은 객체를 통해 확인할 수 있다. 자세한 내용은 생략한다.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;각각의 모형 : tree_(minsplit값)_(cp값*1000)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;각각의 예측 : prob_(minsplit값)_(cp값*1000)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;각각의 roc(4번) : roc_(minsplit값)_(cp값*1000)&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
 &lt;p&gt;해당 auroc를 이용하여 3d surface plot을 그리면 아래와 같다.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;cp = 0.001*1:10
 minsplit = 1:10*5-4
@@ -528,25 +551,25 @@ plot_ly(z = auc,x=cp,y=minsplit) %&amp;gt;%
                 yaxis = list(title = &amp;#39;minsplit&amp;#39;,tickvals=minsplit),
                 zaxis = list(title = &amp;#39;auc&amp;#39;))
                )&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;plotly html-widget&#34;&gt;&lt;/div&gt;
-&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;visdat&#34;:{&#34;13c4489c2f01&#34;:[&#34;function () &#34;,&#34;plotlyVisDat&#34;]},&#34;cur_data&#34;:&#34;13c4489c2f01&#34;,&#34;attrs&#34;:{&#34;13c4489c2f01&#34;:{&#34;z&#34;:[[0.775384615384615,0.775384615384615,0.760615384615385,0.712991452991453,0.760581196581196,0.760581196581196,0.866769230769231,0.866769230769231,0.866769230769231,0.876461538461538],[0.757333333333333,0.757333333333333,0.757333333333333,0.757811965811966,0.757811965811966,0.751846153846154,0.814581196581197,0.814581196581197,0.814581196581197,0.876461538461538],[0.878529914529915,0.878529914529915,0.878529914529915,0.878529914529915,0.874905982905983,0.874905982905983,0.873264957264957,0.873264957264957,0.873264957264957,0.888717948717949],[0.873931623931624,0.873931623931624,0.873931623931624,0.873931623931624,0.873931623931624,0.873931623931624,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949],[0.891897435897436,0.891897435897436,0.891897435897436,0.891897435897436,0.891897435897436,0.891897435897436,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949],[0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949],[0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949],[0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949],[0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949],[0.887897435897436,0.887897435897436,0.887897435897436,0.887897435897436,0.887897435897436,0.887897435897436,0.887897435897436,0.887897435897436,0.887897435897436,0.887897435897436]],&#34;x&#34;:[0.001,0.002,0.003,0.004,0.005,0.006,0.007,0.008,0.009,0.01],&#34;y&#34;:[1,6,11,16,21,26,31,36,41,46],&#34;alpha_stroke&#34;:1,&#34;sizes&#34;:[10,100],&#34;spans&#34;:[1,20],&#34;type&#34;:&#34;surface&#34;,&#34;inherit&#34;:true}},&#34;layout&#34;:{&#34;margin&#34;:{&#34;b&#34;:40,&#34;l&#34;:60,&#34;t&#34;:25,&#34;r&#34;:10},&#34;scene&#34;:{&#34;xaxis&#34;:{&#34;title&#34;:&#34;cp&#34;,&#34;tickvals&#34;:[0.001,0.002,0.003,0.004,0.005,0.006,0.007,0.008,0.009,0.01]},&#34;yaxis&#34;:{&#34;title&#34;:&#34;minsplit&#34;,&#34;tickvals&#34;:[1,6,11,16,21,26,31,36,41,46]},&#34;zaxis&#34;:{&#34;title&#34;:&#34;auc&#34;}},&#34;hovermode&#34;:&#34;closest&#34;,&#34;showlegend&#34;:false,&#34;legend&#34;:{&#34;yanchor&#34;:&#34;top&#34;,&#34;y&#34;:0.5}},&#34;source&#34;:&#34;A&#34;,&#34;config&#34;:{&#34;showSendToCloud&#34;:false},&#34;data&#34;:[{&#34;colorbar&#34;:{&#34;title&#34;:&#34;&#34;,&#34;ticklen&#34;:2,&#34;len&#34;:0.5,&#34;lenmode&#34;:&#34;fraction&#34;,&#34;y&#34;:1,&#34;yanchor&#34;:&#34;top&#34;},&#34;colorscale&#34;:[[&#34;0&#34;,&#34;rgba(68,1,84,1)&#34;],[&#34;0.0416666666666668&#34;,&#34;rgba(70,19,97,1)&#34;],[&#34;0.0833333333333336&#34;,&#34;rgba(72,32,111,1)&#34;],[&#34;0.125&#34;,&#34;rgba(71,45,122,1)&#34;],[&#34;0.166666666666667&#34;,&#34;rgba(68,58,128,1)&#34;],[&#34;0.208333333333333&#34;,&#34;rgba(64,70,135,1)&#34;],[&#34;0.25&#34;,&#34;rgba(60,82,138,1)&#34;],[&#34;0.291666666666667&#34;,&#34;rgba(56,93,140,1)&#34;],[&#34;0.333333333333333&#34;,&#34;rgba(49,104,142,1)&#34;],[&#34;0.375&#34;,&#34;rgba(46,114,142,1)&#34;],[&#34;0.416666666666667&#34;,&#34;rgba(42,123,142,1)&#34;],[&#34;0.458333333333333&#34;,&#34;rgba(38,133,141,1)&#34;],[&#34;0.5&#34;,&#34;rgba(37,144,140,1)&#34;],[&#34;0.541666666666667&#34;,&#34;rgba(33,154,138,1)&#34;],[&#34;0.583333333333333&#34;,&#34;rgba(39,164,133,1)&#34;],[&#34;0.625&#34;,&#34;rgba(47,174,127,1)&#34;],[&#34;0.666666666666667&#34;,&#34;rgba(53,183,121,1)&#34;],[&#34;0.708333333333333&#34;,&#34;rgba(79,191,110,1)&#34;],[&#34;0.75&#34;,&#34;rgba(98,199,98,1)&#34;],[&#34;0.791666666666667&#34;,&#34;rgba(119,207,85,1)&#34;],[&#34;0.833333333333333&#34;,&#34;rgba(147,214,70,1)&#34;],[&#34;0.875&#34;,&#34;rgba(172,220,52,1)&#34;],[&#34;0.916666666666666&#34;,&#34;rgba(199,225,42,1)&#34;],[&#34;0.958333333333333&#34;,&#34;rgba(226,228,40,1)&#34;],[&#34;1&#34;,&#34;rgba(253,231,37,1)&#34;]],&#34;showscale&#34;:true,&#34;z&#34;:[[0.775384615384615,0.775384615384615,0.760615384615385,0.712991452991453,0.760581196581196,0.760581196581196,0.866769230769231,0.866769230769231,0.866769230769231,0.876461538461538],[0.757333333333333,0.757333333333333,0.757333333333333,0.757811965811966,0.757811965811966,0.751846153846154,0.814581196581197,0.814581196581197,0.814581196581197,0.876461538461538],[0.878529914529915,0.878529914529915,0.878529914529915,0.878529914529915,0.874905982905983,0.874905982905983,0.873264957264957,0.873264957264957,0.873264957264957,0.888717948717949],[0.873931623931624,0.873931623931624,0.873931623931624,0.873931623931624,0.873931623931624,0.873931623931624,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949],[0.891897435897436,0.891897435897436,0.891897435897436,0.891897435897436,0.891897435897436,0.891897435897436,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949],[0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949],[0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949],[0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949],[0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949,0.888717948717949],[0.887897435897436,0.887897435897436,0.887897435897436,0.887897435897436,0.887897435897436,0.887897435897436,0.887897435897436,0.887897435897436,0.887897435897436,0.887897435897436]],&#34;x&#34;:[0.001,0.002,0.003,0.004,0.005,0.006,0.007,0.008,0.009,0.01],&#34;y&#34;:[1,6,11,16,21,26,31,36,41,46],&#34;type&#34;:&#34;surface&#34;,&#34;frame&#34;:null}],&#34;highlight&#34;:{&#34;on&#34;:&#34;plotly_click&#34;,&#34;persistent&#34;:false,&#34;dynamic&#34;:false,&#34;selectize&#34;:false,&#34;opacityDim&#34;:0.2,&#34;selected&#34;:{&#34;opacity&#34;:1},&#34;debounce&#34;:0},&#34;shinyEvents&#34;:[&#34;plotly_hover&#34;,&#34;plotly_click&#34;,&#34;plotly_selected&#34;,&#34;plotly_relayout&#34;,&#34;plotly_brushed&#34;,&#34;plotly_brushing&#34;,&#34;plotly_clickannotation&#34;,&#34;plotly_doubleclick&#34;,&#34;plotly_deselect&#34;,&#34;plotly_afterplot&#34;,&#34;plotly_sunburstclick&#34;],&#34;base_url&#34;:&#34;https://plot.ly&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
-그래프는 ploty를 사용하였기에 html에서 종합적으로 볼 수 있다. 과제 제출하기 위해 해당 그래프를 printscreen해서 위에 첨부하였다.&lt;/p&gt;
-&lt;p&gt;#5
-##5. 4번의 결과에서 예측정확도가 가장 높은 최적의 hyper-parameter 조합은 무엇인지 밝히시오.&lt;/p&gt;
+&lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;plotly html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;visdat&#34;:{&#34;1eac4dcb311e&#34;:[&#34;function () &#34;,&#34;plotlyVisDat&#34;]},&#34;cur_data&#34;:&#34;1eac4dcb311e&#34;,&#34;attrs&#34;:{&#34;1eac4dcb311e&#34;:{&#34;z&#34;:[[0.834699453551913,0.834699453551913,0.834429602644539,0.805538689873845,0.873372461714903,0.873372461714903,0.904118599473791,0.904118599473791,0.904118599473791,0.904118599473791],[0.88477366255144,0.88477366255144,0.88477366255144,0.88477366255144,0.88477366255144,0.88477366255144,0.897473520879714,0.897473520879714,0.897473520879714,0.897473520879714],[0.90627740673278,0.90627740673278,0.90627740673278,0.90627740673278,0.90627740673278,0.90627740673278,0.899986507454631,0.899986507454631,0.899986507454631,0.899986507454631],[0.920343385279633,0.920343385279633,0.920343385279633,0.920343385279633,0.920343385279633,0.920343385279633,0.916261890305606,0.916261890305606,0.916261890305606,0.916261890305606],[0.915013829859003,0.915013829859003,0.915013829859003,0.915013829859003,0.915013829859003,0.915013829859003,0.915013829859003,0.915013829859003,0.915013829859003,0.915013829859003],[0.916025770761654,0.916025770761654,0.916025770761654,0.916025770761654,0.916025770761654,0.916025770761654,0.916025770761654,0.916025770761654,0.916025770761654,0.916025770761654],[0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228],[0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228],[0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228],[0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228]],&#34;x&#34;:[0.001,0.002,0.003,0.004,0.005,0.006,0.007,0.008,0.009,0.01],&#34;y&#34;:[1,6,11,16,21,26,31,36,41,46],&#34;alpha_stroke&#34;:1,&#34;sizes&#34;:[10,100],&#34;spans&#34;:[1,20],&#34;type&#34;:&#34;surface&#34;,&#34;inherit&#34;:true}},&#34;layout&#34;:{&#34;margin&#34;:{&#34;b&#34;:40,&#34;l&#34;:60,&#34;t&#34;:25,&#34;r&#34;:10},&#34;scene&#34;:{&#34;xaxis&#34;:{&#34;title&#34;:&#34;cp&#34;,&#34;tickvals&#34;:[0.001,0.002,0.003,0.004,0.005,0.006,0.007,0.008,0.009,0.01]},&#34;yaxis&#34;:{&#34;title&#34;:&#34;minsplit&#34;,&#34;tickvals&#34;:[1,6,11,16,21,26,31,36,41,46]},&#34;zaxis&#34;:{&#34;title&#34;:&#34;auc&#34;}},&#34;hovermode&#34;:&#34;closest&#34;,&#34;showlegend&#34;:false,&#34;legend&#34;:{&#34;yanchor&#34;:&#34;top&#34;,&#34;y&#34;:0.5}},&#34;source&#34;:&#34;A&#34;,&#34;config&#34;:{&#34;showSendToCloud&#34;:false},&#34;data&#34;:[{&#34;colorbar&#34;:{&#34;title&#34;:&#34;&#34;,&#34;ticklen&#34;:2,&#34;len&#34;:0.5,&#34;lenmode&#34;:&#34;fraction&#34;,&#34;y&#34;:1,&#34;yanchor&#34;:&#34;top&#34;},&#34;colorscale&#34;:[[&#34;0&#34;,&#34;rgba(68,1,84,1)&#34;],[&#34;0.0416666666666664&#34;,&#34;rgba(70,19,97,1)&#34;],[&#34;0.0833333333333337&#34;,&#34;rgba(72,32,111,1)&#34;],[&#34;0.125&#34;,&#34;rgba(71,45,122,1)&#34;],[&#34;0.166666666666667&#34;,&#34;rgba(68,58,128,1)&#34;],[&#34;0.208333333333333&#34;,&#34;rgba(64,70,135,1)&#34;],[&#34;0.25&#34;,&#34;rgba(60,82,138,1)&#34;],[&#34;0.291666666666667&#34;,&#34;rgba(56,93,140,1)&#34;],[&#34;0.333333333333333&#34;,&#34;rgba(49,104,142,1)&#34;],[&#34;0.375&#34;,&#34;rgba(46,114,142,1)&#34;],[&#34;0.416666666666667&#34;,&#34;rgba(42,123,142,1)&#34;],[&#34;0.458333333333333&#34;,&#34;rgba(38,133,141,1)&#34;],[&#34;0.5&#34;,&#34;rgba(37,144,140,1)&#34;],[&#34;0.541666666666667&#34;,&#34;rgba(33,154,138,1)&#34;],[&#34;0.583333333333333&#34;,&#34;rgba(39,164,133,1)&#34;],[&#34;0.625&#34;,&#34;rgba(47,174,127,1)&#34;],[&#34;0.666666666666667&#34;,&#34;rgba(53,183,121,1)&#34;],[&#34;0.708333333333333&#34;,&#34;rgba(79,191,110,1)&#34;],[&#34;0.75&#34;,&#34;rgba(98,199,98,1)&#34;],[&#34;0.791666666666667&#34;,&#34;rgba(119,207,85,1)&#34;],[&#34;0.833333333333333&#34;,&#34;rgba(147,214,70,1)&#34;],[&#34;0.875&#34;,&#34;rgba(172,220,52,1)&#34;],[&#34;0.916666666666666&#34;,&#34;rgba(199,225,42,1)&#34;],[&#34;0.958333333333334&#34;,&#34;rgba(226,228,40,1)&#34;],[&#34;1&#34;,&#34;rgba(253,231,37,1)&#34;]],&#34;showscale&#34;:true,&#34;z&#34;:[[0.834699453551913,0.834699453551913,0.834429602644539,0.805538689873845,0.873372461714903,0.873372461714903,0.904118599473791,0.904118599473791,0.904118599473791,0.904118599473791],[0.88477366255144,0.88477366255144,0.88477366255144,0.88477366255144,0.88477366255144,0.88477366255144,0.897473520879714,0.897473520879714,0.897473520879714,0.897473520879714],[0.90627740673278,0.90627740673278,0.90627740673278,0.90627740673278,0.90627740673278,0.90627740673278,0.899986507454631,0.899986507454631,0.899986507454631,0.899986507454631],[0.920343385279633,0.920343385279633,0.920343385279633,0.920343385279633,0.920343385279633,0.920343385279633,0.916261890305606,0.916261890305606,0.916261890305606,0.916261890305606],[0.915013829859003,0.915013829859003,0.915013829859003,0.915013829859003,0.915013829859003,0.915013829859003,0.915013829859003,0.915013829859003,0.915013829859003,0.915013829859003],[0.916025770761654,0.916025770761654,0.916025770761654,0.916025770761654,0.916025770761654,0.916025770761654,0.916025770761654,0.916025770761654,0.916025770761654,0.916025770761654],[0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228],[0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228],[0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228],[0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228,0.91435606827228]],&#34;x&#34;:[0.001,0.002,0.003,0.004,0.005,0.006,0.007,0.008,0.009,0.01],&#34;y&#34;:[1,6,11,16,21,26,31,36,41,46],&#34;type&#34;:&#34;surface&#34;,&#34;frame&#34;:null}],&#34;highlight&#34;:{&#34;on&#34;:&#34;plotly_click&#34;,&#34;persistent&#34;:false,&#34;dynamic&#34;:false,&#34;selectize&#34;:false,&#34;opacityDim&#34;:0.2,&#34;selected&#34;:{&#34;opacity&#34;:1},&#34;debounce&#34;:0},&#34;shinyEvents&#34;:[&#34;plotly_hover&#34;,&#34;plotly_click&#34;,&#34;plotly_selected&#34;,&#34;plotly_relayout&#34;,&#34;plotly_brushed&#34;,&#34;plotly_brushing&#34;,&#34;plotly_clickannotation&#34;,&#34;plotly_doubleclick&#34;,&#34;plotly_deselect&#34;,&#34;plotly_afterplot&#34;,&#34;plotly_sunburstclick&#34;],&#34;base_url&#34;:&#34;https://plot.ly&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;p&gt;그래프는 ploty를 사용하였기에 html에서 종합적으로 볼 수 있다.&lt;/p&gt;
+&lt;p&gt;#4. 위의 결과에서 예측정확도가 가장 높은 최적의 hyper-parameter 조합은 무엇인지 밝히시오.&lt;/p&gt;
 &lt;p&gt;먼저 auc 행렬을 이용해 최댓값을 찾으면 다음의 위치이다.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;auc == max(auc)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;##           1     6    11    16    21    26    31    36    41    46
 ## 0.001 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
 ## 0.002 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
 ## 0.003 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
-## 0.004 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
-## 0.005  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE FALSE FALSE FALSE
+## 0.004  TRUE  TRUE  TRUE  TRUE  TRUE  TRUE FALSE FALSE FALSE FALSE
+## 0.005 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
 ## 0.006 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
 ## 0.007 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
 ## 0.008 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
 ## 0.009 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
 ## 0.01  FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;즉 cp가 0.005이고 minsplit이 1, 6, 11, 16, 21일때 가장 좋은 auroc를 가진다. 즉 해당 조합이 최적의 hyper-parameter이다.&lt;/p&gt;
+&lt;/div&gt;
 </description>
                 
                 
@@ -562,6 +585,12 @@ plot_ly(z = auc,x=cp,y=minsplit) %&amp;gt;%
                                     <category domain="/categories/r/">R</category>
                                 
                             
+                                
+                                
+                                
+                                    <category domain="/categories/data-mining/">data mining</category>
+                                
+                            
                         
                     
                         
@@ -569,7 +598,13 @@ plot_ly(z = auc,x=cp,y=minsplit) %&amp;gt;%
                                 
                                 
                                 
-                                    <category domain="/tags/r-markdown/">R Markdown</category>
+                                    <category domain="/tags/data-mining/">data mining</category>
+                                
+                            
+                                
+                                
+                                
+                                    <category domain="/tags/decision-tree/">decision tree</category>
                                 
                             
                         
@@ -579,8 +614,8 @@ plot_ly(z = auc,x=cp,y=minsplit) %&amp;gt;%
         
             <item>
                 <title>데이터마이닝 - 로지스틱 회귀분석</title>
-                <link>/posts/report/1/</link>
-                <guid isPermaLink="true">/posts/report/1/</guid>
+                <link>/posts/data_mining/1/</link>
+                <guid isPermaLink="true">/posts/data_mining/1/</guid>
                 <pubDate>Sun, 05 Apr 2020 00:00:00 &#43;0000</pubDate>
                 
                     <author>leechungpa@naver.com (Lee Chung Pa)</author>
@@ -590,7 +625,7 @@ plot_ly(z = auc,x=cp,y=minsplit) %&amp;gt;%
                     <description>
 
 
-&lt;hr /&gt;
+&lt;p&gt;데이터마이닝 연습으로 로지스틱 회귀분석을 사용한 예제이다.&lt;/p&gt;
 &lt;div id=&#34;자료-불러오기&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;자료 불러오기&lt;/h1&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(readxl)
@@ -673,9 +708,7 @@ f_airbnb$price_ratio &amp;lt;- f_airbnb$log_price/f_airbnb$mean_price*100&lt;/co
 &lt;/div&gt;
 &lt;div id=&#34;가격비price_ratio를-종속변수로-하여-선형회귀분석을-수행하시오.&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;2. “가격비(price_ratio)”를 종속변수로 하여 선형회귀분석을 수행하시오.&lt;/h2&gt;
-&lt;p&gt;먼저 시행에 앞서 불필요한 변수를 제거한다. 제거한 것들은 아래와 같다.
-&lt;em&gt;amenities나 description의 경우 길이로 변환하여 분석하였으나 큰 의미가 없어 제거하고 분석하였다.&lt;/em&gt;
-(y변수 계산에 필요했던 것들 및 url이나 설명같이 의미없는 것들을 제외한다.)&lt;/p&gt;
+&lt;p&gt;먼저 시행에 앞서 불필요한 변수를 제거한다. 제거한 것들은 아래와 같다. &lt;em&gt;amenities나 description의 경우 길이로 변환하여 분석하였으나 큰 의미가 없어 제거하고 분석하였다.&lt;/em&gt; (y변수 계산에 필요했던 것들 및 url이나 설명같이 의미없는 것들을 제외한다.)&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;description&lt;/p&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;amenities&lt;/p&gt;&lt;/li&gt;
@@ -687,8 +720,7 @@ f_airbnb$price_ratio &amp;lt;- f_airbnb$log_price/f_airbnb$mean_price*100&lt;/co
 &lt;li&gt;&lt;p&gt;mean_price&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;f_df &amp;lt;- subset(f_airbnb, select = -c(description, amenities, name, neighbourhood, thumbnail_url, id, log_price, mean_price))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;character를 factor로 변환한다.
-순서가 있는 cancellation_policy의 경우 순서를 준다.&lt;/p&gt;
+&lt;p&gt;character를 factor로 변환한다. 순서가 있는 cancellation_policy의 경우 순서를 준다.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;find_char_col&amp;lt;-NA
 for (i in 1:ncol(f_df)){
   find_char_col[i] &amp;lt;- is.character(f_df[,i])
@@ -802,41 +834,41 @@ mypanel &amp;lt;- function(x, y) {
 }
 
 xyplot(price_ratio ~ room_type, data=f_df,panel=mypanel)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-12-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;xyplot(price_ratio ~ accommodates, data=f_df,panel=mypanel)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-12-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;xyplot(price_ratio ~ bathrooms, data=f_df,panel=mypanel)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-12-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;xyplot(price_ratio ~ bed_type, data=f_df,panel=mypanel)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-4.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-12-4.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;xyplot(price_ratio ~ cancellation_policy, data=f_df,panel=mypanel)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-5.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-12-5.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;xyplot(price_ratio ~ cleaning_fee, data=f_df,panel=mypanel)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-6.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-12-6.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;xyplot(price_ratio ~ host_identity_verified , data=f_df,panel=mypanel)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-7.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-12-7.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;xyplot(price_ratio ~ host_response_rate, data=f_df,panel=mypanel)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-8.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-12-8.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;xyplot(price_ratio ~ instant_bookable , data=f_df,panel=mypanel)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-9.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-12-9.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;xyplot(price_ratio ~ number_of_reviews, data=f_df,panel=mypanel)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-10.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-12-10.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;xyplot(price_ratio ~ review_scores_rating, data=f_df,panel=mypanel)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-11.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-12-11.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;xyplot(price_ratio ~ bedrooms, data=f_df,panel=mypanel)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-12.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-12-12.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;xyplot(price_ratio ~ beds, data=f_df,panel=mypanel)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-13.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-12-13.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;xyplot(price_ratio ~ zipcode, data=f_df,panel=mypanel)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-14.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-12-14.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;xyplot(price_ratio ~ last_review , data=f_df,panel=mypanel)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-15.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-12-15.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;xyplot(price_ratio ~ host_since , data=f_df,panel=mypanel)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-16.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-12-16.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;xyplot(price_ratio ~ first_review , data=f_df,panel=mypanel)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-17.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-12-17.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;xyplot(price_ratio ~ property_type , data=f_df,panel=mypanel)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-12-18.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-12-18.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;이제 18개의 값들을 이용해 선형회귀분석을 실시한다. 그전에 결측치NA가 포함된 행은 제거하고 실시한다.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;f_df = na.omit(f_df)
 
@@ -1067,9 +1099,9 @@ summary(lm1)&lt;/code&gt;&lt;/pre&gt;
 &lt;div id=&#34;회귀진단&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;회귀진단&lt;/h1&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(lm2,which=1)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-15-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-15-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(lm2,which=2)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-15-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-15-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;잔차에서 메가폰 형태가 나타남을 알수 있다. 또한 QQ플랏도 문제가 있음을 알 수 있다. Y변수의 변환의 필요성이 있으므로 Y’=logY로 변환하였다.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;f_df$log_price_ratio &amp;lt;- log(f_df$price_ratio)
 
@@ -1198,11 +1230,11 @@ lm4 = step(lm3, direction = &amp;#39;both&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
 ## Multiple R-squared:  0.6588, Adjusted R-squared:  0.6584 
 ## F-statistic:  1931 on 27 and 27008 DF,  p-value: &amp;lt; 2.2e-16&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(lm4,which=1)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-17-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-17-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(lm4,which=2)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## Warning: not plotting observations with leverage one:
 ##   1413, 8437, 20636&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-17-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-17-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;잔차의 패턴이 어느정도 감소함을 알 수 있다.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;summary(lm3)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## 
@@ -1422,11 +1454,11 @@ summary(temp_lm)&lt;/code&gt;&lt;/pre&gt;
 ## Multiple R-squared:  0.6588, Adjusted R-squared:  0.6584 
 ## F-statistic:  1931 on 27 and 27008 DF,  p-value: &amp;lt; 2.2e-16&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(lm4,which=1)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-21-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-21-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(lm4,which=2)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## Warning: not plotting observations with leverage one:
 ##   1413, 8437, 20636&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-21-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-21-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;정규성과 등분산성에 문제가 없다. Y 변수가 아닌 잔차를 바탕으로 trellis plot을 그려보면 큰 문제는 보이지 않는다. (결과는 생략 eval=FALSE)&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;xyplot(lm4$residuals ~ room_type, data=f_df,panel=mypanel)
 xyplot(lm4$residuals ~ cancellation_policy, data=f_df,panel=mypanel)
@@ -1517,11 +1549,11 @@ summary(lm5)&lt;/code&gt;&lt;/pre&gt;
 ## Multiple R-squared:  0.6588, Adjusted R-squared:  0.6584 
 ## F-statistic:  1931 on 27 and 27008 DF,  p-value: &amp;lt; 2.2e-16&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(lm5,which=1)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-23-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-23-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(lm5,which=2)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## Warning: not plotting observations with leverage one:
 ##   1413, 8437, 20636&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/posts/2020-04-05-datamining-logisticregression_files/figure-html/unnamed-chunk-23-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/posts/datamining-logisticregression_files/figure-html/unnamed-chunk-23-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;p-value도 유의미하며(일부 zipcode는 유의미 하지 않으나 대부분이 유의미하므로 그대로 사용한다. 하지만 해당 zipcode에 대해서는 해석에 유의할 필요가 있다.), Adjusted R-squared도 0.6584이다. 잔차도 문제 없으므로 test데이터와 비교를 해본다.&lt;/p&gt;
 &lt;p&gt;그 결과 예측결정계수,평균절대오차, MAPE는 순서대로 다음과 같다.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;## predicted values
@@ -1642,7 +1674,7 @@ mean(abs(test_df$log_price_ratio - pred)/abs(test_df$log_price_ratio))*100&lt;/c
                                 
                                 
                                 
-                                    <category domain="/tags/r-markdown/">R Markdown</category>
+                                    <category domain="/tags/data-mining/">data mining</category>
                                 
                             
                                 

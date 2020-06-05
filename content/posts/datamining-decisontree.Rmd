@@ -1,0 +1,131 @@
+---
+title: 데이터마이닝 - Decision Tree
+author: 이청파
+date: 2020-05-15
+slug: 'data_mining/2'
+categories:
+  - R
+  - data mining
+tags:
+  - data mining
+  - decision tree
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+데이터마이닝 연습으로 Decision Tree 모델을 사용한 예제이다.
+
+먼저 사용한 페키지이다.
+
+```{r}
+library(tidyverse)
+library(rpart)
+library(rpart.plot)
+library(pROC)
+library(plotly)
+```
+
+
+
+다음으로 우리가 사용할 데이터이다. 데이터는 https://www.openml.org/d/29 에서 가져왔다.
+
+```{r}
+raw_hw_tb = read_csv("data/dataset_29_credit-a.csv",na="?")
+```
+
+해당자료는 Credit Approval로 credit card applications와 관련된 자료이다. Ross Quinlan의 자료로, 1987년 UCI에 공개된 자료이다. 모든 자료는 보안을 위해 다른 단어로 변경되었다. 정확히 각각의 변수가 의미하는 바는 알 수 없느나 홈페이지를 통해 각 변수들의 특성을 파악할 수 있다. 먼저 A1, A4, A5, A6, A7, A9, A10, A12, A13는 명목형 자료이다. 대부분은 2개의 범주로 구성되어 있으나, A6과 같은경우 15개의 범주로 구성되어 있다. 반면 A2, A3, A8, A11, A14, A15는 숫자형 범주이다. read_csv에서 보면 그 특성과 다르게 가져왔기에 이에 맞게 변수를 변환하였다. 또한 중간중간 NA가 있으나 나무모형을 사용하기에 그대로 사용하였다.
+
+```{r}
+hw_tb = raw_hw_tb %>% mutate(
+    A1=as.factor(A1), A4=as.factor(A4), A5=as.factor(A5), A6=as.factor(A6), A7=as.factor(A7),
+    A9=as.factor(A9), A10=as.factor(A10), A12=as.factor(A12), A13=as.factor(A13),
+    
+    A2=as.numeric(A2), A3=as.numeric(A3), A8=as.numeric(A8), A11=as.numeric(A11),
+    A14=as.numeric(A14), A15=as.numeric(A15),
+    
+    class=as.factor(class)
+  )
+```
+
+자료의 구조와 총 개수를 보면 다음과 같다.
+
+```{r}
+str(hw_tb)
+nrow(hw_tb)
+```
+#1. Training 데이터와 Test 데이터를 50:50의 비율로 분할하시오.
+```{r}
+set.seed(1234)
+n = sample(1:nrow(hw_tb), round(nrow(hw_tb)/2)) 
+train = hw_tb[n,] 
+test = hw_tb[-n,]
+c(nrow(train), nrow(test))
+```
+#2. R 프로그램의 ‘rpart’ 명령어를 사용하여 의사결정나무를 수행하고자 한다. 단, hyper-parameter는 아래와 같이 조정한다. 
+
+- A. minsplit = 1 ~ 46 (5의 간격으로) 
+
+- B. cp = 0.001 ~ 0.01 (0.001의 간격으로) 
+
+- C. xval = 0 으로 고정 (pruning 없음)  
+
+- D. 그외 parameter 값들은 default 값을 사용 
+
+# 3. 위 2번의 조건에 맞는 의사결정나무를 training 데이터를 이용하여 생성하고, test 데이터를 이용하여 예측 정확도를 계산하고자 한다. 이때 예측정확도는 AUROC 값을 사용한다. 그 결과, 총 110개의 AUROC 값을 구할 수 있다. 이를 minsplit과 cp 값의 조합에 따라 AUROC 값으로 3차원 포물선 그래프(3D surface plot)를 생성하시오. 
+
+
+```{r}
+auc = matrix(NA,nrow=10,ncol=10)
+
+for(i1 in 1:10){
+  for(i2 in 1:10){
+    tree_control = rpart.control(minsplit = 5*i1-4, cp =0.001*i2, xval=0)
+    temp_tree = assign(paste('tree',5*i1-4,i2,sep='_'), rpart(class ~ . , data=train, method='class', control=tree_control) )
+    temp_prob = assign(paste('prob',5*i1-4,i2,sep='_'), predict(temp_tree, newdata=test, type="prob")  )
+    temp_roc = assign(paste('roc',5*i1-4,i2,sep='_'), roc(test$class ~ temp_prob[,2])  )
+    auc[i1,i2]=temp_roc$auc
+  }
+}
+```
+
+코드 실행 결과는 아래와 같은 객체를 통해 확인할 수 있다. 자세한 내용은 생략한다.
+
+- 각각의 모형 : tree_(minsplit값)_(cp값\*1000)
+
+- 각각의 예측 : prob_(minsplit값)_(cp값\*1000)
+
+- 각각의 roc(4번) : roc_(minsplit값)_(cp값\*1000)
+
+해당 auroc를 이용하여 3d surface plot을 그리면 아래와 같다.
+
+```{r}
+cp = 0.001*1:10
+minsplit = 1:10*5-4
+rownames(auc)=cp
+colnames(auc)=minsplit
+
+plot_ly(z = auc,x=cp,y=minsplit) %>%
+        add_surface() %>%
+        layout(scene = list(
+                xaxis = list(title = 'cp',tickvals=cp),
+                yaxis = list(title = 'minsplit',tickvals=minsplit),
+                zaxis = list(title = 'auc'))
+               )
+```
+
+그래프는 ploty를 사용하였기에 html에서 종합적으로 볼 수 있다.
+
+#4. 위의 결과에서 예측정확도가 가장 높은 최적의 hyper-parameter 조합은 무엇인지 밝히시오.
+
+먼저 auc 행렬을 이용해 최댓값을 찾으면 다음의 위치이다.
+
+```{r}
+auc == max(auc)
+```
+
+
+즉 cp가 0.005이고 minsplit이 1, 6, 11, 16, 21일때 가장 좋은 auroc를 가진다. 즉 해당 조합이 최적의 hyper-parameter이다.
