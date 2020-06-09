@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-us">
     <title type="text">Leechungpa&#39;s Data Science blog</title>
     <subtitle type="html">Blog for Data Science by Leechungpa.</subtitle>
-    <updated>2020-06-05T15:47:02&#43;09:00</updated>
+    <updated>2020-06-09T14:51:40&#43;09:00</updated>
     <id>/</id>
     <link rel="alternate" type="text/html" href="/" />
     <link rel="self" type="application/atom&#43;xml" href="/atom.xml" />
@@ -166,6 +166,1087 @@ installr::install.R()&lt;/code&gt;&lt;/pre&gt;
                             
                             
                                 <category scheme="/tags/git/" term="Git" label="Git" />
+                            
+                        
+                    
+                
+            
+        </entry>
+    
+        <entry>
+            <title type="text">데이터마이닝 - Random Forest</title>
+            <link rel="alternate" type="text/html" href="/posts/data_mining/3/" />
+            <id>/posts/data_mining/3/</id>
+            <updated>2020-06-09T14:49:01&#43;09:00</updated>
+            <published>2020-05-24T00:00:00&#43;00:00</published>
+            <author>
+                    <name>Lee Chung Pa</name>
+                    <uri>https://leechungpa.netlify.app/</uri>
+                    <email>leechungpa@naver.com</email>
+                    </author>
+            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</rights><summary type="html">데이터마이닝 연습으로 Random Forest을 사용한 예제이다.
+먼저 전처리에서 사용한 packages이다.
+library(tidyverse)library(skimr)그 다음 모형을 만들고자 하는 데이터를 불러왔다. 해당 데이터는 카글에서 가지고 온 데이터다.
+raw_data=read_csv(&amp;#39;./data/ausraindata.csv&amp;#39;,col_types = cols(Evaporation = col_double(),Sunshine = col_double()) )해당 데이터는 오늘의 날씨를 바탕으로 내일의 강수유무를 예측해 보는 데이터 이다.</summary>
+            
+                <content type="html">
+&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/plotly-binding/plotly.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/typedarray/typedarray.min.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/jquery/jquery.min.js&#34;&gt;&lt;/script&gt;
+&lt;link href=&#34;/rmarkdown-libs/crosstalk/css/crosstalk.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;script src=&#34;/rmarkdown-libs/crosstalk/js/crosstalk.min.js&#34;&gt;&lt;/script&gt;
+&lt;link href=&#34;/rmarkdown-libs/plotly-htmlwidgets-css/plotly-htmlwidgets.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;script src=&#34;/rmarkdown-libs/plotly-main/plotly-latest.min.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;데이터마이닝 연습으로 Random Forest을 사용한 예제이다.&lt;/p&gt;
+&lt;p&gt;먼저 전처리에서 사용한 packages이다.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse)
+library(skimr)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;그 다음 모형을 만들고자 하는 데이터를 불러왔다. 해당 데이터는 &lt;a href=&#34;https://www.kaggle.com/kalpakchepurwar/ausrain&#34;&gt;카글&lt;/a&gt;에서 가지고 온 데이터다.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;raw_data=read_csv(&amp;#39;./data/ausraindata.csv&amp;#39;,col_types = cols(Evaporation = col_double(),
+  Sunshine = col_double()) )&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;해당 데이터는 오늘의 날씨를 바탕으로 내일의 강수유무를 예측해 보는 데이터 이다. 이 자료는 수많은 Australian weather stations의 자료가 포함되어 있다. 총 24개의 열로 구성되어 있으며 각 열별 데이터의 의미는 아래와 같다.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Date : The date of observation&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Location : weather station의 위치&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;MinTemp : minimum temperature in degrees Celsius&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;MaxTemp : The maximum temperature in degrees Celsius&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Rainfall : 당일 강수량 (mm)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Evaporation : Class A pan evaporation (mm) in the 24 hours to 9am&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Sunshine : The number of hours of bright sunshine in the day.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;WindGustDir : The direction of the strongest wind gust in the 24 hours to midnight&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;WindGustSpeed : The speed (km/h) of the strongest wind gust in the 24 hours to midnight&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;WindDir9am : Direction of the wind at 9am&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;WindDir3pm : Direction of the wind at 3pm&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;WindSpeed9am : Wind speed (km/hr) averaged over 10 minutes prior to 9am&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;WindSpeed3pm : Wind speed (km/hr) averaged over 10 minutes prior to 3pm&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Humidity9am : Humidity (percent) at 9am&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Humidity3pm : Humidity (percent) at 3pm&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Pressure9am : Atmospheric pressure (hpa) reduced to mean sea level at 9am&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Pressure3pm : Atmospheric pressure (hpa) reduced to mean sea level at 3pm&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Cloud9am : Fraction of sky obscured by cloud at 9am. This is measured in “oktas”, which are a unit of eigths. It records how many eigths of the sky are obscured by cloud. A 0 measure indicates completely clear sky whilst an 8 indicates that it is completely overcast.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Cloud3pm : Fraction of sky obscured by cloud at 3pm. This is measured in “oktas”, which are a unit of eigths. It records how many eigths of the sky are obscured by cloud. A 0 measure indicates completely clear sky whilst an 8 indicates that it is completely overcast.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Temp9am : Temperature (degrees C) at 9am&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Temp3pm : Temperature (degrees C) at 3pm&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;RainToday : Boolean: 1 if precipitation (mm) in the 24 hours to 9am exceeds 1mm, otherwise 0&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;RISK_MM : 다음날의 강수량(mm)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;RainTomorrow : 우리의 목표변수로 다음날 강수 유무&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div id=&#34;전처리&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;전처리&lt;/h1&gt;
+&lt;p&gt;분석에 앞서, 실제 데이터 구성을 직접 보면서 전처리를 시행한다.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;glimpse(raw_data)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Rows: 142,193
+## Columns: 24
+## $ Date          &amp;lt;date&amp;gt; 2008-12-01, 2008-12-02, 2008-12-03, 2008-12-04, 2008...
+## $ Location      &amp;lt;chr&amp;gt; &amp;quot;Albury&amp;quot;, &amp;quot;Albury&amp;quot;, &amp;quot;Albury&amp;quot;, &amp;quot;Albury&amp;quot;, &amp;quot;Albury&amp;quot;, &amp;quot;Al...
+## $ MinTemp       &amp;lt;dbl&amp;gt; 13.4, 7.4, 12.9, 9.2, 17.5, 14.6, 14.3, 7.7, 9.7, 13....
+## $ MaxTemp       &amp;lt;dbl&amp;gt; 22.9, 25.1, 25.7, 28.0, 32.3, 29.7, 25.0, 26.7, 31.9,...
+## $ Rainfall      &amp;lt;dbl&amp;gt; 0.6, 0.0, 0.0, 0.0, 1.0, 0.2, 0.0, 0.0, 0.0, 1.4, 0.0...
+## $ Evaporation   &amp;lt;dbl&amp;gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ Sunshine      &amp;lt;dbl&amp;gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ WindGustDir   &amp;lt;chr&amp;gt; &amp;quot;W&amp;quot;, &amp;quot;WNW&amp;quot;, &amp;quot;WSW&amp;quot;, &amp;quot;NE&amp;quot;, &amp;quot;W&amp;quot;, &amp;quot;WNW&amp;quot;, &amp;quot;W&amp;quot;, &amp;quot;W&amp;quot;, &amp;quot;NNW&amp;quot;,...
+## $ WindGustSpeed &amp;lt;dbl&amp;gt; 44, 44, 46, 24, 41, 56, 50, 35, 80, 28, 30, 31, 61, 4...
+## $ WindDir9am    &amp;lt;chr&amp;gt; &amp;quot;W&amp;quot;, &amp;quot;NNW&amp;quot;, &amp;quot;W&amp;quot;, &amp;quot;SE&amp;quot;, &amp;quot;ENE&amp;quot;, &amp;quot;W&amp;quot;, &amp;quot;SW&amp;quot;, &amp;quot;SSE&amp;quot;, &amp;quot;SE&amp;quot;,...
+## $ WindDir3pm    &amp;lt;chr&amp;gt; &amp;quot;WNW&amp;quot;, &amp;quot;WSW&amp;quot;, &amp;quot;WSW&amp;quot;, &amp;quot;E&amp;quot;, &amp;quot;NW&amp;quot;, &amp;quot;W&amp;quot;, &amp;quot;W&amp;quot;, &amp;quot;W&amp;quot;, &amp;quot;NW&amp;quot;, ...
+## $ WindSpeed9am  &amp;lt;dbl&amp;gt; 20, 4, 19, 11, 7, 19, 20, 6, 7, 15, 17, 15, 28, 24, N...
+## $ WindSpeed3pm  &amp;lt;dbl&amp;gt; 24, 22, 26, 9, 20, 24, 24, 17, 28, 11, 6, 13, 28, 20,...
+## $ Humidity9am   &amp;lt;dbl&amp;gt; 71, 44, 38, 45, 82, 55, 49, 48, 42, 58, 48, 89, 76, 6...
+## $ Humidity3pm   &amp;lt;dbl&amp;gt; 22, 25, 30, 16, 33, 23, 19, 19, 9, 27, 22, 91, 93, 43...
+## $ Pressure9am   &amp;lt;dbl&amp;gt; 1007.7, 1010.6, 1007.6, 1017.6, 1010.8, 1009.2, 1009....
+## $ Pressure3pm   &amp;lt;dbl&amp;gt; 1007.1, 1007.8, 1008.7, 1012.8, 1006.0, 1005.4, 1008....
+## $ Cloud9am      &amp;lt;dbl&amp;gt; 8, NA, NA, NA, 7, NA, 1, NA, NA, NA, NA, 8, 8, NA, 0,...
+## $ Cloud3pm      &amp;lt;dbl&amp;gt; NA, NA, 2, NA, 8, NA, NA, NA, NA, NA, NA, 8, 8, 7, NA...
+## $ Temp9am       &amp;lt;dbl&amp;gt; 16.9, 17.2, 21.0, 18.1, 17.8, 20.6, 18.1, 16.3, 18.3,...
+## $ Temp3pm       &amp;lt;dbl&amp;gt; 21.8, 24.3, 23.2, 26.5, 29.7, 28.9, 24.6, 25.5, 30.2,...
+## $ RainToday     &amp;lt;chr&amp;gt; &amp;quot;No&amp;quot;, &amp;quot;No&amp;quot;, &amp;quot;No&amp;quot;, &amp;quot;No&amp;quot;, &amp;quot;No&amp;quot;, &amp;quot;No&amp;quot;, &amp;quot;No&amp;quot;, &amp;quot;No&amp;quot;, &amp;quot;No&amp;quot;,...
+## $ RISK_MM       &amp;lt;dbl&amp;gt; 0.0, 0.0, 0.0, 1.0, 0.2, 0.0, 0.0, 0.0, 1.4, 0.0, 2.2...
+## $ RainTomorrow  &amp;lt;chr&amp;gt; &amp;quot;No&amp;quot;, &amp;quot;No&amp;quot;, &amp;quot;No&amp;quot;, &amp;quot;No&amp;quot;, &amp;quot;No&amp;quot;, &amp;quot;No&amp;quot;, &amp;quot;No&amp;quot;, &amp;quot;No&amp;quot;, &amp;quot;Yes&amp;quot;...&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;먼저 이 데이터는 2008-12-01 부터 2017-06-24 까지의 데이터이다. 해당 날짜의 모든 데이터를 가지고 있는 시계열 자료로 볼 수 있으나, 뉴럴네트워크를 사용하기에 해당 Date 변수는 사용하지 않는다.&lt;/p&gt;
+&lt;p&gt;또한 우리는 분류를 해야하므로 내일 강수량이 아닌 강수유무를 목적변수로 한다. 따라서 내일 강수량인 RISK_MM도 제외한다.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;raw_data %&amp;gt;% filter(is.na(Evaporation)) %&amp;gt;% 
+  count() / nrow(raw_data)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##           n
+## 1 0.4278903&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;raw_data %&amp;gt;% filter(is.na(Sunshine)) %&amp;gt;% 
+  count() / nrow(raw_data)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##           n
+## 1 0.4769292&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;raw_data %&amp;gt;% filter(is.na(Cloud9am)) %&amp;gt;% 
+  count() / nrow(raw_data)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##           n
+## 1 0.3773533&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;raw_data %&amp;gt;% filter(is.na(Cloud3pm)) %&amp;gt;% 
+  count() / nrow(raw_data)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##           n
+## 1 0.4015247&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;또한 위에서 볼 수있듯이 4개의 열들은 결측치의 값이 높은 것을 알 수 있다. 해당 행을 `na.omit을 이용해 삭제하였다.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;nrow( raw_data %&amp;gt;% distinct(Location) )&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 49&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;nrow( raw_data %&amp;gt;% distinct(WindGustDir) )&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 17&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;nrow( raw_data %&amp;gt;% distinct(WindDir9am) )&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 17&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;nrow( raw_data %&amp;gt;% distinct(WindDir3pm) )&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 17&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;또한 49개로 그 범주의 개수가 다양한 Location과 16개(NA 1개포함) 방향변수들도 제거하였다.&lt;/p&gt;
+&lt;p&gt;앞서 언급한 열들을 제거하고, na인 행을 제거하고, 비가 온 경우(‘Yes’)를 1로 변환하였다. factor형으로 만들었다.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;temp_data = raw_data %&amp;gt;%
+  select(
+    -Date, -RISK_MM,
+    # -Evaporation, -Sunshine, -Cloud9am, -Cloud3pm,
+    -Location, -WindGustDir,-WindDir9am, -WindDir3pm
+    ) %&amp;gt;%
+  na.omit() %&amp;gt;%
+  mutate(
+    RainToday = as.numeric(RainToday==&amp;#39;Yes&amp;#39;),
+    RainTomorrow = as.factor(as.numeric(RainTomorrow==&amp;#39;Yes&amp;#39;))
+  )&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;총 58090개의 관측지가 있다. 그 결과를 skimr 패키지를 이용해 간략히 보였다.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;skim(temp_data) # skimr 패키지&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;caption&gt;&lt;span id=&#34;tab:unnamed-chunk-7&#34;&gt;Table 1: &lt;/span&gt;Data summary&lt;/caption&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Name&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;temp_data&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of rows&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;58090&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of columns&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;18&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;_______________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Column type frequency:&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;factor&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;numeric&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;17&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;________________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Group variables&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: factor&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;ordered&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_unique&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;top_counts&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;RainTomorrow&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;FALSE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;0: 45361, 1: 12729&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: numeric&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;mean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;sd&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p0&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p25&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p50&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p75&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p100&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;hist&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;MinTemp&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;13.34&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.47&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-6.7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8.4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;13.1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;18.3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;31.4&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▅▇▆▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;MaxTemp&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;24.13&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.97&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;18.6&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;23.8&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;29.6&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;48.1&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▇▇▅▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Rainfall&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.12&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.99&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.6&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;206.2&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Evaporation&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5.45&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.69&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.8&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.8&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7.4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;81.2&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Sunshine&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7.70&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.77&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8.6&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10.7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;14.5&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▃▃▅▇▃&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;WindGustSpeed&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;40.56&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;13.38&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;31.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;39.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;48.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;124.0&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▃▇▂▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;WindSpeed9am&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;15.24&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8.58&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;15.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;20.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;67.0&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▆▂▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;WindSpeed3pm&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;19.58&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8.56&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;13.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;19.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;24.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;76.0&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▆▇▂▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Humidity9am&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;66.22&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;18.63&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;55.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;67.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;80.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;100.0&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▂▅▇▅&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Humidity3pm&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;49.70&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;20.22&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;36.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;51.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;63.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;100.0&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▂▅▇▅▂&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Pressure9am&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1017.33&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.94&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;980.5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1012.7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1017.3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1022.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1040.4&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▁▇▇▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Pressure3pm&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1014.88&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;977.1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1010.1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1014.8&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1019.5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1038.9&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▁▇▇▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Cloud9am&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.25&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.80&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8.0&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▆▃▁▃▇&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Cloud3pm&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.33&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.65&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9.0&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▆▃▃▇▂&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Temp9am&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;18.09&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.60&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-0.9&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;12.9&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;17.7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;23.2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;39.4&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▇▇▅▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Temp3pm&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;22.63&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.84&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;17.3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;22.3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;27.8&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;46.1&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▇▇▃▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;RainToday&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.22&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.41&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.0&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▂&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;이상 전처리를 완료하였다.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;/div&gt;
+&lt;div id=&#34;training-데이터와-test-데이터를-5050의-비율로-분할하시오.&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;1. Training 데이터와 Test 데이터를 50:50의 비율로 분할하시오.&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;set.seed(1234)
+sp_n = sample(1:nrow(temp_data), round(nrow(temp_data)/2)) 
+train = temp_data[sp_n,]
+test = temp_data[-sp_n,]
+nrow(train);nrow(test)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 29045&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 29045&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;/div&gt;
+&lt;div id=&#34;r-프로그램의-randomforest-명령어를-사용하여-랜덤포레스트-분석을-수행하고자-한다.-단-hyper-parameter는-아래와-같이-조정한다.&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;2. R 프로그램의 ‘randomForest’ 명령어를 사용하여 랜덤포레스트 분석을 수행하고자 한다. 단, hyper-parameter는 아래와 같이 조정한다.&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;A. ntree=100 을 사용하고,&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;B. mtry = (0.1&lt;em&gt;p, 0.2&lt;/em&gt;p, … , 1.0*p)을 내림하여 사용한다.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;C. nodesize = (1, 0.01&lt;em&gt;n, 0.02&lt;/em&gt;n, … , 0.10*n) 을 반올림하여 사용한다.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;D. 그외 parameter 값들은 default 값을 사용한다.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;먼저 17개의 변수로 RainTomorrow를 예측하므로 p는 17이 된다. 따라서 B의 조건에 따른 mtry를 구할 수 있다. 또한 train 데이터의 수는 29045개 이므로 n은 29045가 된다. 따라서 C조건에 따른 nodesize를 구할 수 있다. 각각은 다음과 같다.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;( para_mtry = floor(17 * 1:10 / 10) )&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  [1]  1  3  5  6  8 10 11 13 15 17&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;( para_ndsz = c(1, round( nrow(train) * 1:10 / 100 ) ) )&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  [1]    1  290  581  871 1162 1452 1743 2033 2324 2614 2904&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;이제 코드를 돌리면 아래와 같다.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(randomForest)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## randomForest 4.6-14&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Type rfNews() to see new features/changes/bug fixes.&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Attaching package: &amp;#39;randomForest&amp;#39;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following object is masked from &amp;#39;package:dplyr&amp;#39;:
+## 
+##     combine&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following object is masked from &amp;#39;package:ggplot2&amp;#39;:
+## 
+##     margin&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(pROC)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Type &amp;#39;citation(&amp;quot;pROC&amp;quot;)&amp;#39; for a citation.&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Attaching package: &amp;#39;pROC&amp;#39;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following objects are masked from &amp;#39;package:stats&amp;#39;:
+## 
+##     cov, smooth, var&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;for(mt in para_mtry){
+  for(nd in para_ndsz){
+    print(paste(&amp;#39;rf&amp;#39;,mt,nd,sep=&amp;#39;_&amp;#39;))
+    set.seed(2010)
+    assign(
+      paste(&amp;#39;rf&amp;#39;,mt,nd,sep=&amp;#39;_&amp;#39;),
+      randomForest(RainTomorrow ~ ., data = train, ntree=100, mtry=mt, nodesize=nd)
+      )
+  }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;rf_1_1&amp;quot;
+## [1] &amp;quot;rf_1_290&amp;quot;
+## [1] &amp;quot;rf_1_581&amp;quot;
+## [1] &amp;quot;rf_1_871&amp;quot;
+## [1] &amp;quot;rf_1_1162&amp;quot;
+## [1] &amp;quot;rf_1_1452&amp;quot;
+## [1] &amp;quot;rf_1_1743&amp;quot;
+## [1] &amp;quot;rf_1_2033&amp;quot;
+## [1] &amp;quot;rf_1_2324&amp;quot;
+## [1] &amp;quot;rf_1_2614&amp;quot;
+## [1] &amp;quot;rf_1_2904&amp;quot;
+## [1] &amp;quot;rf_3_1&amp;quot;
+## [1] &amp;quot;rf_3_290&amp;quot;
+## [1] &amp;quot;rf_3_581&amp;quot;
+## [1] &amp;quot;rf_3_871&amp;quot;
+## [1] &amp;quot;rf_3_1162&amp;quot;
+## [1] &amp;quot;rf_3_1452&amp;quot;
+## [1] &amp;quot;rf_3_1743&amp;quot;
+## [1] &amp;quot;rf_3_2033&amp;quot;
+## [1] &amp;quot;rf_3_2324&amp;quot;
+## [1] &amp;quot;rf_3_2614&amp;quot;
+## [1] &amp;quot;rf_3_2904&amp;quot;
+## [1] &amp;quot;rf_5_1&amp;quot;
+## [1] &amp;quot;rf_5_290&amp;quot;
+## [1] &amp;quot;rf_5_581&amp;quot;
+## [1] &amp;quot;rf_5_871&amp;quot;
+## [1] &amp;quot;rf_5_1162&amp;quot;
+## [1] &amp;quot;rf_5_1452&amp;quot;
+## [1] &amp;quot;rf_5_1743&amp;quot;
+## [1] &amp;quot;rf_5_2033&amp;quot;
+## [1] &amp;quot;rf_5_2324&amp;quot;
+## [1] &amp;quot;rf_5_2614&amp;quot;
+## [1] &amp;quot;rf_5_2904&amp;quot;
+## [1] &amp;quot;rf_6_1&amp;quot;
+## [1] &amp;quot;rf_6_290&amp;quot;
+## [1] &amp;quot;rf_6_581&amp;quot;
+## [1] &amp;quot;rf_6_871&amp;quot;
+## [1] &amp;quot;rf_6_1162&amp;quot;
+## [1] &amp;quot;rf_6_1452&amp;quot;
+## [1] &amp;quot;rf_6_1743&amp;quot;
+## [1] &amp;quot;rf_6_2033&amp;quot;
+## [1] &amp;quot;rf_6_2324&amp;quot;
+## [1] &amp;quot;rf_6_2614&amp;quot;
+## [1] &amp;quot;rf_6_2904&amp;quot;
+## [1] &amp;quot;rf_8_1&amp;quot;
+## [1] &amp;quot;rf_8_290&amp;quot;
+## [1] &amp;quot;rf_8_581&amp;quot;
+## [1] &amp;quot;rf_8_871&amp;quot;
+## [1] &amp;quot;rf_8_1162&amp;quot;
+## [1] &amp;quot;rf_8_1452&amp;quot;
+## [1] &amp;quot;rf_8_1743&amp;quot;
+## [1] &amp;quot;rf_8_2033&amp;quot;
+## [1] &amp;quot;rf_8_2324&amp;quot;
+## [1] &amp;quot;rf_8_2614&amp;quot;
+## [1] &amp;quot;rf_8_2904&amp;quot;
+## [1] &amp;quot;rf_10_1&amp;quot;
+## [1] &amp;quot;rf_10_290&amp;quot;
+## [1] &amp;quot;rf_10_581&amp;quot;
+## [1] &amp;quot;rf_10_871&amp;quot;
+## [1] &amp;quot;rf_10_1162&amp;quot;
+## [1] &amp;quot;rf_10_1452&amp;quot;
+## [1] &amp;quot;rf_10_1743&amp;quot;
+## [1] &amp;quot;rf_10_2033&amp;quot;
+## [1] &amp;quot;rf_10_2324&amp;quot;
+## [1] &amp;quot;rf_10_2614&amp;quot;
+## [1] &amp;quot;rf_10_2904&amp;quot;
+## [1] &amp;quot;rf_11_1&amp;quot;
+## [1] &amp;quot;rf_11_290&amp;quot;
+## [1] &amp;quot;rf_11_581&amp;quot;
+## [1] &amp;quot;rf_11_871&amp;quot;
+## [1] &amp;quot;rf_11_1162&amp;quot;
+## [1] &amp;quot;rf_11_1452&amp;quot;
+## [1] &amp;quot;rf_11_1743&amp;quot;
+## [1] &amp;quot;rf_11_2033&amp;quot;
+## [1] &amp;quot;rf_11_2324&amp;quot;
+## [1] &amp;quot;rf_11_2614&amp;quot;
+## [1] &amp;quot;rf_11_2904&amp;quot;
+## [1] &amp;quot;rf_13_1&amp;quot;
+## [1] &amp;quot;rf_13_290&amp;quot;
+## [1] &amp;quot;rf_13_581&amp;quot;
+## [1] &amp;quot;rf_13_871&amp;quot;
+## [1] &amp;quot;rf_13_1162&amp;quot;
+## [1] &amp;quot;rf_13_1452&amp;quot;
+## [1] &amp;quot;rf_13_1743&amp;quot;
+## [1] &amp;quot;rf_13_2033&amp;quot;
+## [1] &amp;quot;rf_13_2324&amp;quot;
+## [1] &amp;quot;rf_13_2614&amp;quot;
+## [1] &amp;quot;rf_13_2904&amp;quot;
+## [1] &amp;quot;rf_15_1&amp;quot;
+## [1] &amp;quot;rf_15_290&amp;quot;
+## [1] &amp;quot;rf_15_581&amp;quot;
+## [1] &amp;quot;rf_15_871&amp;quot;
+## [1] &amp;quot;rf_15_1162&amp;quot;
+## [1] &amp;quot;rf_15_1452&amp;quot;
+## [1] &amp;quot;rf_15_1743&amp;quot;
+## [1] &amp;quot;rf_15_2033&amp;quot;
+## [1] &amp;quot;rf_15_2324&amp;quot;
+## [1] &amp;quot;rf_15_2614&amp;quot;
+## [1] &amp;quot;rf_15_2904&amp;quot;
+## [1] &amp;quot;rf_17_1&amp;quot;
+## [1] &amp;quot;rf_17_290&amp;quot;
+## [1] &amp;quot;rf_17_581&amp;quot;
+## [1] &amp;quot;rf_17_871&amp;quot;
+## [1] &amp;quot;rf_17_1162&amp;quot;
+## [1] &amp;quot;rf_17_1452&amp;quot;
+## [1] &amp;quot;rf_17_1743&amp;quot;
+## [1] &amp;quot;rf_17_2033&amp;quot;
+## [1] &amp;quot;rf_17_2324&amp;quot;
+## [1] &amp;quot;rf_17_2614&amp;quot;
+## [1] &amp;quot;rf_17_2904&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;각각의 parameter별 모형은 **rf_(mtry값)_(nodesize값)** 라는 객체에 저장되었다. 즉 mtry가 1이고 nodesize가 290인 모형은 rf_1_290라는 객체 저장되어 있다.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;/div&gt;
+&lt;div id=&#34;위-2번의-조건에-맞는-랜덤포레스트를-training-데이터를-이용하여-생성하고-test-데이터를-이용하여-예측-정확도를-계산하고자-한다.-이때-예측정확도는-auroc-값을-사용한다.&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;3. 위 2번의 조건에 맞는 랜덤포레스트를 training 데이터를 이용하여 생성하고, test 데이터를 이용하여 예측 정확도를 계산하고자 한다. 이때 예측정확도는 AUROC 값을 사용한다.&lt;/h1&gt;
+&lt;p&gt;앞서 random forest를 생성하였다. auroc를 test 데이터를 이용해 계산하면 아래와 같다. (message=F)&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;for( md in ls(pattern = &amp;quot;^rf_&amp;quot;) ){
+  assign(
+      paste(&amp;#39;pred&amp;#39;,md ,sep=&amp;#39;_&amp;#39;),
+      predict( get(md), newdata=test , type=&amp;quot;prob&amp;quot;)
+      )
+  assign(
+      paste(&amp;#39;roc&amp;#39;,md ,sep=&amp;#39;_&amp;#39;),
+      roc(test$RainTomorrow ~ get(paste(&amp;#39;pred&amp;#39;,md ,sep=&amp;#39;_&amp;#39;))[,2])
+      )
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;test 데이터를 이용하여 각각의 예측 정확도auroc값을 계산한 결과는 아래와 같다.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;auc_matrix = matrix(nrow=10,ncol=11)
+for( md in ls(pattern = &amp;quot;^roc_&amp;quot;) ){
+  temp_mt = strsplit(md,split=&amp;#39;_&amp;#39;)[[1]][3]
+  temp_ns = strsplit(md,split=&amp;#39;_&amp;#39;)[[1]][4]
+  cat(&amp;#39;mtry값:&amp;#39;,temp_mt,&amp;#39;\t&amp;#39;,
+      &amp;#39;nodesize값:&amp;#39;,temp_ns,&amp;#39;\n&amp;#39;,
+      sep =&amp;quot;&amp;quot;)
+  temp_auc = get(md)$auc 
+  print(temp_auc)
+  cat(&amp;#39;\n&amp;#39;)
+
+  auc_matrix[which(para_mtry ==temp_mt),which(para_ndsz ==temp_ns)] = temp_auc
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## mtry값:1  nodesize값:1
+## Area under the curve: 0.8798
+## 
+## mtry값:1  nodesize값:1162
+## Area under the curve: 0.853
+## 
+## mtry값:1  nodesize값:1452
+## Area under the curve: 0.8509
+## 
+## mtry값:1  nodesize값:1743
+## Area under the curve: 0.8466
+## 
+## mtry값:1  nodesize값:2033
+## Area under the curve: 0.849
+## 
+## mtry값:1  nodesize값:2324
+## Area under the curve: 0.8509
+## 
+## mtry값:1  nodesize값:2614
+## Area under the curve: 0.8466
+## 
+## mtry값:1  nodesize값:290
+## Area under the curve: 0.8572
+## 
+## mtry값:1  nodesize값:2904
+## Area under the curve: 0.8424
+## 
+## mtry값:1  nodesize값:581
+## Area under the curve: 0.8548
+## 
+## mtry값:1  nodesize값:871
+## Area under the curve: 0.8542
+## 
+## mtry값:10 nodesize값:1
+## Area under the curve: 0.8886
+## 
+## mtry값:10 nodesize값:1162
+## Area under the curve: 0.8393
+## 
+## mtry값:10 nodesize값:1452
+## Area under the curve: 0.8436
+## 
+## mtry값:10 nodesize값:1743
+## Area under the curve: 0.8351
+## 
+## mtry값:10 nodesize값:2033
+## Area under the curve: 0.8312
+## 
+## mtry값:10 nodesize값:2324
+## Area under the curve: 0.8316
+## 
+## mtry값:10 nodesize값:2614
+## Area under the curve: 0.8313
+## 
+## mtry값:10 nodesize값:290
+## Area under the curve: 0.859
+## 
+## mtry값:10 nodesize값:2904
+## Area under the curve: 0.8306
+## 
+## mtry값:10 nodesize값:581
+## Area under the curve: 0.8465
+## 
+## mtry값:10 nodesize값:871
+## Area under the curve: 0.8466
+## 
+## mtry값:11 nodesize값:1
+## Area under the curve: 0.888
+## 
+## mtry값:11 nodesize값:1162
+## Area under the curve: 0.8392
+## 
+## mtry값:11 nodesize값:1452
+## Area under the curve: 0.8365
+## 
+## mtry값:11 nodesize값:1743
+## Area under the curve: 0.8294
+## 
+## mtry값:11 nodesize값:2033
+## Area under the curve: 0.8265
+## 
+## mtry값:11 nodesize값:2324
+## Area under the curve: 0.8334
+## 
+## mtry값:11 nodesize값:2614
+## Area under the curve: 0.8274
+## 
+## mtry값:11 nodesize값:290
+## Area under the curve: 0.8599
+## 
+## mtry값:11 nodesize값:2904
+## Area under the curve: 0.8289
+## 
+## mtry값:11 nodesize값:581
+## Area under the curve: 0.8479
+## 
+## mtry값:11 nodesize값:871
+## Area under the curve: 0.8373
+## 
+## mtry값:13 nodesize값:1
+## Area under the curve: 0.887
+## 
+## mtry값:13 nodesize값:1162
+## Area under the curve: 0.8391
+## 
+## mtry값:13 nodesize값:1452
+## Area under the curve: 0.831
+## 
+## mtry값:13 nodesize값:1743
+## Area under the curve: 0.8314
+## 
+## mtry값:13 nodesize값:2033
+## Area under the curve: 0.8231
+## 
+## mtry값:13 nodesize값:2324
+## Area under the curve: 0.823
+## 
+## mtry값:13 nodesize값:2614
+## Area under the curve: 0.8182
+## 
+## mtry값:13 nodesize값:290
+## Area under the curve: 0.8557
+## 
+## mtry값:13 nodesize값:2904
+## Area under the curve: 0.8207
+## 
+## mtry값:13 nodesize값:581
+## Area under the curve: 0.8423
+## 
+## mtry값:13 nodesize값:871
+## Area under the curve: 0.8393
+## 
+## mtry값:15 nodesize값:1
+## Area under the curve: 0.8856
+## 
+## mtry값:15 nodesize값:1162
+## Area under the curve: 0.8333
+## 
+## mtry값:15 nodesize값:1452
+## Area under the curve: 0.8302
+## 
+## mtry값:15 nodesize값:1743
+## Area under the curve: 0.8219
+## 
+## mtry값:15 nodesize값:2033
+## Area under the curve: 0.8201
+## 
+## mtry값:15 nodesize값:2324
+## Area under the curve: 0.8177
+## 
+## mtry값:15 nodesize값:2614
+## Area under the curve: 0.8135
+## 
+## mtry값:15 nodesize값:290
+## Area under the curve: 0.8576
+## 
+## mtry값:15 nodesize값:2904
+## Area under the curve: 0.8134
+## 
+## mtry값:15 nodesize값:581
+## Area under the curve: 0.8329
+## 
+## mtry값:15 nodesize값:871
+## Area under the curve: 0.8343
+## 
+## mtry값:17 nodesize값:1
+## Area under the curve: 0.8852
+## 
+## mtry값:17 nodesize값:1162
+## Area under the curve: 0.8248
+## 
+## mtry값:17 nodesize값:1452
+## Area under the curve: 0.8245
+## 
+## mtry값:17 nodesize값:1743
+## Area under the curve: 0.8235
+## 
+## mtry값:17 nodesize값:2033
+## Area under the curve: 0.815
+## 
+## mtry값:17 nodesize값:2324
+## Area under the curve: 0.8085
+## 
+## mtry값:17 nodesize값:2614
+## Area under the curve: 0.8077
+## 
+## mtry값:17 nodesize값:290
+## Area under the curve: 0.8545
+## 
+## mtry값:17 nodesize값:2904
+## Area under the curve: 0.7965
+## 
+## mtry값:17 nodesize값:581
+## Area under the curve: 0.8312
+## 
+## mtry값:17 nodesize값:871
+## Area under the curve: 0.827
+## 
+## mtry값:3  nodesize값:1
+## Area under the curve: 0.89
+## 
+## mtry값:3  nodesize값:1162
+## Area under the curve: 0.8507
+## 
+## mtry값:3  nodesize값:1452
+## Area under the curve: 0.8467
+## 
+## mtry값:3  nodesize값:1743
+## Area under the curve: 0.8435
+## 
+## mtry값:3  nodesize값:2033
+## Area under the curve: 0.8476
+## 
+## mtry값:3  nodesize값:2324
+## Area under the curve: 0.8467
+## 
+## mtry값:3  nodesize값:2614
+## Area under the curve: 0.8396
+## 
+## mtry값:3  nodesize값:290
+## Area under the curve: 0.8589
+## 
+## mtry값:3  nodesize값:2904
+## Area under the curve: 0.8432
+## 
+## mtry값:3  nodesize값:581
+## Area under the curve: 0.8547
+## 
+## mtry값:3  nodesize값:871
+## Area under the curve: 0.8531
+## 
+## mtry값:5  nodesize값:1
+## Area under the curve: 0.8902
+## 
+## mtry값:5  nodesize값:1162
+## Area under the curve: 0.842
+## 
+## mtry값:5  nodesize값:1452
+## Area under the curve: 0.8445
+## 
+## mtry값:5  nodesize값:1743
+## Area under the curve: 0.8416
+## 
+## mtry값:5  nodesize값:2033
+## Area under the curve: 0.8336
+## 
+## mtry값:5  nodesize값:2324
+## Area under the curve: 0.8358
+## 
+## mtry값:5  nodesize값:2614
+## Area under the curve: 0.8394
+## 
+## mtry값:5  nodesize값:290
+## Area under the curve: 0.8624
+## 
+## mtry값:5  nodesize값:2904
+## Area under the curve: 0.837
+## 
+## mtry값:5  nodesize값:581
+## Area under the curve: 0.8525
+## 
+## mtry값:5  nodesize값:871
+## Area under the curve: 0.8487
+## 
+## mtry값:6  nodesize값:1
+## Area under the curve: 0.8896
+## 
+## mtry값:6  nodesize값:1162
+## Area under the curve: 0.8495
+## 
+## mtry값:6  nodesize값:1452
+## Area under the curve: 0.8422
+## 
+## mtry값:6  nodesize값:1743
+## Area under the curve: 0.8427
+## 
+## mtry값:6  nodesize값:2033
+## Area under the curve: 0.8414
+## 
+## mtry값:6  nodesize값:2324
+## Area under the curve: 0.8394
+## 
+## mtry값:6  nodesize값:2614
+## Area under the curve: 0.8389
+## 
+## mtry값:6  nodesize값:290
+## Area under the curve: 0.8598
+## 
+## mtry값:6  nodesize값:2904
+## Area under the curve: 0.8303
+## 
+## mtry값:6  nodesize값:581
+## Area under the curve: 0.8477
+## 
+## mtry값:6  nodesize값:871
+## Area under the curve: 0.8476
+## 
+## mtry값:8  nodesize값:1
+## Area under the curve: 0.8891
+## 
+## mtry값:8  nodesize값:1162
+## Area under the curve: 0.844
+## 
+## mtry값:8  nodesize값:1452
+## Area under the curve: 0.8441
+## 
+## mtry값:8  nodesize값:1743
+## Area under the curve: 0.8379
+## 
+## mtry값:8  nodesize값:2033
+## Area under the curve: 0.8389
+## 
+## mtry값:8  nodesize값:2324
+## Area under the curve: 0.8368
+## 
+## mtry값:8  nodesize값:2614
+## Area under the curve: 0.8314
+## 
+## mtry값:8  nodesize값:290
+## Area under the curve: 0.8596
+## 
+## mtry값:8  nodesize값:2904
+## Area under the curve: 0.8304
+## 
+## mtry값:8  nodesize값:581
+## Area under the curve: 0.8494
+## 
+## mtry값:8  nodesize값:871
+## Area under the curve: 0.8464&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;행렬로도 보여주면 아래와 같다.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rownames(auc_matrix) = para_mtry
+colnames(auc_matrix) = para_ndsz
+auc_matrix&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##            1       290       581       871      1162      1452      1743
+## 1  0.8797539 0.8572112 0.8548120 0.8541534 0.8530406 0.8508504 0.8465923
+## 3  0.8899524 0.8589102 0.8546948 0.8531171 0.8507239 0.8466689 0.8434589
+## 5  0.8901695 0.8624353 0.8525360 0.8486703 0.8419568 0.8445128 0.8416349
+## 6  0.8895977 0.8597663 0.8477312 0.8476448 0.8495143 0.8421653 0.8426893
+## 8  0.8890539 0.8596478 0.8494105 0.8464140 0.8439507 0.8441229 0.8379413
+## 10 0.8885989 0.8589943 0.8464877 0.8465859 0.8392590 0.8435724 0.8351362
+## 11 0.8880276 0.8599148 0.8479312 0.8372760 0.8392385 0.8365081 0.8294359
+## 13 0.8869692 0.8557121 0.8423401 0.8392755 0.8390583 0.8309899 0.8313972
+## 15 0.8855846 0.8575909 0.8329103 0.8342663 0.8333442 0.8302059 0.8218959
+## 17 0.8851665 0.8544948 0.8311615 0.8269814 0.8248338 0.8244663 0.8234599
+##         2033      2324      2614      2904
+## 1  0.8489772 0.8509397 0.8465913 0.8424482
+## 3  0.8475778 0.8466515 0.8395814 0.8431646
+## 5  0.8336063 0.8358320 0.8394180 0.8369673
+## 6  0.8413764 0.8393648 0.8389086 0.8302772
+## 8  0.8388660 0.8367690 0.8313858 0.8303713
+## 10 0.8311746 0.8315563 0.8313170 0.8306044
+## 11 0.8264946 0.8333505 0.8274361 0.8288907
+## 13 0.8231113 0.8229738 0.8182062 0.8207216
+## 15 0.8200801 0.8176567 0.8134933 0.8133673
+## 17 0.8149581 0.8084856 0.8076712 0.7964592&lt;/code&gt;&lt;/pre&gt;
+&lt;hr /&gt;
+&lt;/div&gt;
+&lt;div id=&#34;번의-결과-총-110개의-auroc-값을-구할-수-있다.-이를-mtry-값과-nodesize-값의-조합에-따라-auroc-값으로-3차원-포물선-그래프를-생성하시오.-3d-surface-plot&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;4. 3번의 결과, 총 110개의 AUROC 값을 구할 수 있다. 이를 mtry 값과 nodesize 값의 조합에 따라 AUROC 값으로 3차원 포물선 그래프를 생성하시오. (3D surface plot)&lt;/h1&gt;
+&lt;p&gt;해당 auroc를 이용하여 3d surface plot을 그리면 아래와 같다.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(plotly)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Attaching package: &amp;#39;plotly&amp;#39;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following object is masked from &amp;#39;package:ggplot2&amp;#39;:
+## 
+##     last_plot&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following object is masked from &amp;#39;package:stats&amp;#39;:
+## 
+##     filter&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following object is masked from &amp;#39;package:graphics&amp;#39;:
+## 
+##     layout&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot_ly(z = auc_matrix,x=para_mtry,y=para_ndsz) %&amp;gt;%
+        add_surface() %&amp;gt;%
+        layout(scene = list(
+                xaxis = list(title = &amp;#39;mtry&amp;#39;,tickvals=para_mtry),
+                yaxis = list(title = &amp;#39;nodesize&amp;#39;,tickvals=para_ndsz),
+                zaxis = list(title = &amp;#39;auc&amp;#39;))
+               )&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;plotly html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;visdat&#34;:{&#34;12d85a685ec2&#34;:[&#34;function () &#34;,&#34;plotlyVisDat&#34;]},&#34;cur_data&#34;:&#34;12d85a685ec2&#34;,&#34;attrs&#34;:{&#34;12d85a685ec2&#34;:{&#34;z&#34;:[[0.879753909191365,0.857211175123725,0.854811972002102,0.854153366076446,0.853040569816661,0.850850435213139,0.8465923363023,0.848977171104065,0.85093973905314,0.846591314172719,0.842448227209508],[0.889952446264445,0.858910185067677,0.854694788459305,0.853117105640692,0.850723894194487,0.846668909982982,0.843458934405753,0.847577824085869,0.846651513131034,0.839581429057744,0.843164571411155],[0.890169523185017,0.862435269084319,0.852536040461079,0.848670332622165,0.841956789372187,0.844512815391848,0.84163488394314,0.833606324527615,0.835831958345349,0.839417960596678,0.836967272429525],[0.889597657171627,0.859766323557383,0.847731184821085,0.847644789060193,0.84951433633443,0.842165327897173,0.842689349986571,0.841376360872615,0.839364847715151,0.838908599355807,0.830277172771134],[0.889053873910343,0.859647839122393,0.849410492098883,0.846413993618855,0.843950716394448,0.844122909092841,0.837941293089318,0.838865972766641,0.836768979290939,0.831385784150213,0.830371274081287],[0.888598898911082,0.858994257806795,0.846487690194052,0.846585924762205,0.83925898331104,0.84357238046463,0.835136180629803,0.831174609425703,0.831556287065361,0.831316984849066,0.830604440078586],[0.888027628279568,0.859914766369467,0.847931205599569,0.837275996860954,0.839238516628837,0.836508133198641,0.829435942918943,0.826494625670199,0.833350530577485,0.827436120583648,0.828890655716155],[0.886969249235017,0.855712079271332,0.842340132704494,0.839275478486389,0.839058267346781,0.830989855202164,0.831397240949449,0.823111256306281,0.822973819455133,0.818206173461681,0.820721624034365],[0.885584556182319,0.857590863568442,0.832910302464593,0.834266265760601,0.833344236048857,0.830205861164958,0.821895937352226,0.820080125873503,0.817656653196995,0.813493268185754,0.813367301899896],[0.885166481093363,0.85449475735628,0.831161473167763,0.826981365841266,0.824833819970259,0.824466293835094,0.823459909180104,0.814958114093421,0.808485552518443,0.807671235303687,0.796459206849747]],&#34;x&#34;:[1,3,5,6,8,10,11,13,15,17],&#34;y&#34;:[1,290,581,871,1162,1452,1743,2033,2324,2614,2904],&#34;alpha_stroke&#34;:1,&#34;sizes&#34;:[10,100],&#34;spans&#34;:[1,20],&#34;type&#34;:&#34;surface&#34;,&#34;inherit&#34;:true}},&#34;layout&#34;:{&#34;margin&#34;:{&#34;b&#34;:40,&#34;l&#34;:60,&#34;t&#34;:25,&#34;r&#34;:10},&#34;scene&#34;:{&#34;xaxis&#34;:{&#34;title&#34;:&#34;mtry&#34;,&#34;tickvals&#34;:[1,3,5,6,8,10,11,13,15,17]},&#34;yaxis&#34;:{&#34;title&#34;:&#34;nodesize&#34;,&#34;tickvals&#34;:[1,290,581,871,1162,1452,1743,2033,2324,2614,2904]},&#34;zaxis&#34;:{&#34;title&#34;:&#34;auc&#34;}},&#34;hovermode&#34;:&#34;closest&#34;,&#34;showlegend&#34;:false,&#34;legend&#34;:{&#34;yanchor&#34;:&#34;top&#34;,&#34;y&#34;:0.5}},&#34;source&#34;:&#34;A&#34;,&#34;config&#34;:{&#34;showSendToCloud&#34;:false},&#34;data&#34;:[{&#34;colorbar&#34;:{&#34;title&#34;:&#34;&#34;,&#34;ticklen&#34;:2,&#34;len&#34;:0.5,&#34;lenmode&#34;:&#34;fraction&#34;,&#34;y&#34;:1,&#34;yanchor&#34;:&#34;top&#34;},&#34;colorscale&#34;:[[&#34;0&#34;,&#34;rgba(68,1,84,1)&#34;],[&#34;0.0416666666666665&#34;,&#34;rgba(70,19,97,1)&#34;],[&#34;0.0833333333333329&#34;,&#34;rgba(72,32,111,1)&#34;],[&#34;0.125000000000001&#34;,&#34;rgba(71,45,122,1)&#34;],[&#34;0.166666666666667&#34;,&#34;rgba(68,58,128,1)&#34;],[&#34;0.208333333333334&#34;,&#34;rgba(64,70,135,1)&#34;],[&#34;0.25&#34;,&#34;rgba(60,82,138,1)&#34;],[&#34;0.291666666666666&#34;,&#34;rgba(56,93,140,1)&#34;],[&#34;0.333333333333333&#34;,&#34;rgba(49,104,142,1)&#34;],[&#34;0.374999999999999&#34;,&#34;rgba(46,114,142,1)&#34;],[&#34;0.416666666666667&#34;,&#34;rgba(42,123,142,1)&#34;],[&#34;0.458333333333334&#34;,&#34;rgba(38,133,141,1)&#34;],[&#34;0.5&#34;,&#34;rgba(37,144,140,1)&#34;],[&#34;0.541666666666667&#34;,&#34;rgba(33,154,138,1)&#34;],[&#34;0.583333333333333&#34;,&#34;rgba(39,164,133,1)&#34;],[&#34;0.625000000000001&#34;,&#34;rgba(47,174,127,1)&#34;],[&#34;0.666666666666667&#34;,&#34;rgba(53,183,121,1)&#34;],[&#34;0.708333333333333&#34;,&#34;rgba(79,191,110,1)&#34;],[&#34;0.75&#34;,&#34;rgba(98,199,98,1)&#34;],[&#34;0.791666666666667&#34;,&#34;rgba(119,207,85,1)&#34;],[&#34;0.833333333333333&#34;,&#34;rgba(147,214,70,1)&#34;],[&#34;0.874999999999999&#34;,&#34;rgba(172,220,52,1)&#34;],[&#34;0.916666666666667&#34;,&#34;rgba(199,225,42,1)&#34;],[&#34;0.958333333333333&#34;,&#34;rgba(226,228,40,1)&#34;],[&#34;1&#34;,&#34;rgba(253,231,37,1)&#34;]],&#34;showscale&#34;:true,&#34;z&#34;:[[0.879753909191365,0.857211175123725,0.854811972002102,0.854153366076446,0.853040569816661,0.850850435213139,0.8465923363023,0.848977171104065,0.85093973905314,0.846591314172719,0.842448227209508],[0.889952446264445,0.858910185067677,0.854694788459305,0.853117105640692,0.850723894194487,0.846668909982982,0.843458934405753,0.847577824085869,0.846651513131034,0.839581429057744,0.843164571411155],[0.890169523185017,0.862435269084319,0.852536040461079,0.848670332622165,0.841956789372187,0.844512815391848,0.84163488394314,0.833606324527615,0.835831958345349,0.839417960596678,0.836967272429525],[0.889597657171627,0.859766323557383,0.847731184821085,0.847644789060193,0.84951433633443,0.842165327897173,0.842689349986571,0.841376360872615,0.839364847715151,0.838908599355807,0.830277172771134],[0.889053873910343,0.859647839122393,0.849410492098883,0.846413993618855,0.843950716394448,0.844122909092841,0.837941293089318,0.838865972766641,0.836768979290939,0.831385784150213,0.830371274081287],[0.888598898911082,0.858994257806795,0.846487690194052,0.846585924762205,0.83925898331104,0.84357238046463,0.835136180629803,0.831174609425703,0.831556287065361,0.831316984849066,0.830604440078586],[0.888027628279568,0.859914766369467,0.847931205599569,0.837275996860954,0.839238516628837,0.836508133198641,0.829435942918943,0.826494625670199,0.833350530577485,0.827436120583648,0.828890655716155],[0.886969249235017,0.855712079271332,0.842340132704494,0.839275478486389,0.839058267346781,0.830989855202164,0.831397240949449,0.823111256306281,0.822973819455133,0.818206173461681,0.820721624034365],[0.885584556182319,0.857590863568442,0.832910302464593,0.834266265760601,0.833344236048857,0.830205861164958,0.821895937352226,0.820080125873503,0.817656653196995,0.813493268185754,0.813367301899896],[0.885166481093363,0.85449475735628,0.831161473167763,0.826981365841266,0.824833819970259,0.824466293835094,0.823459909180104,0.814958114093421,0.808485552518443,0.807671235303687,0.796459206849747]],&#34;x&#34;:[1,3,5,6,8,10,11,13,15,17],&#34;y&#34;:[1,290,581,871,1162,1452,1743,2033,2324,2614,2904],&#34;type&#34;:&#34;surface&#34;,&#34;frame&#34;:null}],&#34;highlight&#34;:{&#34;on&#34;:&#34;plotly_click&#34;,&#34;persistent&#34;:false,&#34;dynamic&#34;:false,&#34;selectize&#34;:false,&#34;opacityDim&#34;:0.2,&#34;selected&#34;:{&#34;opacity&#34;:1},&#34;debounce&#34;:0},&#34;shinyEvents&#34;:[&#34;plotly_hover&#34;,&#34;plotly_click&#34;,&#34;plotly_selected&#34;,&#34;plotly_relayout&#34;,&#34;plotly_brushed&#34;,&#34;plotly_brushing&#34;,&#34;plotly_clickannotation&#34;,&#34;plotly_doubleclick&#34;,&#34;plotly_deselect&#34;,&#34;plotly_afterplot&#34;,&#34;plotly_sunburstclick&#34;],&#34;base_url&#34;:&#34;https://plot.ly&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;hr /&gt;
+&lt;/div&gt;
+&lt;div id=&#34;번의-결과에서-예측정확도가-가장-높은-최적의-hyper-parameter-조합은-무엇인지-밝히시오.&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;5. 4번의 결과에서 예측정확도가 가장 높은 최적의 hyper-parameter 조합은 무엇인지 밝히시오.&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;auc_matrix == max(auc_matrix)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##        1   290   581   871  1162  1452  1743  2033  2324  2614  2904
+## 1  FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 3  FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 5   TRUE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 6  FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 8  FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 10 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 11 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 13 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 15 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 17 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;즉 &lt;strong&gt;mtry가 3&lt;/strong&gt;이고, &lt;strong&gt;node size 가 1&lt;/strong&gt;일 떄 가장 예측정확도가 높은 조합이다.&lt;/p&gt;
+&lt;/div&gt;
+</content>
+            
+            
+            
+            
+            
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="/categories/r/" term="R" label="R" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="/categories/data-mining/" term="data mining" label="data mining" />
+                            
+                        
+                    
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="/tags/data-mining/" term="data mining" label="data mining" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="/tags/random-forest/" term="random forest" label="random forest" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="/tags/decision-tree/" term="decision tree" label="decision tree" />
                             
                         
                     
@@ -613,7 +1694,7 @@ plot_ly(z = auc,x=cp,y=minsplit) %&amp;gt;%
             <title type="text">데이터마이닝 - 로지스틱 회귀분석</title>
             <link rel="alternate" type="text/html" href="/posts/data_mining/1/" />
             <id>/posts/data_mining/1/</id>
-            <updated>2020-06-05T15:46:44&#43;09:00</updated>
+            <updated>2020-06-09T14:40:21&#43;09:00</updated>
             <published>2020-04-05T00:00:00&#43;00:00</published>
             <author>
                     <name>Lee Chung Pa</name>
@@ -1681,7 +2762,7 @@ mean(abs(test_df$log_price_ratio - pred)/abs(test_df$log_price_ratio))*100&lt;/c
                             
                             
                             
-                                <category scheme="/tags/%EB%A1%9C%EC%A7%80%EC%8A%A4%ED%8B%B1/" term="로지스틱" label="로지스틱" />
+                                <category scheme="/tags/logistic/" term="logistic" label="logistic" />
                             
                         
                     

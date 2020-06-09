@@ -8,7 +8,7 @@ categories:
   - data mining
 tags:
   - data mining
-  - 로지스틱
+  - logistic
 ---
 
 

@@ -1,0 +1,1030 @@
+---
+title: 데이터마이닝 - Random Forest
+author: 이청파
+date: 2020-05-24
+slug: 'data_mining/3'
+categories:
+  - R
+  - data mining
+tags:
+  - data mining
+  - random forest
+  - decision tree
+---
+
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/plotly-binding/plotly.js"></script>
+<script src="/rmarkdown-libs/typedarray/typedarray.min.js"></script>
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<link href="/rmarkdown-libs/crosstalk/css/crosstalk.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/crosstalk/js/crosstalk.min.js"></script>
+<link href="/rmarkdown-libs/plotly-htmlwidgets-css/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/plotly-main/plotly-latest.min.js"></script>
+
+
+<p>데이터마이닝 연습으로 Random Forest을 사용한 예제이다.</p>
+<p>먼저 전처리에서 사용한 packages이다.</p>
+<pre class="r"><code>library(tidyverse)
+library(skimr)</code></pre>
+<p>그 다음 모형을 만들고자 하는 데이터를 불러왔다. 해당 데이터는 <a href="https://www.kaggle.com/kalpakchepurwar/ausrain">카글</a>에서 가지고 온 데이터다.</p>
+<pre class="r"><code>raw_data=read_csv(&#39;./data/ausraindata.csv&#39;,col_types = cols(Evaporation = col_double(),
+  Sunshine = col_double()) )</code></pre>
+<p>해당 데이터는 오늘의 날씨를 바탕으로 내일의 강수유무를 예측해 보는 데이터 이다. 이 자료는 수많은 Australian weather stations의 자료가 포함되어 있다. 총 24개의 열로 구성되어 있으며 각 열별 데이터의 의미는 아래와 같다.</p>
+<ul>
+<li><p>Date : The date of observation</p></li>
+<li><p>Location : weather station의 위치</p></li>
+<li><p>MinTemp : minimum temperature in degrees Celsius</p></li>
+<li><p>MaxTemp : The maximum temperature in degrees Celsius</p></li>
+<li><p>Rainfall : 당일 강수량 (mm)</p></li>
+<li><p>Evaporation : Class A pan evaporation (mm) in the 24 hours to 9am</p></li>
+<li><p>Sunshine : The number of hours of bright sunshine in the day.</p></li>
+<li><p>WindGustDir : The direction of the strongest wind gust in the 24 hours to midnight</p></li>
+<li><p>WindGustSpeed : The speed (km/h) of the strongest wind gust in the 24 hours to midnight</p></li>
+<li><p>WindDir9am : Direction of the wind at 9am</p></li>
+<li><p>WindDir3pm : Direction of the wind at 3pm</p></li>
+<li><p>WindSpeed9am : Wind speed (km/hr) averaged over 10 minutes prior to 9am</p></li>
+<li><p>WindSpeed3pm : Wind speed (km/hr) averaged over 10 minutes prior to 3pm</p></li>
+<li><p>Humidity9am : Humidity (percent) at 9am</p></li>
+<li><p>Humidity3pm : Humidity (percent) at 3pm</p></li>
+<li><p>Pressure9am : Atmospheric pressure (hpa) reduced to mean sea level at 9am</p></li>
+<li><p>Pressure3pm : Atmospheric pressure (hpa) reduced to mean sea level at 3pm</p></li>
+<li><p>Cloud9am : Fraction of sky obscured by cloud at 9am. This is measured in “oktas”, which are a unit of eigths. It records how many eigths of the sky are obscured by cloud. A 0 measure indicates completely clear sky whilst an 8 indicates that it is completely overcast.</p></li>
+<li><p>Cloud3pm : Fraction of sky obscured by cloud at 3pm. This is measured in “oktas”, which are a unit of eigths. It records how many eigths of the sky are obscured by cloud. A 0 measure indicates completely clear sky whilst an 8 indicates that it is completely overcast.</p></li>
+<li><p>Temp9am : Temperature (degrees C) at 9am</p></li>
+<li><p>Temp3pm : Temperature (degrees C) at 3pm</p></li>
+<li><p>RainToday : Boolean: 1 if precipitation (mm) in the 24 hours to 9am exceeds 1mm, otherwise 0</p></li>
+<li><p>RISK_MM : 다음날의 강수량(mm)</p></li>
+<li><p>RainTomorrow : 우리의 목표변수로 다음날 강수 유무</p></li>
+</ul>
+<div id="전처리" class="section level1">
+<h1>전처리</h1>
+<p>분석에 앞서, 실제 데이터 구성을 직접 보면서 전처리를 시행한다.</p>
+<pre class="r"><code>glimpse(raw_data)</code></pre>
+<pre><code>## Rows: 142,193
+## Columns: 24
+## $ Date          &lt;date&gt; 2008-12-01, 2008-12-02, 2008-12-03, 2008-12-04, 2008...
+## $ Location      &lt;chr&gt; &quot;Albury&quot;, &quot;Albury&quot;, &quot;Albury&quot;, &quot;Albury&quot;, &quot;Albury&quot;, &quot;Al...
+## $ MinTemp       &lt;dbl&gt; 13.4, 7.4, 12.9, 9.2, 17.5, 14.6, 14.3, 7.7, 9.7, 13....
+## $ MaxTemp       &lt;dbl&gt; 22.9, 25.1, 25.7, 28.0, 32.3, 29.7, 25.0, 26.7, 31.9,...
+## $ Rainfall      &lt;dbl&gt; 0.6, 0.0, 0.0, 0.0, 1.0, 0.2, 0.0, 0.0, 0.0, 1.4, 0.0...
+## $ Evaporation   &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ Sunshine      &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ WindGustDir   &lt;chr&gt; &quot;W&quot;, &quot;WNW&quot;, &quot;WSW&quot;, &quot;NE&quot;, &quot;W&quot;, &quot;WNW&quot;, &quot;W&quot;, &quot;W&quot;, &quot;NNW&quot;,...
+## $ WindGustSpeed &lt;dbl&gt; 44, 44, 46, 24, 41, 56, 50, 35, 80, 28, 30, 31, 61, 4...
+## $ WindDir9am    &lt;chr&gt; &quot;W&quot;, &quot;NNW&quot;, &quot;W&quot;, &quot;SE&quot;, &quot;ENE&quot;, &quot;W&quot;, &quot;SW&quot;, &quot;SSE&quot;, &quot;SE&quot;,...
+## $ WindDir3pm    &lt;chr&gt; &quot;WNW&quot;, &quot;WSW&quot;, &quot;WSW&quot;, &quot;E&quot;, &quot;NW&quot;, &quot;W&quot;, &quot;W&quot;, &quot;W&quot;, &quot;NW&quot;, ...
+## $ WindSpeed9am  &lt;dbl&gt; 20, 4, 19, 11, 7, 19, 20, 6, 7, 15, 17, 15, 28, 24, N...
+## $ WindSpeed3pm  &lt;dbl&gt; 24, 22, 26, 9, 20, 24, 24, 17, 28, 11, 6, 13, 28, 20,...
+## $ Humidity9am   &lt;dbl&gt; 71, 44, 38, 45, 82, 55, 49, 48, 42, 58, 48, 89, 76, 6...
+## $ Humidity3pm   &lt;dbl&gt; 22, 25, 30, 16, 33, 23, 19, 19, 9, 27, 22, 91, 93, 43...
+## $ Pressure9am   &lt;dbl&gt; 1007.7, 1010.6, 1007.6, 1017.6, 1010.8, 1009.2, 1009....
+## $ Pressure3pm   &lt;dbl&gt; 1007.1, 1007.8, 1008.7, 1012.8, 1006.0, 1005.4, 1008....
+## $ Cloud9am      &lt;dbl&gt; 8, NA, NA, NA, 7, NA, 1, NA, NA, NA, NA, 8, 8, NA, 0,...
+## $ Cloud3pm      &lt;dbl&gt; NA, NA, 2, NA, 8, NA, NA, NA, NA, NA, NA, 8, 8, 7, NA...
+## $ Temp9am       &lt;dbl&gt; 16.9, 17.2, 21.0, 18.1, 17.8, 20.6, 18.1, 16.3, 18.3,...
+## $ Temp3pm       &lt;dbl&gt; 21.8, 24.3, 23.2, 26.5, 29.7, 28.9, 24.6, 25.5, 30.2,...
+## $ RainToday     &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;,...
+## $ RISK_MM       &lt;dbl&gt; 0.0, 0.0, 0.0, 1.0, 0.2, 0.0, 0.0, 0.0, 1.4, 0.0, 2.2...
+## $ RainTomorrow  &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes&quot;...</code></pre>
+<p>먼저 이 데이터는 2008-12-01 부터 2017-06-24 까지의 데이터이다. 해당 날짜의 모든 데이터를 가지고 있는 시계열 자료로 볼 수 있으나, 뉴럴네트워크를 사용하기에 해당 Date 변수는 사용하지 않는다.</p>
+<p>또한 우리는 분류를 해야하므로 내일 강수량이 아닌 강수유무를 목적변수로 한다. 따라서 내일 강수량인 RISK_MM도 제외한다.</p>
+<pre class="r"><code>raw_data %&gt;% filter(is.na(Evaporation)) %&gt;% 
+  count() / nrow(raw_data)</code></pre>
+<pre><code>##           n
+## 1 0.4278903</code></pre>
+<pre class="r"><code>raw_data %&gt;% filter(is.na(Sunshine)) %&gt;% 
+  count() / nrow(raw_data)</code></pre>
+<pre><code>##           n
+## 1 0.4769292</code></pre>
+<pre class="r"><code>raw_data %&gt;% filter(is.na(Cloud9am)) %&gt;% 
+  count() / nrow(raw_data)</code></pre>
+<pre><code>##           n
+## 1 0.3773533</code></pre>
+<pre class="r"><code>raw_data %&gt;% filter(is.na(Cloud3pm)) %&gt;% 
+  count() / nrow(raw_data)</code></pre>
+<pre><code>##           n
+## 1 0.4015247</code></pre>
+<p>또한 위에서 볼 수있듯이 4개의 열들은 결측치의 값이 높은 것을 알 수 있다. 해당 행을 `na.omit을 이용해 삭제하였다.</p>
+<pre class="r"><code>nrow( raw_data %&gt;% distinct(Location) )</code></pre>
+<pre><code>## [1] 49</code></pre>
+<pre class="r"><code>nrow( raw_data %&gt;% distinct(WindGustDir) )</code></pre>
+<pre><code>## [1] 17</code></pre>
+<pre class="r"><code>nrow( raw_data %&gt;% distinct(WindDir9am) )</code></pre>
+<pre><code>## [1] 17</code></pre>
+<pre class="r"><code>nrow( raw_data %&gt;% distinct(WindDir3pm) )</code></pre>
+<pre><code>## [1] 17</code></pre>
+<p>또한 49개로 그 범주의 개수가 다양한 Location과 16개(NA 1개포함) 방향변수들도 제거하였다.</p>
+<p>앞서 언급한 열들을 제거하고, na인 행을 제거하고, 비가 온 경우(‘Yes’)를 1로 변환하였다. factor형으로 만들었다.</p>
+<pre class="r"><code>temp_data = raw_data %&gt;%
+  select(
+    -Date, -RISK_MM,
+    # -Evaporation, -Sunshine, -Cloud9am, -Cloud3pm,
+    -Location, -WindGustDir,-WindDir9am, -WindDir3pm
+    ) %&gt;%
+  na.omit() %&gt;%
+  mutate(
+    RainToday = as.numeric(RainToday==&#39;Yes&#39;),
+    RainTomorrow = as.factor(as.numeric(RainTomorrow==&#39;Yes&#39;))
+  )</code></pre>
+<p>총 58090개의 관측지가 있다. 그 결과를 skimr 패키지를 이용해 간략히 보였다.</p>
+<pre class="r"><code>skim(temp_data) # skimr 패키지</code></pre>
+<table>
+<caption><span id="tab:unnamed-chunk-7">Table 1: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">temp_data</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">58090</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">18</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">factor</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">17</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: factor</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="left">ordered</th>
+<th align="right">n_unique</th>
+<th align="left">top_counts</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">RainTomorrow</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">FALSE</td>
+<td align="right">2</td>
+<td align="left">0: 45361, 1: 12729</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">MinTemp</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">13.34</td>
+<td align="right">6.47</td>
+<td align="right">-6.7</td>
+<td align="right">8.4</td>
+<td align="right">13.1</td>
+<td align="right">18.3</td>
+<td align="right">31.4</td>
+<td align="left">▁▅▇▆▁</td>
+</tr>
+<tr class="even">
+<td align="left">MaxTemp</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">24.13</td>
+<td align="right">6.97</td>
+<td align="right">4.1</td>
+<td align="right">18.6</td>
+<td align="right">23.8</td>
+<td align="right">29.6</td>
+<td align="right">48.1</td>
+<td align="left">▁▇▇▅▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Rainfall</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.12</td>
+<td align="right">6.99</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td align="right">0.6</td>
+<td align="right">206.2</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Evaporation</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">5.45</td>
+<td align="right">3.69</td>
+<td align="right">0.0</td>
+<td align="right">2.8</td>
+<td align="right">4.8</td>
+<td align="right">7.4</td>
+<td align="right">81.2</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Sunshine</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">7.70</td>
+<td align="right">3.77</td>
+<td align="right">0.0</td>
+<td align="right">5.0</td>
+<td align="right">8.6</td>
+<td align="right">10.7</td>
+<td align="right">14.5</td>
+<td align="left">▃▃▅▇▃</td>
+</tr>
+<tr class="even">
+<td align="left">WindGustSpeed</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">40.56</td>
+<td align="right">13.38</td>
+<td align="right">9.0</td>
+<td align="right">31.0</td>
+<td align="right">39.0</td>
+<td align="right">48.0</td>
+<td align="right">124.0</td>
+<td align="left">▃▇▂▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">WindSpeed9am</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">15.24</td>
+<td align="right">8.58</td>
+<td align="right">0.0</td>
+<td align="right">9.0</td>
+<td align="right">15.0</td>
+<td align="right">20.0</td>
+<td align="right">67.0</td>
+<td align="left">▇▆▂▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">WindSpeed3pm</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">19.58</td>
+<td align="right">8.56</td>
+<td align="right">0.0</td>
+<td align="right">13.0</td>
+<td align="right">19.0</td>
+<td align="right">24.0</td>
+<td align="right">76.0</td>
+<td align="left">▆▇▂▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Humidity9am</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">66.22</td>
+<td align="right">18.63</td>
+<td align="right">0.0</td>
+<td align="right">55.0</td>
+<td align="right">67.0</td>
+<td align="right">80.0</td>
+<td align="right">100.0</td>
+<td align="left">▁▂▅▇▅</td>
+</tr>
+<tr class="even">
+<td align="left">Humidity3pm</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">49.70</td>
+<td align="right">20.22</td>
+<td align="right">0.0</td>
+<td align="right">36.0</td>
+<td align="right">51.0</td>
+<td align="right">63.0</td>
+<td align="right">100.0</td>
+<td align="left">▂▅▇▅▂</td>
+</tr>
+<tr class="odd">
+<td align="left">Pressure9am</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1017.33</td>
+<td align="right">6.94</td>
+<td align="right">980.5</td>
+<td align="right">1012.7</td>
+<td align="right">1017.3</td>
+<td align="right">1022.0</td>
+<td align="right">1040.4</td>
+<td align="left">▁▁▇▇▁</td>
+</tr>
+<tr class="even">
+<td align="left">Pressure3pm</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1014.88</td>
+<td align="right">6.90</td>
+<td align="right">977.1</td>
+<td align="right">1010.1</td>
+<td align="right">1014.8</td>
+<td align="right">1019.5</td>
+<td align="right">1038.9</td>
+<td align="left">▁▁▇▇▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Cloud9am</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4.25</td>
+<td align="right">2.80</td>
+<td align="right">0.0</td>
+<td align="right">1.0</td>
+<td align="right">5.0</td>
+<td align="right">7.0</td>
+<td align="right">8.0</td>
+<td align="left">▆▃▁▃▇</td>
+</tr>
+<tr class="even">
+<td align="left">Cloud3pm</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4.33</td>
+<td align="right">2.65</td>
+<td align="right">0.0</td>
+<td align="right">2.0</td>
+<td align="right">5.0</td>
+<td align="right">7.0</td>
+<td align="right">9.0</td>
+<td align="left">▆▃▃▇▂</td>
+</tr>
+<tr class="odd">
+<td align="left">Temp9am</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">18.09</td>
+<td align="right">6.60</td>
+<td align="right">-0.9</td>
+<td align="right">12.9</td>
+<td align="right">17.7</td>
+<td align="right">23.2</td>
+<td align="right">39.4</td>
+<td align="left">▁▇▇▅▁</td>
+</tr>
+<tr class="even">
+<td align="left">Temp3pm</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">22.63</td>
+<td align="right">6.84</td>
+<td align="right">3.7</td>
+<td align="right">17.3</td>
+<td align="right">22.3</td>
+<td align="right">27.8</td>
+<td align="right">46.1</td>
+<td align="left">▁▇▇▃▁</td>
+</tr>
+<tr class="odd">
+<td align="left">RainToday</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0.22</td>
+<td align="right">0.41</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td align="right">1.0</td>
+<td align="left">▇▁▁▁▂</td>
+</tr>
+</tbody>
+</table>
+<p>이상 전처리를 완료하였다.</p>
+<hr />
+</div>
+<div id="training-데이터와-test-데이터를-5050의-비율로-분할하시오." class="section level1">
+<h1>1. Training 데이터와 Test 데이터를 50:50의 비율로 분할하시오.</h1>
+<pre class="r"><code>set.seed(1234)
+sp_n = sample(1:nrow(temp_data), round(nrow(temp_data)/2)) 
+train = temp_data[sp_n,]
+test = temp_data[-sp_n,]
+nrow(train);nrow(test)</code></pre>
+<pre><code>## [1] 29045</code></pre>
+<pre><code>## [1] 29045</code></pre>
+<hr />
+</div>
+<div id="r-프로그램의-randomforest-명령어를-사용하여-랜덤포레스트-분석을-수행하고자-한다.-단-hyper-parameter는-아래와-같이-조정한다." class="section level1">
+<h1>2. R 프로그램의 ‘randomForest’ 명령어를 사용하여 랜덤포레스트 분석을 수행하고자 한다. 단, hyper-parameter는 아래와 같이 조정한다.</h1>
+<ul>
+<li><p>A. ntree=100 을 사용하고,</p></li>
+<li><p>B. mtry = (0.1<em>p, 0.2</em>p, … , 1.0*p)을 내림하여 사용한다.</p></li>
+<li><p>C. nodesize = (1, 0.01<em>n, 0.02</em>n, … , 0.10*n) 을 반올림하여 사용한다.</p></li>
+<li><p>D. 그외 parameter 값들은 default 값을 사용한다.</p></li>
+</ul>
+<p>먼저 17개의 변수로 RainTomorrow를 예측하므로 p는 17이 된다. 따라서 B의 조건에 따른 mtry를 구할 수 있다. 또한 train 데이터의 수는 29045개 이므로 n은 29045가 된다. 따라서 C조건에 따른 nodesize를 구할 수 있다. 각각은 다음과 같다.</p>
+<pre class="r"><code>( para_mtry = floor(17 * 1:10 / 10) )</code></pre>
+<pre><code>##  [1]  1  3  5  6  8 10 11 13 15 17</code></pre>
+<pre class="r"><code>( para_ndsz = c(1, round( nrow(train) * 1:10 / 100 ) ) )</code></pre>
+<pre><code>##  [1]    1  290  581  871 1162 1452 1743 2033 2324 2614 2904</code></pre>
+<p>이제 코드를 돌리면 아래와 같다.</p>
+<pre class="r"><code>library(randomForest)</code></pre>
+<pre><code>## randomForest 4.6-14</code></pre>
+<pre><code>## Type rfNews() to see new features/changes/bug fixes.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;randomForest&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     combine</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     margin</code></pre>
+<pre class="r"><code>library(pROC)</code></pre>
+<pre><code>## Type &#39;citation(&quot;pROC&quot;)&#39; for a citation.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;pROC&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     cov, smooth, var</code></pre>
+<pre class="r"><code>for(mt in para_mtry){
+  for(nd in para_ndsz){
+    print(paste(&#39;rf&#39;,mt,nd,sep=&#39;_&#39;))
+    set.seed(2010)
+    assign(
+      paste(&#39;rf&#39;,mt,nd,sep=&#39;_&#39;),
+      randomForest(RainTomorrow ~ ., data = train, ntree=100, mtry=mt, nodesize=nd)
+      )
+  }
+}</code></pre>
+<pre><code>## [1] &quot;rf_1_1&quot;
+## [1] &quot;rf_1_290&quot;
+## [1] &quot;rf_1_581&quot;
+## [1] &quot;rf_1_871&quot;
+## [1] &quot;rf_1_1162&quot;
+## [1] &quot;rf_1_1452&quot;
+## [1] &quot;rf_1_1743&quot;
+## [1] &quot;rf_1_2033&quot;
+## [1] &quot;rf_1_2324&quot;
+## [1] &quot;rf_1_2614&quot;
+## [1] &quot;rf_1_2904&quot;
+## [1] &quot;rf_3_1&quot;
+## [1] &quot;rf_3_290&quot;
+## [1] &quot;rf_3_581&quot;
+## [1] &quot;rf_3_871&quot;
+## [1] &quot;rf_3_1162&quot;
+## [1] &quot;rf_3_1452&quot;
+## [1] &quot;rf_3_1743&quot;
+## [1] &quot;rf_3_2033&quot;
+## [1] &quot;rf_3_2324&quot;
+## [1] &quot;rf_3_2614&quot;
+## [1] &quot;rf_3_2904&quot;
+## [1] &quot;rf_5_1&quot;
+## [1] &quot;rf_5_290&quot;
+## [1] &quot;rf_5_581&quot;
+## [1] &quot;rf_5_871&quot;
+## [1] &quot;rf_5_1162&quot;
+## [1] &quot;rf_5_1452&quot;
+## [1] &quot;rf_5_1743&quot;
+## [1] &quot;rf_5_2033&quot;
+## [1] &quot;rf_5_2324&quot;
+## [1] &quot;rf_5_2614&quot;
+## [1] &quot;rf_5_2904&quot;
+## [1] &quot;rf_6_1&quot;
+## [1] &quot;rf_6_290&quot;
+## [1] &quot;rf_6_581&quot;
+## [1] &quot;rf_6_871&quot;
+## [1] &quot;rf_6_1162&quot;
+## [1] &quot;rf_6_1452&quot;
+## [1] &quot;rf_6_1743&quot;
+## [1] &quot;rf_6_2033&quot;
+## [1] &quot;rf_6_2324&quot;
+## [1] &quot;rf_6_2614&quot;
+## [1] &quot;rf_6_2904&quot;
+## [1] &quot;rf_8_1&quot;
+## [1] &quot;rf_8_290&quot;
+## [1] &quot;rf_8_581&quot;
+## [1] &quot;rf_8_871&quot;
+## [1] &quot;rf_8_1162&quot;
+## [1] &quot;rf_8_1452&quot;
+## [1] &quot;rf_8_1743&quot;
+## [1] &quot;rf_8_2033&quot;
+## [1] &quot;rf_8_2324&quot;
+## [1] &quot;rf_8_2614&quot;
+## [1] &quot;rf_8_2904&quot;
+## [1] &quot;rf_10_1&quot;
+## [1] &quot;rf_10_290&quot;
+## [1] &quot;rf_10_581&quot;
+## [1] &quot;rf_10_871&quot;
+## [1] &quot;rf_10_1162&quot;
+## [1] &quot;rf_10_1452&quot;
+## [1] &quot;rf_10_1743&quot;
+## [1] &quot;rf_10_2033&quot;
+## [1] &quot;rf_10_2324&quot;
+## [1] &quot;rf_10_2614&quot;
+## [1] &quot;rf_10_2904&quot;
+## [1] &quot;rf_11_1&quot;
+## [1] &quot;rf_11_290&quot;
+## [1] &quot;rf_11_581&quot;
+## [1] &quot;rf_11_871&quot;
+## [1] &quot;rf_11_1162&quot;
+## [1] &quot;rf_11_1452&quot;
+## [1] &quot;rf_11_1743&quot;
+## [1] &quot;rf_11_2033&quot;
+## [1] &quot;rf_11_2324&quot;
+## [1] &quot;rf_11_2614&quot;
+## [1] &quot;rf_11_2904&quot;
+## [1] &quot;rf_13_1&quot;
+## [1] &quot;rf_13_290&quot;
+## [1] &quot;rf_13_581&quot;
+## [1] &quot;rf_13_871&quot;
+## [1] &quot;rf_13_1162&quot;
+## [1] &quot;rf_13_1452&quot;
+## [1] &quot;rf_13_1743&quot;
+## [1] &quot;rf_13_2033&quot;
+## [1] &quot;rf_13_2324&quot;
+## [1] &quot;rf_13_2614&quot;
+## [1] &quot;rf_13_2904&quot;
+## [1] &quot;rf_15_1&quot;
+## [1] &quot;rf_15_290&quot;
+## [1] &quot;rf_15_581&quot;
+## [1] &quot;rf_15_871&quot;
+## [1] &quot;rf_15_1162&quot;
+## [1] &quot;rf_15_1452&quot;
+## [1] &quot;rf_15_1743&quot;
+## [1] &quot;rf_15_2033&quot;
+## [1] &quot;rf_15_2324&quot;
+## [1] &quot;rf_15_2614&quot;
+## [1] &quot;rf_15_2904&quot;
+## [1] &quot;rf_17_1&quot;
+## [1] &quot;rf_17_290&quot;
+## [1] &quot;rf_17_581&quot;
+## [1] &quot;rf_17_871&quot;
+## [1] &quot;rf_17_1162&quot;
+## [1] &quot;rf_17_1452&quot;
+## [1] &quot;rf_17_1743&quot;
+## [1] &quot;rf_17_2033&quot;
+## [1] &quot;rf_17_2324&quot;
+## [1] &quot;rf_17_2614&quot;
+## [1] &quot;rf_17_2904&quot;</code></pre>
+<p>각각의 parameter별 모형은 **rf_(mtry값)_(nodesize값)** 라는 객체에 저장되었다. 즉 mtry가 1이고 nodesize가 290인 모형은 rf_1_290라는 객체 저장되어 있다.</p>
+<hr />
+</div>
+<div id="위-2번의-조건에-맞는-랜덤포레스트를-training-데이터를-이용하여-생성하고-test-데이터를-이용하여-예측-정확도를-계산하고자-한다.-이때-예측정확도는-auroc-값을-사용한다." class="section level1">
+<h1>3. 위 2번의 조건에 맞는 랜덤포레스트를 training 데이터를 이용하여 생성하고, test 데이터를 이용하여 예측 정확도를 계산하고자 한다. 이때 예측정확도는 AUROC 값을 사용한다.</h1>
+<p>앞서 random forest를 생성하였다. auroc를 test 데이터를 이용해 계산하면 아래와 같다. (message=F)</p>
+<pre class="r"><code>for( md in ls(pattern = &quot;^rf_&quot;) ){
+  assign(
+      paste(&#39;pred&#39;,md ,sep=&#39;_&#39;),
+      predict( get(md), newdata=test , type=&quot;prob&quot;)
+      )
+  assign(
+      paste(&#39;roc&#39;,md ,sep=&#39;_&#39;),
+      roc(test$RainTomorrow ~ get(paste(&#39;pred&#39;,md ,sep=&#39;_&#39;))[,2])
+      )
+}</code></pre>
+<p>test 데이터를 이용하여 각각의 예측 정확도auroc값을 계산한 결과는 아래와 같다.</p>
+<pre class="r"><code>auc_matrix = matrix(nrow=10,ncol=11)
+for( md in ls(pattern = &quot;^roc_&quot;) ){
+  temp_mt = strsplit(md,split=&#39;_&#39;)[[1]][3]
+  temp_ns = strsplit(md,split=&#39;_&#39;)[[1]][4]
+  cat(&#39;mtry값:&#39;,temp_mt,&#39;\t&#39;,
+      &#39;nodesize값:&#39;,temp_ns,&#39;\n&#39;,
+      sep =&quot;&quot;)
+  temp_auc = get(md)$auc 
+  print(temp_auc)
+  cat(&#39;\n&#39;)
+
+  auc_matrix[which(para_mtry ==temp_mt),which(para_ndsz ==temp_ns)] = temp_auc
+}</code></pre>
+<pre><code>## mtry값:1  nodesize값:1
+## Area under the curve: 0.8798
+## 
+## mtry값:1  nodesize값:1162
+## Area under the curve: 0.853
+## 
+## mtry값:1  nodesize값:1452
+## Area under the curve: 0.8509
+## 
+## mtry값:1  nodesize값:1743
+## Area under the curve: 0.8466
+## 
+## mtry값:1  nodesize값:2033
+## Area under the curve: 0.849
+## 
+## mtry값:1  nodesize값:2324
+## Area under the curve: 0.8509
+## 
+## mtry값:1  nodesize값:2614
+## Area under the curve: 0.8466
+## 
+## mtry값:1  nodesize값:290
+## Area under the curve: 0.8572
+## 
+## mtry값:1  nodesize값:2904
+## Area under the curve: 0.8424
+## 
+## mtry값:1  nodesize값:581
+## Area under the curve: 0.8548
+## 
+## mtry값:1  nodesize값:871
+## Area under the curve: 0.8542
+## 
+## mtry값:10 nodesize값:1
+## Area under the curve: 0.8886
+## 
+## mtry값:10 nodesize값:1162
+## Area under the curve: 0.8393
+## 
+## mtry값:10 nodesize값:1452
+## Area under the curve: 0.8436
+## 
+## mtry값:10 nodesize값:1743
+## Area under the curve: 0.8351
+## 
+## mtry값:10 nodesize값:2033
+## Area under the curve: 0.8312
+## 
+## mtry값:10 nodesize값:2324
+## Area under the curve: 0.8316
+## 
+## mtry값:10 nodesize값:2614
+## Area under the curve: 0.8313
+## 
+## mtry값:10 nodesize값:290
+## Area under the curve: 0.859
+## 
+## mtry값:10 nodesize값:2904
+## Area under the curve: 0.8306
+## 
+## mtry값:10 nodesize값:581
+## Area under the curve: 0.8465
+## 
+## mtry값:10 nodesize값:871
+## Area under the curve: 0.8466
+## 
+## mtry값:11 nodesize값:1
+## Area under the curve: 0.888
+## 
+## mtry값:11 nodesize값:1162
+## Area under the curve: 0.8392
+## 
+## mtry값:11 nodesize값:1452
+## Area under the curve: 0.8365
+## 
+## mtry값:11 nodesize값:1743
+## Area under the curve: 0.8294
+## 
+## mtry값:11 nodesize값:2033
+## Area under the curve: 0.8265
+## 
+## mtry값:11 nodesize값:2324
+## Area under the curve: 0.8334
+## 
+## mtry값:11 nodesize값:2614
+## Area under the curve: 0.8274
+## 
+## mtry값:11 nodesize값:290
+## Area under the curve: 0.8599
+## 
+## mtry값:11 nodesize값:2904
+## Area under the curve: 0.8289
+## 
+## mtry값:11 nodesize값:581
+## Area under the curve: 0.8479
+## 
+## mtry값:11 nodesize값:871
+## Area under the curve: 0.8373
+## 
+## mtry값:13 nodesize값:1
+## Area under the curve: 0.887
+## 
+## mtry값:13 nodesize값:1162
+## Area under the curve: 0.8391
+## 
+## mtry값:13 nodesize값:1452
+## Area under the curve: 0.831
+## 
+## mtry값:13 nodesize값:1743
+## Area under the curve: 0.8314
+## 
+## mtry값:13 nodesize값:2033
+## Area under the curve: 0.8231
+## 
+## mtry값:13 nodesize값:2324
+## Area under the curve: 0.823
+## 
+## mtry값:13 nodesize값:2614
+## Area under the curve: 0.8182
+## 
+## mtry값:13 nodesize값:290
+## Area under the curve: 0.8557
+## 
+## mtry값:13 nodesize값:2904
+## Area under the curve: 0.8207
+## 
+## mtry값:13 nodesize값:581
+## Area under the curve: 0.8423
+## 
+## mtry값:13 nodesize값:871
+## Area under the curve: 0.8393
+## 
+## mtry값:15 nodesize값:1
+## Area under the curve: 0.8856
+## 
+## mtry값:15 nodesize값:1162
+## Area under the curve: 0.8333
+## 
+## mtry값:15 nodesize값:1452
+## Area under the curve: 0.8302
+## 
+## mtry값:15 nodesize값:1743
+## Area under the curve: 0.8219
+## 
+## mtry값:15 nodesize값:2033
+## Area under the curve: 0.8201
+## 
+## mtry값:15 nodesize값:2324
+## Area under the curve: 0.8177
+## 
+## mtry값:15 nodesize값:2614
+## Area under the curve: 0.8135
+## 
+## mtry값:15 nodesize값:290
+## Area under the curve: 0.8576
+## 
+## mtry값:15 nodesize값:2904
+## Area under the curve: 0.8134
+## 
+## mtry값:15 nodesize값:581
+## Area under the curve: 0.8329
+## 
+## mtry값:15 nodesize값:871
+## Area under the curve: 0.8343
+## 
+## mtry값:17 nodesize값:1
+## Area under the curve: 0.8852
+## 
+## mtry값:17 nodesize값:1162
+## Area under the curve: 0.8248
+## 
+## mtry값:17 nodesize값:1452
+## Area under the curve: 0.8245
+## 
+## mtry값:17 nodesize값:1743
+## Area under the curve: 0.8235
+## 
+## mtry값:17 nodesize값:2033
+## Area under the curve: 0.815
+## 
+## mtry값:17 nodesize값:2324
+## Area under the curve: 0.8085
+## 
+## mtry값:17 nodesize값:2614
+## Area under the curve: 0.8077
+## 
+## mtry값:17 nodesize값:290
+## Area under the curve: 0.8545
+## 
+## mtry값:17 nodesize값:2904
+## Area under the curve: 0.7965
+## 
+## mtry값:17 nodesize값:581
+## Area under the curve: 0.8312
+## 
+## mtry값:17 nodesize값:871
+## Area under the curve: 0.827
+## 
+## mtry값:3  nodesize값:1
+## Area under the curve: 0.89
+## 
+## mtry값:3  nodesize값:1162
+## Area under the curve: 0.8507
+## 
+## mtry값:3  nodesize값:1452
+## Area under the curve: 0.8467
+## 
+## mtry값:3  nodesize값:1743
+## Area under the curve: 0.8435
+## 
+## mtry값:3  nodesize값:2033
+## Area under the curve: 0.8476
+## 
+## mtry값:3  nodesize값:2324
+## Area under the curve: 0.8467
+## 
+## mtry값:3  nodesize값:2614
+## Area under the curve: 0.8396
+## 
+## mtry값:3  nodesize값:290
+## Area under the curve: 0.8589
+## 
+## mtry값:3  nodesize값:2904
+## Area under the curve: 0.8432
+## 
+## mtry값:3  nodesize값:581
+## Area under the curve: 0.8547
+## 
+## mtry값:3  nodesize값:871
+## Area under the curve: 0.8531
+## 
+## mtry값:5  nodesize값:1
+## Area under the curve: 0.8902
+## 
+## mtry값:5  nodesize값:1162
+## Area under the curve: 0.842
+## 
+## mtry값:5  nodesize값:1452
+## Area under the curve: 0.8445
+## 
+## mtry값:5  nodesize값:1743
+## Area under the curve: 0.8416
+## 
+## mtry값:5  nodesize값:2033
+## Area under the curve: 0.8336
+## 
+## mtry값:5  nodesize값:2324
+## Area under the curve: 0.8358
+## 
+## mtry값:5  nodesize값:2614
+## Area under the curve: 0.8394
+## 
+## mtry값:5  nodesize값:290
+## Area under the curve: 0.8624
+## 
+## mtry값:5  nodesize값:2904
+## Area under the curve: 0.837
+## 
+## mtry값:5  nodesize값:581
+## Area under the curve: 0.8525
+## 
+## mtry값:5  nodesize값:871
+## Area under the curve: 0.8487
+## 
+## mtry값:6  nodesize값:1
+## Area under the curve: 0.8896
+## 
+## mtry값:6  nodesize값:1162
+## Area under the curve: 0.8495
+## 
+## mtry값:6  nodesize값:1452
+## Area under the curve: 0.8422
+## 
+## mtry값:6  nodesize값:1743
+## Area under the curve: 0.8427
+## 
+## mtry값:6  nodesize값:2033
+## Area under the curve: 0.8414
+## 
+## mtry값:6  nodesize값:2324
+## Area under the curve: 0.8394
+## 
+## mtry값:6  nodesize값:2614
+## Area under the curve: 0.8389
+## 
+## mtry값:6  nodesize값:290
+## Area under the curve: 0.8598
+## 
+## mtry값:6  nodesize값:2904
+## Area under the curve: 0.8303
+## 
+## mtry값:6  nodesize값:581
+## Area under the curve: 0.8477
+## 
+## mtry값:6  nodesize값:871
+## Area under the curve: 0.8476
+## 
+## mtry값:8  nodesize값:1
+## Area under the curve: 0.8891
+## 
+## mtry값:8  nodesize값:1162
+## Area under the curve: 0.844
+## 
+## mtry값:8  nodesize값:1452
+## Area under the curve: 0.8441
+## 
+## mtry값:8  nodesize값:1743
+## Area under the curve: 0.8379
+## 
+## mtry값:8  nodesize값:2033
+## Area under the curve: 0.8389
+## 
+## mtry값:8  nodesize값:2324
+## Area under the curve: 0.8368
+## 
+## mtry값:8  nodesize값:2614
+## Area under the curve: 0.8314
+## 
+## mtry값:8  nodesize값:290
+## Area under the curve: 0.8596
+## 
+## mtry값:8  nodesize값:2904
+## Area under the curve: 0.8304
+## 
+## mtry값:8  nodesize값:581
+## Area under the curve: 0.8494
+## 
+## mtry값:8  nodesize값:871
+## Area under the curve: 0.8464</code></pre>
+<p>행렬로도 보여주면 아래와 같다.</p>
+<pre class="r"><code>rownames(auc_matrix) = para_mtry
+colnames(auc_matrix) = para_ndsz
+auc_matrix</code></pre>
+<pre><code>##            1       290       581       871      1162      1452      1743
+## 1  0.8797539 0.8572112 0.8548120 0.8541534 0.8530406 0.8508504 0.8465923
+## 3  0.8899524 0.8589102 0.8546948 0.8531171 0.8507239 0.8466689 0.8434589
+## 5  0.8901695 0.8624353 0.8525360 0.8486703 0.8419568 0.8445128 0.8416349
+## 6  0.8895977 0.8597663 0.8477312 0.8476448 0.8495143 0.8421653 0.8426893
+## 8  0.8890539 0.8596478 0.8494105 0.8464140 0.8439507 0.8441229 0.8379413
+## 10 0.8885989 0.8589943 0.8464877 0.8465859 0.8392590 0.8435724 0.8351362
+## 11 0.8880276 0.8599148 0.8479312 0.8372760 0.8392385 0.8365081 0.8294359
+## 13 0.8869692 0.8557121 0.8423401 0.8392755 0.8390583 0.8309899 0.8313972
+## 15 0.8855846 0.8575909 0.8329103 0.8342663 0.8333442 0.8302059 0.8218959
+## 17 0.8851665 0.8544948 0.8311615 0.8269814 0.8248338 0.8244663 0.8234599
+##         2033      2324      2614      2904
+## 1  0.8489772 0.8509397 0.8465913 0.8424482
+## 3  0.8475778 0.8466515 0.8395814 0.8431646
+## 5  0.8336063 0.8358320 0.8394180 0.8369673
+## 6  0.8413764 0.8393648 0.8389086 0.8302772
+## 8  0.8388660 0.8367690 0.8313858 0.8303713
+## 10 0.8311746 0.8315563 0.8313170 0.8306044
+## 11 0.8264946 0.8333505 0.8274361 0.8288907
+## 13 0.8231113 0.8229738 0.8182062 0.8207216
+## 15 0.8200801 0.8176567 0.8134933 0.8133673
+## 17 0.8149581 0.8084856 0.8076712 0.7964592</code></pre>
+<hr />
+</div>
+<div id="번의-결과-총-110개의-auroc-값을-구할-수-있다.-이를-mtry-값과-nodesize-값의-조합에-따라-auroc-값으로-3차원-포물선-그래프를-생성하시오.-3d-surface-plot" class="section level1">
+<h1>4. 3번의 결과, 총 110개의 AUROC 값을 구할 수 있다. 이를 mtry 값과 nodesize 값의 조합에 따라 AUROC 값으로 3차원 포물선 그래프를 생성하시오. (3D surface plot)</h1>
+<p>해당 auroc를 이용하여 3d surface plot을 그리면 아래와 같다.</p>
+<pre class="r"><code>library(plotly)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;plotly&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     last_plot</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter</code></pre>
+<pre><code>## The following object is masked from &#39;package:graphics&#39;:
+## 
+##     layout</code></pre>
+<pre class="r"><code>plot_ly(z = auc_matrix,x=para_mtry,y=para_ndsz) %&gt;%
+        add_surface() %&gt;%
+        layout(scene = list(
+                xaxis = list(title = &#39;mtry&#39;,tickvals=para_mtry),
+                yaxis = list(title = &#39;nodesize&#39;,tickvals=para_ndsz),
+                zaxis = list(title = &#39;auc&#39;))
+               )</code></pre>
+<div id="htmlwidget-1" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"visdat":{"12d85a685ec2":["function () ","plotlyVisDat"]},"cur_data":"12d85a685ec2","attrs":{"12d85a685ec2":{"z":[[0.879753909191365,0.857211175123725,0.854811972002102,0.854153366076446,0.853040569816661,0.850850435213139,0.8465923363023,0.848977171104065,0.85093973905314,0.846591314172719,0.842448227209508],[0.889952446264445,0.858910185067677,0.854694788459305,0.853117105640692,0.850723894194487,0.846668909982982,0.843458934405753,0.847577824085869,0.846651513131034,0.839581429057744,0.843164571411155],[0.890169523185017,0.862435269084319,0.852536040461079,0.848670332622165,0.841956789372187,0.844512815391848,0.84163488394314,0.833606324527615,0.835831958345349,0.839417960596678,0.836967272429525],[0.889597657171627,0.859766323557383,0.847731184821085,0.847644789060193,0.84951433633443,0.842165327897173,0.842689349986571,0.841376360872615,0.839364847715151,0.838908599355807,0.830277172771134],[0.889053873910343,0.859647839122393,0.849410492098883,0.846413993618855,0.843950716394448,0.844122909092841,0.837941293089318,0.838865972766641,0.836768979290939,0.831385784150213,0.830371274081287],[0.888598898911082,0.858994257806795,0.846487690194052,0.846585924762205,0.83925898331104,0.84357238046463,0.835136180629803,0.831174609425703,0.831556287065361,0.831316984849066,0.830604440078586],[0.888027628279568,0.859914766369467,0.847931205599569,0.837275996860954,0.839238516628837,0.836508133198641,0.829435942918943,0.826494625670199,0.833350530577485,0.827436120583648,0.828890655716155],[0.886969249235017,0.855712079271332,0.842340132704494,0.839275478486389,0.839058267346781,0.830989855202164,0.831397240949449,0.823111256306281,0.822973819455133,0.818206173461681,0.820721624034365],[0.885584556182319,0.857590863568442,0.832910302464593,0.834266265760601,0.833344236048857,0.830205861164958,0.821895937352226,0.820080125873503,0.817656653196995,0.813493268185754,0.813367301899896],[0.885166481093363,0.85449475735628,0.831161473167763,0.826981365841266,0.824833819970259,0.824466293835094,0.823459909180104,0.814958114093421,0.808485552518443,0.807671235303687,0.796459206849747]],"x":[1,3,5,6,8,10,11,13,15,17],"y":[1,290,581,871,1162,1452,1743,2033,2324,2614,2904],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"surface","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"title":"mtry","tickvals":[1,3,5,6,8,10,11,13,15,17]},"yaxis":{"title":"nodesize","tickvals":[1,290,581,871,1162,1452,1743,2033,2324,2614,2904]},"zaxis":{"title":"auc"}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"showSendToCloud":false},"data":[{"colorbar":{"title":"","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":[["0","rgba(68,1,84,1)"],["0.0416666666666665","rgba(70,19,97,1)"],["0.0833333333333329","rgba(72,32,111,1)"],["0.125000000000001","rgba(71,45,122,1)"],["0.166666666666667","rgba(68,58,128,1)"],["0.208333333333334","rgba(64,70,135,1)"],["0.25","rgba(60,82,138,1)"],["0.291666666666666","rgba(56,93,140,1)"],["0.333333333333333","rgba(49,104,142,1)"],["0.374999999999999","rgba(46,114,142,1)"],["0.416666666666667","rgba(42,123,142,1)"],["0.458333333333334","rgba(38,133,141,1)"],["0.5","rgba(37,144,140,1)"],["0.541666666666667","rgba(33,154,138,1)"],["0.583333333333333","rgba(39,164,133,1)"],["0.625000000000001","rgba(47,174,127,1)"],["0.666666666666667","rgba(53,183,121,1)"],["0.708333333333333","rgba(79,191,110,1)"],["0.75","rgba(98,199,98,1)"],["0.791666666666667","rgba(119,207,85,1)"],["0.833333333333333","rgba(147,214,70,1)"],["0.874999999999999","rgba(172,220,52,1)"],["0.916666666666667","rgba(199,225,42,1)"],["0.958333333333333","rgba(226,228,40,1)"],["1","rgba(253,231,37,1)"]],"showscale":true,"z":[[0.879753909191365,0.857211175123725,0.854811972002102,0.854153366076446,0.853040569816661,0.850850435213139,0.8465923363023,0.848977171104065,0.85093973905314,0.846591314172719,0.842448227209508],[0.889952446264445,0.858910185067677,0.854694788459305,0.853117105640692,0.850723894194487,0.846668909982982,0.843458934405753,0.847577824085869,0.846651513131034,0.839581429057744,0.843164571411155],[0.890169523185017,0.862435269084319,0.852536040461079,0.848670332622165,0.841956789372187,0.844512815391848,0.84163488394314,0.833606324527615,0.835831958345349,0.839417960596678,0.836967272429525],[0.889597657171627,0.859766323557383,0.847731184821085,0.847644789060193,0.84951433633443,0.842165327897173,0.842689349986571,0.841376360872615,0.839364847715151,0.838908599355807,0.830277172771134],[0.889053873910343,0.859647839122393,0.849410492098883,0.846413993618855,0.843950716394448,0.844122909092841,0.837941293089318,0.838865972766641,0.836768979290939,0.831385784150213,0.830371274081287],[0.888598898911082,0.858994257806795,0.846487690194052,0.846585924762205,0.83925898331104,0.84357238046463,0.835136180629803,0.831174609425703,0.831556287065361,0.831316984849066,0.830604440078586],[0.888027628279568,0.859914766369467,0.847931205599569,0.837275996860954,0.839238516628837,0.836508133198641,0.829435942918943,0.826494625670199,0.833350530577485,0.827436120583648,0.828890655716155],[0.886969249235017,0.855712079271332,0.842340132704494,0.839275478486389,0.839058267346781,0.830989855202164,0.831397240949449,0.823111256306281,0.822973819455133,0.818206173461681,0.820721624034365],[0.885584556182319,0.857590863568442,0.832910302464593,0.834266265760601,0.833344236048857,0.830205861164958,0.821895937352226,0.820080125873503,0.817656653196995,0.813493268185754,0.813367301899896],[0.885166481093363,0.85449475735628,0.831161473167763,0.826981365841266,0.824833819970259,0.824466293835094,0.823459909180104,0.814958114093421,0.808485552518443,0.807671235303687,0.796459206849747]],"x":[1,3,5,6,8,10,11,13,15,17],"y":[1,290,581,871,1162,1452,1743,2033,2324,2614,2904],"type":"surface","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<hr />
+</div>
+<div id="번의-결과에서-예측정확도가-가장-높은-최적의-hyper-parameter-조합은-무엇인지-밝히시오." class="section level1">
+<h1>5. 4번의 결과에서 예측정확도가 가장 높은 최적의 hyper-parameter 조합은 무엇인지 밝히시오.</h1>
+<pre class="r"><code>auc_matrix == max(auc_matrix)</code></pre>
+<pre><code>##        1   290   581   871  1162  1452  1743  2033  2324  2614  2904
+## 1  FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 3  FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 5   TRUE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 6  FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 8  FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 10 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 11 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 13 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 15 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 17 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE</code></pre>
+<p>즉 <strong>mtry가 3</strong>이고, <strong>node size 가 1</strong>일 떄 가장 예측정확도가 높은 조합이다.</p>
+</div>

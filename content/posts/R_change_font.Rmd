@@ -1,0 +1,22 @@
+---
+title: R 글꼴 변경
+author: 이청파
+date: '2020-06-05'
+slug: 'r/3'
+categories:
+  - R
+tags:
+  - R
+  - R studio
+  - 글꼴
+editor_options: 
+  chunk_output_type: inline
+output: 
+  html_document:
+    toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: show
+    number_section: true
+    self_contained: true
+---

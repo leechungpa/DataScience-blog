@@ -1,0 +1,276 @@
+---
+title: 데이터마이닝 - Random Forest
+author: 이청파
+date: 2020-05-24
+slug: 'data_mining/3'
+categories:
+  - R
+  - data mining
+tags:
+  - data mining
+  - random forest
+  - decision tree
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+데이터마이닝 연습으로 Random Forest을 사용한 예제이다.
+
+먼저 전처리에서 사용한 packages이다.
+
+```{r , message=FALSE}
+library(tidyverse)
+library(skimr)
+```
+
+그 다음 모형을 만들고자 하는 데이터를 불러왔다. 해당 데이터는 [카글]( https://www.kaggle.com/kalpakchepurwar/ausrain )에서 가지고 온 데이터다. 
+
+```{r}
+raw_data=read_csv('./data/ausraindata.csv',col_types = cols(Evaporation = col_double(),
+  Sunshine = col_double()) )
+```
+
+해당 데이터는 오늘의 날씨를 바탕으로 내일의 강수유무를 예측해 보는 데이터 이다. 이 자료는 수많은 Australian weather stations의 자료가 포함되어 있다. 총 24개의 열로 구성되어 있으며 각 열별 데이터의 의미는 아래와 같다.
+
+- Date : The date of observation
+
+- Location :  weather station의 위치
+
+- MinTemp : minimum temperature in degrees Celsius
+
+- MaxTemp : The maximum temperature in degrees Celsius
+
+- Rainfall : 당일 강수량 (mm)
+
+- Evaporation : Class A pan evaporation (mm) in the 24 hours to 9am
+
+- Sunshine : The number of hours of bright sunshine in the day.
+
+- WindGustDir : The direction of the strongest wind gust in the 24 hours to midnight
+
+- WindGustSpeed : The speed (km/h) of the strongest wind gust in the 24 hours to midnight
+
+- WindDir9am : Direction of the wind at 9am
+
+- WindDir3pm : Direction of the wind at 3pm
+
+- WindSpeed9am : Wind speed (km/hr) averaged over 10 minutes prior to 9am
+
+- WindSpeed3pm : Wind speed (km/hr) averaged over 10 minutes prior to 3pm
+
+- Humidity9am : Humidity (percent) at 9am
+
+- Humidity3pm : Humidity (percent) at 3pm
+
+- Pressure9am : Atmospheric pressure (hpa) reduced to mean sea level at 9am
+
+- Pressure3pm : Atmospheric pressure (hpa) reduced to mean sea level at 3pm
+
+- Cloud9am : Fraction of sky obscured by cloud at 9am. This is measured in "oktas", which are a unit of eigths. It records how many eigths of the sky are obscured by cloud. A 0 measure indicates completely clear sky whilst an 8 indicates that it is completely overcast.
+
+- Cloud3pm : Fraction of sky obscured by cloud at 3pm. This is measured in "oktas", which are a unit of eigths. It records how many eigths of the sky are obscured by cloud. A 0 measure indicates completely clear sky whilst an 8 indicates that it is completely overcast.
+
+- Temp9am : Temperature (degrees C) at 9am
+
+- Temp3pm : Temperature (degrees C) at 3pm
+
+- RainToday : Boolean: 1 if precipitation (mm) in the 24 hours to 9am exceeds 1mm, otherwise 0
+
+- RISK_MM : 다음날의 강수량(mm)
+
+- RainTomorrow : 우리의 목표변수로 다음날 강수 유무
+
+# 전처리
+
+분석에 앞서, 실제 데이터 구성을 직접 보면서 전처리를 시행한다.
+
+```{r}
+glimpse(raw_data)
+```
+
+먼저 이 데이터는 2008-12-01	부터 2017-06-24	까지의 데이터이다. 해당 날짜의 모든 데이터를 가지고 있는 시계열 자료로 볼 수 있으나, 뉴럴네트워크를 사용하기에 해당 Date 변수는 사용하지 않는다.
+
+또한 우리는 분류를 해야하므로 내일 강수량이 아닌 강수유무를 목적변수로 한다. 따라서 내일 강수량인 RISK_MM도 제외한다. 
+
+
+```{r}
+raw_data %>% filter(is.na(Evaporation)) %>% 
+  count() / nrow(raw_data)
+
+raw_data %>% filter(is.na(Sunshine)) %>% 
+  count() / nrow(raw_data)
+
+raw_data %>% filter(is.na(Cloud9am)) %>% 
+  count() / nrow(raw_data)
+
+raw_data %>% filter(is.na(Cloud3pm)) %>% 
+  count() / nrow(raw_data)
+```
+
+또한 위에서 볼 수있듯이 4개의 열들은 결측치의 값이 높은 것을 알 수 있다. 해당 행을 `na.omit을 이용해 삭제하였다.
+
+```{r}
+nrow( raw_data %>% distinct(Location) )
+nrow( raw_data %>% distinct(WindGustDir) )
+nrow( raw_data %>% distinct(WindDir9am) )
+nrow( raw_data %>% distinct(WindDir3pm) )
+```
+
+또한 49개로 그 범주의 개수가 다양한 Location과 16개(NA 1개포함) 방향변수들도 제거하였다.
+
+앞서 언급한 열들을 제거하고, na인 행을 제거하고, 비가 온 경우('Yes')를 1로 변환하였다. factor형으로 만들었다. 
+
+```{r}
+temp_data = raw_data %>%
+  select(
+    -Date, -RISK_MM,
+    # -Evaporation, -Sunshine, -Cloud9am, -Cloud3pm,
+    -Location, -WindGustDir,-WindDir9am, -WindDir3pm
+    ) %>%
+  na.omit() %>%
+  mutate(
+    RainToday = as.numeric(RainToday=='Yes'),
+    RainTomorrow = as.factor(as.numeric(RainTomorrow=='Yes'))
+  )
+```
+
+총 58090개의 관측지가 있다. 그 결과를 skimr 패키지를 이용해 간략히 보였다.
+
+```{r}
+skim(temp_data) # skimr 패키지
+```
+
+이상 전처리를 완료하였다.   
+   
+****  
+
+# 1. Training 데이터와 Test 데이터를 50:50의 비율로 분할하시오.
+
+```{r}
+set.seed(1234)
+sp_n = sample(1:nrow(temp_data), round(nrow(temp_data)/2)) 
+train = temp_data[sp_n,]
+test = temp_data[-sp_n,]
+nrow(train);nrow(test)
+```
+
+*****  
+
+# 2. R 프로그램의 ‘randomForest’ 명령어를 사용하여 랜덤포레스트 분석을 수행하고자 한다. 단, hyper-parameter는 아래와 같이 조정한다.
+
+- A. ntree=100 을 사용하고,
+
+- B. mtry = (0.1*p, 0.2*p, … , 1.0*p)을 내림하여 사용한다.
+
+- C. nodesize = (1, 0.01*n, 0.02*n, … , 0.10*n) 을 반올림하여 사용한다.
+
+- D. 그외 parameter 값들은 default 값을 사용한다.
+
+먼저 17개의 변수로 RainTomorrow를 예측하므로 p는 17이 된다. 따라서 B의 조건에 따른 mtry를 구할 수 있다. 또한 train 데이터의 수는 29045개 이므로 n은 29045가 된다. 따라서 C조건에 따른 nodesize를 구할 수 있다. 각각은 다음과 같다.
+
+```{r}
+( para_mtry = floor(17 * 1:10 / 10) )
+( para_ndsz = c(1, round( nrow(train) * 1:10 / 100 ) ) )
+```
+
+이제 코드를 돌리면 아래와 같다.
+
+```{r, warning=FALSE}
+library(randomForest)
+library(pROC)
+```
+
+```{r}
+for(mt in para_mtry){
+  for(nd in para_ndsz){
+    print(paste('rf',mt,nd,sep='_'))
+    set.seed(2010)
+    assign(
+      paste('rf',mt,nd,sep='_'),
+      randomForest(RainTomorrow ~ ., data = train, ntree=100, mtry=mt, nodesize=nd)
+      )
+  }
+}
+
+```
+
+각각의 parameter별 모형은 **rf_(mtry값)_(nodesize값)** 라는 객체에 저장되었다. 즉 mtry가 1이고 nodesize가 290인 모형은 rf_1_290라는 객체 저장되어 있다.
+
+
+
+***
+
+# 3. 위 2번의 조건에 맞는 랜덤포레스트를 training 데이터를 이용하여 생성하고, test 데이터를 이용하여 예측 정확도를 계산하고자 한다. 이때 예측정확도는 AUROC 값을 사용한다.
+
+앞서 random forest를 생성하였다. auroc를 test 데이터를 이용해 계산하면 아래와 같다. (message=F)
+
+```{r, message=FALSE}
+for( md in ls(pattern = "^rf_") ){
+  assign(
+      paste('pred',md ,sep='_'),
+      predict( get(md), newdata=test , type="prob")
+      )
+  assign(
+      paste('roc',md ,sep='_'),
+      roc(test$RainTomorrow ~ get(paste('pred',md ,sep='_'))[,2])
+      )
+}
+```
+
+test 데이터를 이용하여 각각의 예측 정확도auroc값을 계산한 결과는 아래와 같다.
+
+```{r}
+auc_matrix = matrix(nrow=10,ncol=11)
+for( md in ls(pattern = "^roc_") ){
+  temp_mt = strsplit(md,split='_')[[1]][3]
+  temp_ns = strsplit(md,split='_')[[1]][4]
+  cat('mtry값:',temp_mt,'\t',
+      'nodesize값:',temp_ns,'\n',
+      sep ="")
+  temp_auc = get(md)$auc 
+  print(temp_auc)
+  cat('\n')
+
+  auc_matrix[which(para_mtry ==temp_mt),which(para_ndsz ==temp_ns)] = temp_auc
+}
+```
+
+행렬로도 보여주면 아래와 같다.
+
+```{r}
+rownames(auc_matrix) = para_mtry
+colnames(auc_matrix) = para_ndsz
+auc_matrix
+```
+
+
+***
+
+# 4. 3번의 결과, 총 110개의 AUROC 값을 구할 수 있다. 이를 mtry 값과 nodesize 값의 조합에 따라 AUROC 값으로 3차원 포물선 그래프를 생성하시오. (3D surface plot)
+
+해당 auroc를 이용하여 3d surface plot을 그리면 아래와 같다.
+
+```{r}
+library(plotly)
+
+plot_ly(z = auc_matrix,x=para_mtry,y=para_ndsz) %>%
+        add_surface() %>%
+        layout(scene = list(
+                xaxis = list(title = 'mtry',tickvals=para_mtry),
+                yaxis = list(title = 'nodesize',tickvals=para_ndsz),
+                zaxis = list(title = 'auc'))
+               )
+```
+
+
+***
+
+# 5. 4번의 결과에서 예측정확도가 가장 높은 최적의 hyper-parameter 조합은 무엇인지 밝히시오.
+
+```{r}
+auc_matrix == max(auc_matrix)
+```
+
+즉 **mtry가 3**이고, **node size 가 1**일 떄 가장 예측정확도가 높은 조합이다.

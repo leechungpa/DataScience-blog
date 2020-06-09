@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+    <meta charset="UTF-8" />
+
+    <meta name="generator" content="Hugo 0.71.1" /><meta name="theme-color" content="#fff" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
+    
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+    <title>데이터마이닝 - Random Forest | Leechungpa&#39;s Data Science blog</title>
+
+    <link rel="stylesheet" href="/css/meme.min.fc5749b0b62ea1c61f871fdf8db99da35cd3991c6d12f4e0f086ac28734ed949.css" integrity="sha256-/FdJsLYuocYfhx/fjbmdo1zTmRxtEvTg8IasKHNO2Uk=" />
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/lunr@2.3.8/lunr.min.js" defer></script><script src="/js/meme.min.ed401f0734cfe720f5ee3b9ead0481293a60a776c1b752ad55e070c50053cd6d.js" integrity="sha256-7UAfBzTP5yD17juerQSBKTpgp3bBt1KtVeBwxQBTzW0="></script>
+
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM&#43;Plex&#43;Serif:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Source&#43;Code&#43;Pro:ital,wght@0,400;0,700;1,400;1,700&amp;family=Comfortaa:wght@700&amp;display=swap&amp;family=Nanum&#43;Gothic:wght@400;700;800&amp;display=swap" media="print" onload="this.media='all'" />
+        <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM&#43;Plex&#43;Serif:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Source&#43;Code&#43;Pro:ital,wght@0,400;0,700;1,400;1,700&amp;family=Comfortaa:wght@700&amp;display=swap&amp;family=Nanum&#43;Gothic:wght@400;700;800&amp;display=swap" /></noscript>
+
+    <meta name="author" content="이청파" /><meta name="description" content="데이터마이닝 연습으로 Random Forest을 사용한 예제이다.
+먼저 전처리에서 사용한 packages이다.
+library(tidyverse)library(skimr)그 다음 모형을 만들고자 하는 데이터를 불러왔다. 해당 데이터는 카글에서 가지고 온 데이터다.
+raw_data=read_csv(&amp;#39;./data/ausraindata.csv&amp;#39;,col_types = cols(Evaporation = col_double(),Sunshine = col_double()) )해당 데이터는 오늘의 날씨를 바탕으로 내일의 강수유무를 예측해 보는 데이터 이다." />
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#2a6df4" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Leechungpa&#39;s Data Science blog" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="Leechungpa&#39;s Data Science blog" />
+    <meta name="msapplication-starturl" content="../../../" />
+    <meta name="msapplication-TileColor" content="#fff" />
+    <meta name="msapplication-TileImage" content="../../../icons/mstile-150x150.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    
+    
+
+    
+    <link rel="canonical" href="/posts/data_mining/3/" />
+    
+
+<script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "datePublished": "2020-05-24T00:00:00+00:00",
+        "dateModified": "2020-06-09T14:49:01+09:00",
+        "url": "/posts/data_mining/3/",
+        "headline": "데이터마이닝 - Random Forest",
+        "description": "데이터마이닝 연습으로 Random Forest을 사용한 예제이다.\n먼저 전처리에서 사용한 packages이다.\nlibrary(tidyverse)\rlibrary(skimr)\r그 다음 모형을 만들고자 하는 데이터를 불러왔다. 해당 데이터는 카글에서 가지고 온 데이터다.\nraw_data=read_csv(\u0026#39;./data/ausraindata.csv\u0026#39;,col_types = cols(Evaporation = col_double(),\rSunshine = col_double()) )\r해당 데이터는 오늘의 날씨를 바탕으로 내일의 강수유무를 예측해 보는 데이터 이다.",
+        "inLanguage" : "en-us",
+        "articleSection": "posts",
+        "wordCount":  3431 ,
+        "image": "/icons/apple-touch-icon.png",
+        "author": {
+            "@type": "Person",
+            "description": "나라는 사람이 좀 더 바르고 사회를 위한 존재로 거듭나길 오늘도 노력한다.",
+            "email": "leechungpa@naver.com",
+            "image": "/icons/apple-touch-icon.png",
+            "url": "https://leechungpa.netlify.app/",
+            "name": "Lee Chung Pa"
+        },
+        "license": "[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)",
+        "publisher": {
+            "@type": "Organization",
+            "name": "Leechungpa's Data Science blog",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "/icons/apple-touch-icon.png"
+            },
+            "url": "/"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebSite",
+            "@id": "/"
+        }
+    }
+</script>
+
+    
+
+<meta name="twitter:card" content="summary" />
+
+<meta name="twitter:creator" content="@reuixiy" />
+
+    
+
+
+
+<meta property="og:title" content="데이터마이닝 - Random Forest" />
+<meta property="og:description" content="데이터마이닝 연습으로 Random Forest을 사용한 예제이다.
+먼저 전처리에서 사용한 packages이다.
+library(tidyverse)library(skimr)그 다음 모형을 만들고자 하는 데이터를 불러왔다. 해당 데이터는 카글에서 가지고 온 데이터다.
+raw_data=read_csv(&amp;#39;./data/ausraindata.csv&amp;#39;,col_types = cols(Evaporation = col_double(),Sunshine = col_double()) )해당 데이터는 오늘의 날씨를 바탕으로 내일의 강수유무를 예측해 보는 데이터 이다." />
+<meta property="og:url" content="/posts/data_mining/3/" />
+<meta property="og:site_name" content="Leechungpa&#39;s Data Science blog" />
+<meta property="og:locale" content="en" /><meta property="og:image" content="/icons/apple-touch-icon.png" />
+    <meta property="og:type" content="article" />
+    <meta property="article:published_time" content="2020-05-24T00:00:00&#43;00:00" />
+    <meta property="article:modified_time" content="2020-06-09T14:49:01&#43;09:00" />
+    
+    <meta property="article:section" content="posts" />
+
+
+
+    
+</head>
+
+    <body>
+        <div class="container">
+            
+    <header class="header" data-scroll-header>
+        
+            <div class="header-wrapper">
+                <div class="header-inner single">
+                    
+    <div class="site-brand">
+        
+            <a href="/" class="brand">Leechungpa&#39;s Data Science blog</a>
+        
+    </div>
+
+                    <nav class="nav">
+    <ul class="menu" id="menu">
+        
+            
+        
+        
+        
+        
+            
+                <li class="menu-item"><a href="/posts/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon archive"><path d="M32 448c0 17.7 14.3 32 32 32h384c17.7 0 32-14.3 32-32V160H32v288zm160-212c0-6.6 5.4-12 12-12h104c6.6 0 12 5.4 12 12v8c0 6.6-5.4 12-12 12H204c-6.6 0-12-5.4-12-12v-8zM480 32H32C14.3 32 0 46.3 0 64v48c0 8.8 7.2 16 16 16h480c8.8 0 16-7.2 16-16V64c0-17.7-14.3-32-32-32z"/></svg><span class="menu-item-name">Posts</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/categories/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon th"><path d="M149.333 56v80c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V56c0-13.255 10.745-24 24-24h101.333c13.255 0 24 10.745 24 24zm181.334 240v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm32-240v80c0 13.255 10.745 24 24 24H488c13.255 0 24-10.745 24-24V56c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24zm-32 80V56c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm-205.334 56H24c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24zM0 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H24c-13.255 0-24 10.745-24 24zm386.667-56H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zm0 160H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zM181.333 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24z"/></svg><span class="menu-item-name">Categories</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/tags/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="icon tags"><path d="M497.941 225.941L286.059 14.059A48 48 0 0 0 252.118 0H48C21.49 0 0 21.49 0 48v204.118a48 48 0 0 0 14.059 33.941l211.882 211.882c18.744 18.745 49.136 18.746 67.882 0l204.118-204.118c18.745-18.745 18.745-49.137 0-67.882zM112 160c-26.51 0-48-21.49-48-48s21.49-48 48-48 48 21.49 48 48-21.49 48-48 48zm513.941 133.823L421.823 497.941c-18.745 18.745-49.137 18.745-67.882 0l-.36-.36L527.64 323.522c16.999-16.999 26.36-39.6 26.36-63.64s-9.362-46.641-26.36-63.64L331.397 0h48.721a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882z"/></svg><span class="menu-item-name">Tags</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/about/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="icon user-circle"><path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"/></svg><span class="menu-item-name">About</span></a>
+                </li>
+            
+        
+            
+                
+                    
+                    
+                        <li class="menu-item">
+                            <a id="theme-switcher" href="#"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon theme-icon-light"><path d="M193.2 104.5l48.8-97.5a18 18 0 0128 0l48.8 97.5 103.4 -34.5a18 18 0 0119.8 19.8l-34.5 103.4l97.5 48.8a18 18 0 010 28l-97.5 48.8 34.5 103.4a18 18 0 01-19.8 19.8l-103.4-34.5-48.8 97.5a18 18 0 01-28 0l-48.8-97.5l-103.4 34.5a18 18 0 01-19.8-19.8l34.5-103.4-97.5-48.8a18 18 0 010-28l97.5-48.8-34.5-103.4a18 18 0 0119.8-19.8zM256 128a128 128 0 10.01 0M256 160a96 96 0 10.01 0"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon theme-icon-dark"><path d="M27 412a256 256 0 10154-407a11.5 11.5 0 00-5 20a201.5 201.5 0 01-134 374a11.5 11.5 0 00-15 13"/></svg></a>
+                        </li>
+                    
+                
+            
+        
+            
+                
+            
+        
+            
+                <li class="menu-item search-item">
+                        <form id="search" class="search" role="search">
+    <label for="search-input"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon search-icon"><path d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg></label>
+    <input type="search" id="search-input" class="search-input">
+</form>
+
+<template id="search-result" hidden>
+    <article class="content post">
+        <h2 class="post-title"><a class="summary-title-link"></a></h2>
+        <summary class="summary"></summary>
+        <div class="read-more-container">
+            <a class="read-more-link">Read More »</a>
+        </div>
+    </article>
+</template>
+
+                    </li>
+                
+            
+        
+    </ul>
+</nav>
+
+                    
+                </div>
+            </div>
+            
+    <input type="checkbox" id="nav-toggle" aria-hidden="true" />
+    <label for="nav-toggle" class="nav-toggle"></label>
+    <label for="nav-toggle" class="nav-curtain"></label>
+
+
+        
+    </header>
+
+
+
+
+            
+            
+    <main class="main single" id="main">
+    <div class="main-inner">
+
+        
+
+        <article class="content post" data-small-caps="true" data-align="default" data-type="posts" data-toc-num="true">
+
+            <h1 class="post-title">데이터마이닝 - Random Forest</h1>
+
+            
+
+            
+                
+            
+
+            
+                
+
+<div class="post-meta">
+    
+        
+        <time datetime="2020-05-24T00:00:00&#43;00:00" class="post-meta-item published"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon post-meta-icon"><path d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"/></svg>&nbsp;2020.5.24</time>
+    
+    
+        
+        <time datetime="2020-06-09T14:49:01&#43;09:00" class="post-meta-item modified"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon post-meta-icon"><path d="M400 64h-48V12c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v52H160V12c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v52H48C21.49 64 0 85.49 0 112v352c0 26.51 21.49 48 48 48h352c26.51 0 48-21.49 48-48V112c0-26.51-21.49-48-48-48zm-6 400H54a6 6 0 0 1-6-6V160h352v298a6 6 0 0 1-6 6zm-52.849-200.65L198.842 404.519c-4.705 4.667-12.303 4.637-16.971-.068l-75.091-75.699c-4.667-4.705-4.637-12.303.068-16.971l22.719-22.536c4.705-4.667 12.303-4.637 16.97.069l44.104 44.461 111.072-110.181c4.705-4.667 12.303-4.637 16.971.068l22.536 22.718c4.667 4.705 4.636 12.303-.069 16.97z"/></svg>&nbsp;2020.6.9</time>
+    
+    
+    
+        
+        
+        
+            
+                <span class="post-meta-item category"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M464 128H272l-54.63-54.63c-6-6-14.14-9.37-22.63-9.37H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V176c0-26.51-21.49-48-48-48zm0 272H48V112h140.12l54.63 54.63c6 6 14.14 9.37 22.63 9.37H464v224z"/></svg>&nbsp;<a href="/categories/r/" class="category-link">R</a>/<a href="/categories/data-mining/" class="category-link">data mining</a></span>
+            
+        
+    
+    
+        
+        <span class="post-meta-item wordcount"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3 0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9 0l60.1 60.1c18.8 18.7 18.8 49.1 0 67.9zM284.2 99.8L21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3 0-17l-111-111c-4.8-4.7-12.4-4.7-17.1 0zM124.1 339.9c-5.5-5.5-5.5-14.3 0-19.8l154-154c5.5-5.5 14.3-5.5 19.8 0s5.5 14.3 0 19.8l-154 154c-5.5 5.5-14.3 5.5-19.8 0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z"/></svg>&nbsp;3431</span>
+    
+    
+        
+        <span class="post-meta-item reading-time"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5 0-200-89.5-200-200S145.5 56 256 56s200 89.5 200 200-89.5 200-200 200zm61.8-104.4l-84.9-61.7c-3.1-2.3-4.9-5.9-4.9-9.7V116c0-6.6 5.4-12 12-12h32c6.6 0 12 5.4 12 12v141.7l66.8 48.6c5.4 3.9 6.5 11.4 2.6 16.8L334.6 349c-3.9 5.3-11.4 6.5-16.8 2.6z"/></svg>&nbsp;17&nbsp;mins</span>
+    
+    
+    
+</div>
+
+            
+
+            <div class="post-body">
+              
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/plotly-binding/plotly.js"></script>
+<script src="/rmarkdown-libs/typedarray/typedarray.min.js"></script>
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<link href="/rmarkdown-libs/crosstalk/css/crosstalk.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/crosstalk/js/crosstalk.min.js"></script>
+<link href="/rmarkdown-libs/plotly-htmlwidgets-css/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/plotly-main/plotly-latest.min.js"></script>
+
+
+<p style="text-indent:0"><span class="drop-cap">데</span>이터마이닝 연습으로 Random Forest을 사용한 예제이다.</p>
+<p>먼저 전처리에서 사용한 packages이다.</p>
+<pre class="r"><code>library(tidyverse)
+library(skimr)</code></pre>
+<p>그 다음 모형을 만들고자 하는 데이터를 불러왔다. 해당 데이터는 <a href="https://www.kaggle.com/kalpakchepurwar/ausrain" target="_blank" rel="noopener">카글</a>에서 가지고 온 데이터다.</p>
+<pre class="r"><code>raw_data=read_csv(&#39;./data/ausraindata.csv&#39;,col_types = cols(Evaporation = col_double(),
+  Sunshine = col_double()) )</code></pre>
+<p>해당 데이터는 오늘의 날씨를 바탕으로 내일의 강수유무를 예측해 보는 데이터 이다. 이 자료는 수많은 Australian weather stations의 자료가 포함되어 있다. 총 24개의 열로 구성되어 있으며 각 열별 데이터의 의미는 아래와 같다.</p>
+<ul>
+<li><p>Date : The date of observation</p></li>
+<li><p>Location : weather station의 위치</p></li>
+<li><p>MinTemp : minimum temperature in degrees Celsius</p></li>
+<li><p>MaxTemp : The maximum temperature in degrees Celsius</p></li>
+<li><p>Rainfall : 당일 강수량 (mm)</p></li>
+<li><p>Evaporation : Class A pan evaporation (mm) in the 24 hours to 9am</p></li>
+<li><p>Sunshine : The number of hours of bright sunshine in the day.</p></li>
+<li><p>WindGustDir : The direction of the strongest wind gust in the 24 hours to midnight</p></li>
+<li><p>WindGustSpeed : The speed (km/h) of the strongest wind gust in the 24 hours to midnight</p></li>
+<li><p>WindDir9am : Direction of the wind at 9am</p></li>
+<li><p>WindDir3pm : Direction of the wind at 3pm</p></li>
+<li><p>WindSpeed9am : Wind speed (km/hr) averaged over 10 minutes prior to 9am</p></li>
+<li><p>WindSpeed3pm : Wind speed (km/hr) averaged over 10 minutes prior to 3pm</p></li>
+<li><p>Humidity9am : Humidity (percent) at 9am</p></li>
+<li><p>Humidity3pm : Humidity (percent) at 3pm</p></li>
+<li><p>Pressure9am : Atmospheric pressure (hpa) reduced to mean sea level at 9am</p></li>
+<li><p>Pressure3pm : Atmospheric pressure (hpa) reduced to mean sea level at 3pm</p></li>
+<li><p>Cloud9am : Fraction of sky obscured by cloud at 9am. This is measured in “oktas”, which are a unit of eigths. It records how many eigths of the sky are obscured by cloud. A 0 measure indicates completely clear sky whilst an 8 indicates that it is completely overcast.</p></li>
+<li><p>Cloud3pm : Fraction of sky obscured by cloud at 3pm. This is measured in “oktas”, which are a unit of eigths. It records how many eigths of the sky are obscured by cloud. A 0 measure indicates completely clear sky whilst an 8 indicates that it is completely overcast.</p></li>
+<li><p>Temp9am : Temperature (degrees C) at 9am</p></li>
+<li><p>Temp3pm : Temperature (degrees C) at 3pm</p></li>
+<li><p>RainToday : Boolean: 1 if precipitation (mm) in the 24 hours to 9am exceeds 1mm, otherwise 0</p></li>
+<li><p>RISK_MM : 다음날의 강수량(mm)</p></li>
+<li><p>RainTomorrow : 우리의 목표변수로 다음날 강수 유무</p></li>
+</ul>
+<div id="전처리" class="section level1">
+<h1>전처리</h1>
+<p>분석에 앞서, 실제 데이터 구성을 직접 보면서 전처리를 시행한다.</p>
+<pre class="r"><code>glimpse(raw_data)</code></pre>
+<pre><code>## Rows: 142,193
+## Columns: 24
+## $ Date          &lt;date&gt; 2008-12-01, 2008-12-02, 2008-12-03, 2008-12-04, 2008...
+## $ Location      &lt;chr&gt; &quot;Albury&quot;, &quot;Albury&quot;, &quot;Albury&quot;, &quot;Albury&quot;, &quot;Albury&quot;, &quot;Al...
+## $ MinTemp       &lt;dbl&gt; 13.4, 7.4, 12.9, 9.2, 17.5, 14.6, 14.3, 7.7, 9.7, 13....
+## $ MaxTemp       &lt;dbl&gt; 22.9, 25.1, 25.7, 28.0, 32.3, 29.7, 25.0, 26.7, 31.9,...
+## $ Rainfall      &lt;dbl&gt; 0.6, 0.0, 0.0, 0.0, 1.0, 0.2, 0.0, 0.0, 0.0, 1.4, 0.0...
+## $ Evaporation   &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ Sunshine      &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ WindGustDir   &lt;chr&gt; &quot;W&quot;, &quot;WNW&quot;, &quot;WSW&quot;, &quot;NE&quot;, &quot;W&quot;, &quot;WNW&quot;, &quot;W&quot;, &quot;W&quot;, &quot;NNW&quot;,...
+## $ WindGustSpeed &lt;dbl&gt; 44, 44, 46, 24, 41, 56, 50, 35, 80, 28, 30, 31, 61, 4...
+## $ WindDir9am    &lt;chr&gt; &quot;W&quot;, &quot;NNW&quot;, &quot;W&quot;, &quot;SE&quot;, &quot;ENE&quot;, &quot;W&quot;, &quot;SW&quot;, &quot;SSE&quot;, &quot;SE&quot;,...
+## $ WindDir3pm    &lt;chr&gt; &quot;WNW&quot;, &quot;WSW&quot;, &quot;WSW&quot;, &quot;E&quot;, &quot;NW&quot;, &quot;W&quot;, &quot;W&quot;, &quot;W&quot;, &quot;NW&quot;, ...
+## $ WindSpeed9am  &lt;dbl&gt; 20, 4, 19, 11, 7, 19, 20, 6, 7, 15, 17, 15, 28, 24, N...
+## $ WindSpeed3pm  &lt;dbl&gt; 24, 22, 26, 9, 20, 24, 24, 17, 28, 11, 6, 13, 28, 20,...
+## $ Humidity9am   &lt;dbl&gt; 71, 44, 38, 45, 82, 55, 49, 48, 42, 58, 48, 89, 76, 6...
+## $ Humidity3pm   &lt;dbl&gt; 22, 25, 30, 16, 33, 23, 19, 19, 9, 27, 22, 91, 93, 43...
+## $ Pressure9am   &lt;dbl&gt; 1007.7, 1010.6, 1007.6, 1017.6, 1010.8, 1009.2, 1009....
+## $ Pressure3pm   &lt;dbl&gt; 1007.1, 1007.8, 1008.7, 1012.8, 1006.0, 1005.4, 1008....
+## $ Cloud9am      &lt;dbl&gt; 8, NA, NA, NA, 7, NA, 1, NA, NA, NA, NA, 8, 8, NA, 0,...
+## $ Cloud3pm      &lt;dbl&gt; NA, NA, 2, NA, 8, NA, NA, NA, NA, NA, NA, 8, 8, 7, NA...
+## $ Temp9am       &lt;dbl&gt; 16.9, 17.2, 21.0, 18.1, 17.8, 20.6, 18.1, 16.3, 18.3,...
+## $ Temp3pm       &lt;dbl&gt; 21.8, 24.3, 23.2, 26.5, 29.7, 28.9, 24.6, 25.5, 30.2,...
+## $ RainToday     &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;,...
+## $ RISK_MM       &lt;dbl&gt; 0.0, 0.0, 0.0, 1.0, 0.2, 0.0, 0.0, 0.0, 1.4, 0.0, 2.2...
+## $ RainTomorrow  &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes&quot;...</code></pre>
+<p>먼저 이 데이터는 2008-12-01 부터 2017-06-24 까지의 데이터이다. 해당 날짜의 모든 데이터를 가지고 있는 시계열 자료로 볼 수 있으나, 뉴럴네트워크를 사용하기에 해당 Date 변수는 사용하지 않는다.</p>
+<p>또한 우리는 분류를 해야하므로 내일 강수량이 아닌 강수유무를 목적변수로 한다. 따라서 내일 강수량인 RISK_MM도 제외한다.</p>
+<pre class="r"><code>raw_data %&gt;% filter(is.na(Evaporation)) %&gt;% 
+  count() / nrow(raw_data)</code></pre>
+<pre><code>##           n
+## 1 0.4278903</code></pre>
+<pre class="r"><code>raw_data %&gt;% filter(is.na(Sunshine)) %&gt;% 
+  count() / nrow(raw_data)</code></pre>
+<pre><code>##           n
+## 1 0.4769292</code></pre>
+<pre class="r"><code>raw_data %&gt;% filter(is.na(Cloud9am)) %&gt;% 
+  count() / nrow(raw_data)</code></pre>
+<pre><code>##           n
+## 1 0.3773533</code></pre>
+<pre class="r"><code>raw_data %&gt;% filter(is.na(Cloud3pm)) %&gt;% 
+  count() / nrow(raw_data)</code></pre>
+<pre><code>##           n
+## 1 0.4015247</code></pre>
+<p>또한 위에서 볼 수있듯이 4개의 열들은 결측치의 값이 높은 것을 알 수 있다. 해당 행을 `na.omit을 이용해 삭제하였다.</p>
+<pre class="r"><code>nrow( raw_data %&gt;% distinct(Location) )</code></pre>
+<pre><code>## [1] 49</code></pre>
+<pre class="r"><code>nrow( raw_data %&gt;% distinct(WindGustDir) )</code></pre>
+<pre><code>## [1] 17</code></pre>
+<pre class="r"><code>nrow( raw_data %&gt;% distinct(WindDir9am) )</code></pre>
+<pre><code>## [1] 17</code></pre>
+<pre class="r"><code>nrow( raw_data %&gt;% distinct(WindDir3pm) )</code></pre>
+<pre><code>## [1] 17</code></pre>
+<p>또한 49개로 그 범주의 개수가 다양한 Location과 16개(NA 1개포함) 방향변수들도 제거하였다.</p>
+<p>앞서 언급한 열들을 제거하고, na인 행을 제거하고, 비가 온 경우(‘Yes’)를 1로 변환하였다. factor형으로 만들었다.</p>
+<pre class="r"><code>temp_data = raw_data %&gt;%
+  select(
+    -Date, -RISK_MM,
+    # -Evaporation, -Sunshine, -Cloud9am, -Cloud3pm,
+    -Location, -WindGustDir,-WindDir9am, -WindDir3pm
+    ) %&gt;%
+  na.omit() %&gt;%
+  mutate(
+    RainToday = as.numeric(RainToday==&#39;Yes&#39;),
+    RainTomorrow = as.factor(as.numeric(RainTomorrow==&#39;Yes&#39;))
+  )</code></pre>
+<p>총 58090개의 관측지가 있다. 그 결과를 skimr 패키지를 이용해 간략히 보였다.</p>
+<pre class="r"><code>skim(temp_data) # skimr 패키지</code></pre>
+<table>
+<caption><span id="tab:unnamed-chunk-7">Table 1: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">temp_data</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">58090</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">18</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">factor</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">17</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: factor</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="left">ordered</th>
+<th align="right">n_unique</th>
+<th align="left">top_counts</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">RainTomorrow</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">FALSE</td>
+<td align="right">2</td>
+<td align="left">0: 45361, 1: 12729</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">MinTemp</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">13.34</td>
+<td align="right">6.47</td>
+<td align="right">-6.7</td>
+<td align="right">8.4</td>
+<td align="right">13.1</td>
+<td align="right">18.3</td>
+<td align="right">31.4</td>
+<td align="left">▁▅▇▆▁</td>
+</tr>
+<tr class="even">
+<td align="left">MaxTemp</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">24.13</td>
+<td align="right">6.97</td>
+<td align="right">4.1</td>
+<td align="right">18.6</td>
+<td align="right">23.8</td>
+<td align="right">29.6</td>
+<td align="right">48.1</td>
+<td align="left">▁▇▇▅▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Rainfall</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.12</td>
+<td align="right">6.99</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td align="right">0.6</td>
+<td align="right">206.2</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Evaporation</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">5.45</td>
+<td align="right">3.69</td>
+<td align="right">0.0</td>
+<td align="right">2.8</td>
+<td align="right">4.8</td>
+<td align="right">7.4</td>
+<td align="right">81.2</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Sunshine</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">7.70</td>
+<td align="right">3.77</td>
+<td align="right">0.0</td>
+<td align="right">5.0</td>
+<td align="right">8.6</td>
+<td align="right">10.7</td>
+<td align="right">14.5</td>
+<td align="left">▃▃▅▇▃</td>
+</tr>
+<tr class="even">
+<td align="left">WindGustSpeed</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">40.56</td>
+<td align="right">13.38</td>
+<td align="right">9.0</td>
+<td align="right">31.0</td>
+<td align="right">39.0</td>
+<td align="right">48.0</td>
+<td align="right">124.0</td>
+<td align="left">▃▇▂▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">WindSpeed9am</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">15.24</td>
+<td align="right">8.58</td>
+<td align="right">0.0</td>
+<td align="right">9.0</td>
+<td align="right">15.0</td>
+<td align="right">20.0</td>
+<td align="right">67.0</td>
+<td align="left">▇▆▂▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">WindSpeed3pm</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">19.58</td>
+<td align="right">8.56</td>
+<td align="right">0.0</td>
+<td align="right">13.0</td>
+<td align="right">19.0</td>
+<td align="right">24.0</td>
+<td align="right">76.0</td>
+<td align="left">▆▇▂▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Humidity9am</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">66.22</td>
+<td align="right">18.63</td>
+<td align="right">0.0</td>
+<td align="right">55.0</td>
+<td align="right">67.0</td>
+<td align="right">80.0</td>
+<td align="right">100.0</td>
+<td align="left">▁▂▅▇▅</td>
+</tr>
+<tr class="even">
+<td align="left">Humidity3pm</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">49.70</td>
+<td align="right">20.22</td>
+<td align="right">0.0</td>
+<td align="right">36.0</td>
+<td align="right">51.0</td>
+<td align="right">63.0</td>
+<td align="right">100.0</td>
+<td align="left">▂▅▇▅▂</td>
+</tr>
+<tr class="odd">
+<td align="left">Pressure9am</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1017.33</td>
+<td align="right">6.94</td>
+<td align="right">980.5</td>
+<td align="right">1012.7</td>
+<td align="right">1017.3</td>
+<td align="right">1022.0</td>
+<td align="right">1040.4</td>
+<td align="left">▁▁▇▇▁</td>
+</tr>
+<tr class="even">
+<td align="left">Pressure3pm</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1014.88</td>
+<td align="right">6.90</td>
+<td align="right">977.1</td>
+<td align="right">1010.1</td>
+<td align="right">1014.8</td>
+<td align="right">1019.5</td>
+<td align="right">1038.9</td>
+<td align="left">▁▁▇▇▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Cloud9am</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4.25</td>
+<td align="right">2.80</td>
+<td align="right">0.0</td>
+<td align="right">1.0</td>
+<td align="right">5.0</td>
+<td align="right">7.0</td>
+<td align="right">8.0</td>
+<td align="left">▆▃▁▃▇</td>
+</tr>
+<tr class="even">
+<td align="left">Cloud3pm</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4.33</td>
+<td align="right">2.65</td>
+<td align="right">0.0</td>
+<td align="right">2.0</td>
+<td align="right">5.0</td>
+<td align="right">7.0</td>
+<td align="right">9.0</td>
+<td align="left">▆▃▃▇▂</td>
+</tr>
+<tr class="odd">
+<td align="left">Temp9am</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">18.09</td>
+<td align="right">6.60</td>
+<td align="right">-0.9</td>
+<td align="right">12.9</td>
+<td align="right">17.7</td>
+<td align="right">23.2</td>
+<td align="right">39.4</td>
+<td align="left">▁▇▇▅▁</td>
+</tr>
+<tr class="even">
+<td align="left">Temp3pm</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">22.63</td>
+<td align="right">6.84</td>
+<td align="right">3.7</td>
+<td align="right">17.3</td>
+<td align="right">22.3</td>
+<td align="right">27.8</td>
+<td align="right">46.1</td>
+<td align="left">▁▇▇▃▁</td>
+</tr>
+<tr class="odd">
+<td align="left">RainToday</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0.22</td>
+<td align="right">0.41</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td align="right">1.0</td>
+<td align="left">▇▁▁▁▂</td>
+</tr>
+</tbody>
+</table>
+<p>이상 전처리를 완료하였다.</p>
+<hr />
+</div>
+<div id="training-데이터와-test-데이터를-5050의-비율로-분할하시오." class="section level1">
+<h1>1. Training 데이터와 Test 데이터를 50:50의 비율로 분할하시오.</h1>
+<pre class="r"><code>set.seed(1234)
+sp_n = sample(1:nrow(temp_data), round(nrow(temp_data)/2)) 
+train = temp_data[sp_n,]
+test = temp_data[-sp_n,]
+nrow(train);nrow(test)</code></pre>
+<pre><code>## [1] 29045</code></pre>
+<pre><code>## [1] 29045</code></pre>
+<hr />
+</div>
+<div id="r-프로그램의-randomforest-명령어를-사용하여-랜덤포레스트-분석을-수행하고자-한다.-단-hyper-parameter는-아래와-같이-조정한다." class="section level1">
+<h1>2. R 프로그램의 ‘randomForest’ 명령어를 사용하여 랜덤포레스트 분석을 수행하고자 한다. 단, hyper-parameter는 아래와 같이 조정한다.</h1>
+<ul>
+<li><p>A. ntree=100 을 사용하고,</p></li>
+<li><p>B. mtry = (0.1<em>p, 0.2</em>p, … , 1.0*p)을 내림하여 사용한다.</p></li>
+<li><p>C. nodesize = (1, 0.01<em>n, 0.02</em>n, … , 0.10*n) 을 반올림하여 사용한다.</p></li>
+<li><p>D. 그외 parameter 값들은 default 값을 사용한다.</p></li>
+</ul>
+<p>먼저 17개의 변수로 RainTomorrow를 예측하므로 p는 17이 된다. 따라서 B의 조건에 따른 mtry를 구할 수 있다. 또한 train 데이터의 수는 29045개 이므로 n은 29045가 된다. 따라서 C조건에 따른 nodesize를 구할 수 있다. 각각은 다음과 같다.</p>
+<pre class="r"><code>( para_mtry = floor(17 * 1:10 / 10) )</code></pre>
+<pre><code>##  [1]  1  3  5  6  8 10 11 13 15 17</code></pre>
+<pre class="r"><code>( para_ndsz = c(1, round( nrow(train) * 1:10 / 100 ) ) )</code></pre>
+<pre><code>##  [1]    1  290  581  871 1162 1452 1743 2033 2324 2614 2904</code></pre>
+<p>이제 코드를 돌리면 아래와 같다.</p>
+<pre class="r"><code>library(randomForest)</code></pre>
+<pre><code>## randomForest 4.6-14</code></pre>
+<pre><code>## Type rfNews() to see new features/changes/bug fixes.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;randomForest&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     combine</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     margin</code></pre>
+<pre class="r"><code>library(pROC)</code></pre>
+<pre><code>## Type &#39;citation(&quot;pROC&quot;)&#39; for a citation.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;pROC&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     cov, smooth, var</code></pre>
+<pre class="r"><code>for(mt in para_mtry){
+  for(nd in para_ndsz){
+    print(paste(&#39;rf&#39;,mt,nd,sep=&#39;_&#39;))
+    set.seed(2010)
+    assign(
+      paste(&#39;rf&#39;,mt,nd,sep=&#39;_&#39;),
+      randomForest(RainTomorrow ~ ., data = train, ntree=100, mtry=mt, nodesize=nd)
+      )
+  }
+}</code></pre>
+<pre><code>## [1] &quot;rf_1_1&quot;
+## [1] &quot;rf_1_290&quot;
+## [1] &quot;rf_1_581&quot;
+## [1] &quot;rf_1_871&quot;
+## [1] &quot;rf_1_1162&quot;
+## [1] &quot;rf_1_1452&quot;
+## [1] &quot;rf_1_1743&quot;
+## [1] &quot;rf_1_2033&quot;
+## [1] &quot;rf_1_2324&quot;
+## [1] &quot;rf_1_2614&quot;
+## [1] &quot;rf_1_2904&quot;
+## [1] &quot;rf_3_1&quot;
+## [1] &quot;rf_3_290&quot;
+## [1] &quot;rf_3_581&quot;
+## [1] &quot;rf_3_871&quot;
+## [1] &quot;rf_3_1162&quot;
+## [1] &quot;rf_3_1452&quot;
+## [1] &quot;rf_3_1743&quot;
+## [1] &quot;rf_3_2033&quot;
+## [1] &quot;rf_3_2324&quot;
+## [1] &quot;rf_3_2614&quot;
+## [1] &quot;rf_3_2904&quot;
+## [1] &quot;rf_5_1&quot;
+## [1] &quot;rf_5_290&quot;
+## [1] &quot;rf_5_581&quot;
+## [1] &quot;rf_5_871&quot;
+## [1] &quot;rf_5_1162&quot;
+## [1] &quot;rf_5_1452&quot;
+## [1] &quot;rf_5_1743&quot;
+## [1] &quot;rf_5_2033&quot;
+## [1] &quot;rf_5_2324&quot;
+## [1] &quot;rf_5_2614&quot;
+## [1] &quot;rf_5_2904&quot;
+## [1] &quot;rf_6_1&quot;
+## [1] &quot;rf_6_290&quot;
+## [1] &quot;rf_6_581&quot;
+## [1] &quot;rf_6_871&quot;
+## [1] &quot;rf_6_1162&quot;
+## [1] &quot;rf_6_1452&quot;
+## [1] &quot;rf_6_1743&quot;
+## [1] &quot;rf_6_2033&quot;
+## [1] &quot;rf_6_2324&quot;
+## [1] &quot;rf_6_2614&quot;
+## [1] &quot;rf_6_2904&quot;
+## [1] &quot;rf_8_1&quot;
+## [1] &quot;rf_8_290&quot;
+## [1] &quot;rf_8_581&quot;
+## [1] &quot;rf_8_871&quot;
+## [1] &quot;rf_8_1162&quot;
+## [1] &quot;rf_8_1452&quot;
+## [1] &quot;rf_8_1743&quot;
+## [1] &quot;rf_8_2033&quot;
+## [1] &quot;rf_8_2324&quot;
+## [1] &quot;rf_8_2614&quot;
+## [1] &quot;rf_8_2904&quot;
+## [1] &quot;rf_10_1&quot;
+## [1] &quot;rf_10_290&quot;
+## [1] &quot;rf_10_581&quot;
+## [1] &quot;rf_10_871&quot;
+## [1] &quot;rf_10_1162&quot;
+## [1] &quot;rf_10_1452&quot;
+## [1] &quot;rf_10_1743&quot;
+## [1] &quot;rf_10_2033&quot;
+## [1] &quot;rf_10_2324&quot;
+## [1] &quot;rf_10_2614&quot;
+## [1] &quot;rf_10_2904&quot;
+## [1] &quot;rf_11_1&quot;
+## [1] &quot;rf_11_290&quot;
+## [1] &quot;rf_11_581&quot;
+## [1] &quot;rf_11_871&quot;
+## [1] &quot;rf_11_1162&quot;
+## [1] &quot;rf_11_1452&quot;
+## [1] &quot;rf_11_1743&quot;
+## [1] &quot;rf_11_2033&quot;
+## [1] &quot;rf_11_2324&quot;
+## [1] &quot;rf_11_2614&quot;
+## [1] &quot;rf_11_2904&quot;
+## [1] &quot;rf_13_1&quot;
+## [1] &quot;rf_13_290&quot;
+## [1] &quot;rf_13_581&quot;
+## [1] &quot;rf_13_871&quot;
+## [1] &quot;rf_13_1162&quot;
+## [1] &quot;rf_13_1452&quot;
+## [1] &quot;rf_13_1743&quot;
+## [1] &quot;rf_13_2033&quot;
+## [1] &quot;rf_13_2324&quot;
+## [1] &quot;rf_13_2614&quot;
+## [1] &quot;rf_13_2904&quot;
+## [1] &quot;rf_15_1&quot;
+## [1] &quot;rf_15_290&quot;
+## [1] &quot;rf_15_581&quot;
+## [1] &quot;rf_15_871&quot;
+## [1] &quot;rf_15_1162&quot;
+## [1] &quot;rf_15_1452&quot;
+## [1] &quot;rf_15_1743&quot;
+## [1] &quot;rf_15_2033&quot;
+## [1] &quot;rf_15_2324&quot;
+## [1] &quot;rf_15_2614&quot;
+## [1] &quot;rf_15_2904&quot;
+## [1] &quot;rf_17_1&quot;
+## [1] &quot;rf_17_290&quot;
+## [1] &quot;rf_17_581&quot;
+## [1] &quot;rf_17_871&quot;
+## [1] &quot;rf_17_1162&quot;
+## [1] &quot;rf_17_1452&quot;
+## [1] &quot;rf_17_1743&quot;
+## [1] &quot;rf_17_2033&quot;
+## [1] &quot;rf_17_2324&quot;
+## [1] &quot;rf_17_2614&quot;
+## [1] &quot;rf_17_2904&quot;</code></pre>
+<p>각각의 parameter별 모형은 **rf_(mtry값)_(nodesize값)** 라는 객체에 저장되었다. 즉 mtry가 1이고 nodesize가 290인 모형은 rf_1_290라는 객체 저장되어 있다.</p>
+<hr />
+</div>
+<div id="위-2번의-조건에-맞는-랜덤포레스트를-training-데이터를-이용하여-생성하고-test-데이터를-이용하여-예측-정확도를-계산하고자-한다.-이때-예측정확도는-auroc-값을-사용한다." class="section level1">
+<h1>3. 위 2번의 조건에 맞는 랜덤포레스트를 training 데이터를 이용하여 생성하고, test 데이터를 이용하여 예측 정확도를 계산하고자 한다. 이때 예측정확도는 AUROC 값을 사용한다.</h1>
+<p>앞서 random forest를 생성하였다. auroc를 test 데이터를 이용해 계산하면 아래와 같다. (message=F)</p>
+<pre class="r"><code>for( md in ls(pattern = &quot;^rf_&quot;) ){
+  assign(
+      paste(&#39;pred&#39;,md ,sep=&#39;_&#39;),
+      predict( get(md), newdata=test , type=&quot;prob&quot;)
+      )
+  assign(
+      paste(&#39;roc&#39;,md ,sep=&#39;_&#39;),
+      roc(test$RainTomorrow ~ get(paste(&#39;pred&#39;,md ,sep=&#39;_&#39;))[,2])
+      )
+}</code></pre>
+<p>test 데이터를 이용하여 각각의 예측 정확도auroc값을 계산한 결과는 아래와 같다.</p>
+<pre class="r"><code>auc_matrix = matrix(nrow=10,ncol=11)
+for( md in ls(pattern = &quot;^roc_&quot;) ){
+  temp_mt = strsplit(md,split=&#39;_&#39;)[[1]][3]
+  temp_ns = strsplit(md,split=&#39;_&#39;)[[1]][4]
+  cat(&#39;mtry값:&#39;,temp_mt,&#39;\t&#39;,
+      &#39;nodesize값:&#39;,temp_ns,&#39;\n&#39;,
+      sep =&quot;&quot;)
+  temp_auc = get(md)$auc 
+  print(temp_auc)
+  cat(&#39;\n&#39;)
+
+  auc_matrix[which(para_mtry ==temp_mt),which(para_ndsz ==temp_ns)] = temp_auc
+}</code></pre>
+<pre><code>## mtry값:1  nodesize값:1
+## Area under the curve: 0.8798
+## 
+## mtry값:1  nodesize값:1162
+## Area under the curve: 0.853
+## 
+## mtry값:1  nodesize값:1452
+## Area under the curve: 0.8509
+## 
+## mtry값:1  nodesize값:1743
+## Area under the curve: 0.8466
+## 
+## mtry값:1  nodesize값:2033
+## Area under the curve: 0.849
+## 
+## mtry값:1  nodesize값:2324
+## Area under the curve: 0.8509
+## 
+## mtry값:1  nodesize값:2614
+## Area under the curve: 0.8466
+## 
+## mtry값:1  nodesize값:290
+## Area under the curve: 0.8572
+## 
+## mtry값:1  nodesize값:2904
+## Area under the curve: 0.8424
+## 
+## mtry값:1  nodesize값:581
+## Area under the curve: 0.8548
+## 
+## mtry값:1  nodesize값:871
+## Area under the curve: 0.8542
+## 
+## mtry값:10 nodesize값:1
+## Area under the curve: 0.8886
+## 
+## mtry값:10 nodesize값:1162
+## Area under the curve: 0.8393
+## 
+## mtry값:10 nodesize값:1452
+## Area under the curve: 0.8436
+## 
+## mtry값:10 nodesize값:1743
+## Area under the curve: 0.8351
+## 
+## mtry값:10 nodesize값:2033
+## Area under the curve: 0.8312
+## 
+## mtry값:10 nodesize값:2324
+## Area under the curve: 0.8316
+## 
+## mtry값:10 nodesize값:2614
+## Area under the curve: 0.8313
+## 
+## mtry값:10 nodesize값:290
+## Area under the curve: 0.859
+## 
+## mtry값:10 nodesize값:2904
+## Area under the curve: 0.8306
+## 
+## mtry값:10 nodesize값:581
+## Area under the curve: 0.8465
+## 
+## mtry값:10 nodesize값:871
+## Area under the curve: 0.8466
+## 
+## mtry값:11 nodesize값:1
+## Area under the curve: 0.888
+## 
+## mtry값:11 nodesize값:1162
+## Area under the curve: 0.8392
+## 
+## mtry값:11 nodesize값:1452
+## Area under the curve: 0.8365
+## 
+## mtry값:11 nodesize값:1743
+## Area under the curve: 0.8294
+## 
+## mtry값:11 nodesize값:2033
+## Area under the curve: 0.8265
+## 
+## mtry값:11 nodesize값:2324
+## Area under the curve: 0.8334
+## 
+## mtry값:11 nodesize값:2614
+## Area under the curve: 0.8274
+## 
+## mtry값:11 nodesize값:290
+## Area under the curve: 0.8599
+## 
+## mtry값:11 nodesize값:2904
+## Area under the curve: 0.8289
+## 
+## mtry값:11 nodesize값:581
+## Area under the curve: 0.8479
+## 
+## mtry값:11 nodesize값:871
+## Area under the curve: 0.8373
+## 
+## mtry값:13 nodesize값:1
+## Area under the curve: 0.887
+## 
+## mtry값:13 nodesize값:1162
+## Area under the curve: 0.8391
+## 
+## mtry값:13 nodesize값:1452
+## Area under the curve: 0.831
+## 
+## mtry값:13 nodesize값:1743
+## Area under the curve: 0.8314
+## 
+## mtry값:13 nodesize값:2033
+## Area under the curve: 0.8231
+## 
+## mtry값:13 nodesize값:2324
+## Area under the curve: 0.823
+## 
+## mtry값:13 nodesize값:2614
+## Area under the curve: 0.8182
+## 
+## mtry값:13 nodesize값:290
+## Area under the curve: 0.8557
+## 
+## mtry값:13 nodesize값:2904
+## Area under the curve: 0.8207
+## 
+## mtry값:13 nodesize값:581
+## Area under the curve: 0.8423
+## 
+## mtry값:13 nodesize값:871
+## Area under the curve: 0.8393
+## 
+## mtry값:15 nodesize값:1
+## Area under the curve: 0.8856
+## 
+## mtry값:15 nodesize값:1162
+## Area under the curve: 0.8333
+## 
+## mtry값:15 nodesize값:1452
+## Area under the curve: 0.8302
+## 
+## mtry값:15 nodesize값:1743
+## Area under the curve: 0.8219
+## 
+## mtry값:15 nodesize값:2033
+## Area under the curve: 0.8201
+## 
+## mtry값:15 nodesize값:2324
+## Area under the curve: 0.8177
+## 
+## mtry값:15 nodesize값:2614
+## Area under the curve: 0.8135
+## 
+## mtry값:15 nodesize값:290
+## Area under the curve: 0.8576
+## 
+## mtry값:15 nodesize값:2904
+## Area under the curve: 0.8134
+## 
+## mtry값:15 nodesize값:581
+## Area under the curve: 0.8329
+## 
+## mtry값:15 nodesize값:871
+## Area under the curve: 0.8343
+## 
+## mtry값:17 nodesize값:1
+## Area under the curve: 0.8852
+## 
+## mtry값:17 nodesize값:1162
+## Area under the curve: 0.8248
+## 
+## mtry값:17 nodesize값:1452
+## Area under the curve: 0.8245
+## 
+## mtry값:17 nodesize값:1743
+## Area under the curve: 0.8235
+## 
+## mtry값:17 nodesize값:2033
+## Area under the curve: 0.815
+## 
+## mtry값:17 nodesize값:2324
+## Area under the curve: 0.8085
+## 
+## mtry값:17 nodesize값:2614
+## Area under the curve: 0.8077
+## 
+## mtry값:17 nodesize값:290
+## Area under the curve: 0.8545
+## 
+## mtry값:17 nodesize값:2904
+## Area under the curve: 0.7965
+## 
+## mtry값:17 nodesize값:581
+## Area under the curve: 0.8312
+## 
+## mtry값:17 nodesize값:871
+## Area under the curve: 0.827
+## 
+## mtry값:3  nodesize값:1
+## Area under the curve: 0.89
+## 
+## mtry값:3  nodesize값:1162
+## Area under the curve: 0.8507
+## 
+## mtry값:3  nodesize값:1452
+## Area under the curve: 0.8467
+## 
+## mtry값:3  nodesize값:1743
+## Area under the curve: 0.8435
+## 
+## mtry값:3  nodesize값:2033
+## Area under the curve: 0.8476
+## 
+## mtry값:3  nodesize값:2324
+## Area under the curve: 0.8467
+## 
+## mtry값:3  nodesize값:2614
+## Area under the curve: 0.8396
+## 
+## mtry값:3  nodesize값:290
+## Area under the curve: 0.8589
+## 
+## mtry값:3  nodesize값:2904
+## Area under the curve: 0.8432
+## 
+## mtry값:3  nodesize값:581
+## Area under the curve: 0.8547
+## 
+## mtry값:3  nodesize값:871
+## Area under the curve: 0.8531
+## 
+## mtry값:5  nodesize값:1
+## Area under the curve: 0.8902
+## 
+## mtry값:5  nodesize값:1162
+## Area under the curve: 0.842
+## 
+## mtry값:5  nodesize값:1452
+## Area under the curve: 0.8445
+## 
+## mtry값:5  nodesize값:1743
+## Area under the curve: 0.8416
+## 
+## mtry값:5  nodesize값:2033
+## Area under the curve: 0.8336
+## 
+## mtry값:5  nodesize값:2324
+## Area under the curve: 0.8358
+## 
+## mtry값:5  nodesize값:2614
+## Area under the curve: 0.8394
+## 
+## mtry값:5  nodesize값:290
+## Area under the curve: 0.8624
+## 
+## mtry값:5  nodesize값:2904
+## Area under the curve: 0.837
+## 
+## mtry값:5  nodesize값:581
+## Area under the curve: 0.8525
+## 
+## mtry값:5  nodesize값:871
+## Area under the curve: 0.8487
+## 
+## mtry값:6  nodesize값:1
+## Area under the curve: 0.8896
+## 
+## mtry값:6  nodesize값:1162
+## Area under the curve: 0.8495
+## 
+## mtry값:6  nodesize값:1452
+## Area under the curve: 0.8422
+## 
+## mtry값:6  nodesize값:1743
+## Area under the curve: 0.8427
+## 
+## mtry값:6  nodesize값:2033
+## Area under the curve: 0.8414
+## 
+## mtry값:6  nodesize값:2324
+## Area under the curve: 0.8394
+## 
+## mtry값:6  nodesize값:2614
+## Area under the curve: 0.8389
+## 
+## mtry값:6  nodesize값:290
+## Area under the curve: 0.8598
+## 
+## mtry값:6  nodesize값:2904
+## Area under the curve: 0.8303
+## 
+## mtry값:6  nodesize값:581
+## Area under the curve: 0.8477
+## 
+## mtry값:6  nodesize값:871
+## Area under the curve: 0.8476
+## 
+## mtry값:8  nodesize값:1
+## Area under the curve: 0.8891
+## 
+## mtry값:8  nodesize값:1162
+## Area under the curve: 0.844
+## 
+## mtry값:8  nodesize값:1452
+## Area under the curve: 0.8441
+## 
+## mtry값:8  nodesize값:1743
+## Area under the curve: 0.8379
+## 
+## mtry값:8  nodesize값:2033
+## Area under the curve: 0.8389
+## 
+## mtry값:8  nodesize값:2324
+## Area under the curve: 0.8368
+## 
+## mtry값:8  nodesize값:2614
+## Area under the curve: 0.8314
+## 
+## mtry값:8  nodesize값:290
+## Area under the curve: 0.8596
+## 
+## mtry값:8  nodesize값:2904
+## Area under the curve: 0.8304
+## 
+## mtry값:8  nodesize값:581
+## Area under the curve: 0.8494
+## 
+## mtry값:8  nodesize값:871
+## Area under the curve: 0.8464</code></pre>
+<p>행렬로도 보여주면 아래와 같다.</p>
+<pre class="r"><code>rownames(auc_matrix) = para_mtry
+colnames(auc_matrix) = para_ndsz
+auc_matrix</code></pre>
+<pre><code>##            1       290       581       871      1162      1452      1743
+## 1  0.8797539 0.8572112 0.8548120 0.8541534 0.8530406 0.8508504 0.8465923
+## 3  0.8899524 0.8589102 0.8546948 0.8531171 0.8507239 0.8466689 0.8434589
+## 5  0.8901695 0.8624353 0.8525360 0.8486703 0.8419568 0.8445128 0.8416349
+## 6  0.8895977 0.8597663 0.8477312 0.8476448 0.8495143 0.8421653 0.8426893
+## 8  0.8890539 0.8596478 0.8494105 0.8464140 0.8439507 0.8441229 0.8379413
+## 10 0.8885989 0.8589943 0.8464877 0.8465859 0.8392590 0.8435724 0.8351362
+## 11 0.8880276 0.8599148 0.8479312 0.8372760 0.8392385 0.8365081 0.8294359
+## 13 0.8869692 0.8557121 0.8423401 0.8392755 0.8390583 0.8309899 0.8313972
+## 15 0.8855846 0.8575909 0.8329103 0.8342663 0.8333442 0.8302059 0.8218959
+## 17 0.8851665 0.8544948 0.8311615 0.8269814 0.8248338 0.8244663 0.8234599
+##         2033      2324      2614      2904
+## 1  0.8489772 0.8509397 0.8465913 0.8424482
+## 3  0.8475778 0.8466515 0.8395814 0.8431646
+## 5  0.8336063 0.8358320 0.8394180 0.8369673
+## 6  0.8413764 0.8393648 0.8389086 0.8302772
+## 8  0.8388660 0.8367690 0.8313858 0.8303713
+## 10 0.8311746 0.8315563 0.8313170 0.8306044
+## 11 0.8264946 0.8333505 0.8274361 0.8288907
+## 13 0.8231113 0.8229738 0.8182062 0.8207216
+## 15 0.8200801 0.8176567 0.8134933 0.8133673
+## 17 0.8149581 0.8084856 0.8076712 0.7964592</code></pre>
+<hr />
+</div>
+<div id="번의-결과-총-110개의-auroc-값을-구할-수-있다.-이를-mtry-값과-nodesize-값의-조합에-따라-auroc-값으로-3차원-포물선-그래프를-생성하시오.-3d-surface-plot" class="section level1">
+<h1>4. 3번의 결과, 총 110개의 AUROC 값을 구할 수 있다. 이를 mtry 값과 nodesize 값의 조합에 따라 AUROC 값으로 3차원 포물선 그래프를 생성하시오. (3D surface plot)</h1>
+<p>해당 auroc를 이용하여 3d surface plot을 그리면 아래와 같다.</p>
+<pre class="r"><code>library(plotly)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;plotly&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     last_plot</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter</code></pre>
+<pre><code>## The following object is masked from &#39;package:graphics&#39;:
+## 
+##     layout</code></pre>
+<pre class="r"><code>plot_ly(z = auc_matrix,x=para_mtry,y=para_ndsz) %&gt;%
+        add_surface() %&gt;%
+        layout(scene = list(
+                xaxis = list(title = &#39;mtry&#39;,tickvals=para_mtry),
+                yaxis = list(title = &#39;nodesize&#39;,tickvals=para_ndsz),
+                zaxis = list(title = &#39;auc&#39;))
+               )</code></pre>
+<div id="htmlwidget-1" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"visdat":{"12d85a685ec2":["function () ","plotlyVisDat"]},"cur_data":"12d85a685ec2","attrs":{"12d85a685ec2":{"z":[[0.879753909191365,0.857211175123725,0.854811972002102,0.854153366076446,0.853040569816661,0.850850435213139,0.8465923363023,0.848977171104065,0.85093973905314,0.846591314172719,0.842448227209508],[0.889952446264445,0.858910185067677,0.854694788459305,0.853117105640692,0.850723894194487,0.846668909982982,0.843458934405753,0.847577824085869,0.846651513131034,0.839581429057744,0.843164571411155],[0.890169523185017,0.862435269084319,0.852536040461079,0.848670332622165,0.841956789372187,0.844512815391848,0.84163488394314,0.833606324527615,0.835831958345349,0.839417960596678,0.836967272429525],[0.889597657171627,0.859766323557383,0.847731184821085,0.847644789060193,0.84951433633443,0.842165327897173,0.842689349986571,0.841376360872615,0.839364847715151,0.838908599355807,0.830277172771134],[0.889053873910343,0.859647839122393,0.849410492098883,0.846413993618855,0.843950716394448,0.844122909092841,0.837941293089318,0.838865972766641,0.836768979290939,0.831385784150213,0.830371274081287],[0.888598898911082,0.858994257806795,0.846487690194052,0.846585924762205,0.83925898331104,0.84357238046463,0.835136180629803,0.831174609425703,0.831556287065361,0.831316984849066,0.830604440078586],[0.888027628279568,0.859914766369467,0.847931205599569,0.837275996860954,0.839238516628837,0.836508133198641,0.829435942918943,0.826494625670199,0.833350530577485,0.827436120583648,0.828890655716155],[0.886969249235017,0.855712079271332,0.842340132704494,0.839275478486389,0.839058267346781,0.830989855202164,0.831397240949449,0.823111256306281,0.822973819455133,0.818206173461681,0.820721624034365],[0.885584556182319,0.857590863568442,0.832910302464593,0.834266265760601,0.833344236048857,0.830205861164958,0.821895937352226,0.820080125873503,0.817656653196995,0.813493268185754,0.813367301899896],[0.885166481093363,0.85449475735628,0.831161473167763,0.826981365841266,0.824833819970259,0.824466293835094,0.823459909180104,0.814958114093421,0.808485552518443,0.807671235303687,0.796459206849747]],"x":[1,3,5,6,8,10,11,13,15,17],"y":[1,290,581,871,1162,1452,1743,2033,2324,2614,2904],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"surface","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"title":"mtry","tickvals":[1,3,5,6,8,10,11,13,15,17]},"yaxis":{"title":"nodesize","tickvals":[1,290,581,871,1162,1452,1743,2033,2324,2614,2904]},"zaxis":{"title":"auc"}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"showSendToCloud":false},"data":[{"colorbar":{"title":"","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":[["0","rgba(68,1,84,1)"],["0.0416666666666665","rgba(70,19,97,1)"],["0.0833333333333329","rgba(72,32,111,1)"],["0.125000000000001","rgba(71,45,122,1)"],["0.166666666666667","rgba(68,58,128,1)"],["0.208333333333334","rgba(64,70,135,1)"],["0.25","rgba(60,82,138,1)"],["0.291666666666666","rgba(56,93,140,1)"],["0.333333333333333","rgba(49,104,142,1)"],["0.374999999999999","rgba(46,114,142,1)"],["0.416666666666667","rgba(42,123,142,1)"],["0.458333333333334","rgba(38,133,141,1)"],["0.5","rgba(37,144,140,1)"],["0.541666666666667","rgba(33,154,138,1)"],["0.583333333333333","rgba(39,164,133,1)"],["0.625000000000001","rgba(47,174,127,1)"],["0.666666666666667","rgba(53,183,121,1)"],["0.708333333333333","rgba(79,191,110,1)"],["0.75","rgba(98,199,98,1)"],["0.791666666666667","rgba(119,207,85,1)"],["0.833333333333333","rgba(147,214,70,1)"],["0.874999999999999","rgba(172,220,52,1)"],["0.916666666666667","rgba(199,225,42,1)"],["0.958333333333333","rgba(226,228,40,1)"],["1","rgba(253,231,37,1)"]],"showscale":true,"z":[[0.879753909191365,0.857211175123725,0.854811972002102,0.854153366076446,0.853040569816661,0.850850435213139,0.8465923363023,0.848977171104065,0.85093973905314,0.846591314172719,0.842448227209508],[0.889952446264445,0.858910185067677,0.854694788459305,0.853117105640692,0.850723894194487,0.846668909982982,0.843458934405753,0.847577824085869,0.846651513131034,0.839581429057744,0.843164571411155],[0.890169523185017,0.862435269084319,0.852536040461079,0.848670332622165,0.841956789372187,0.844512815391848,0.84163488394314,0.833606324527615,0.835831958345349,0.839417960596678,0.836967272429525],[0.889597657171627,0.859766323557383,0.847731184821085,0.847644789060193,0.84951433633443,0.842165327897173,0.842689349986571,0.841376360872615,0.839364847715151,0.838908599355807,0.830277172771134],[0.889053873910343,0.859647839122393,0.849410492098883,0.846413993618855,0.843950716394448,0.844122909092841,0.837941293089318,0.838865972766641,0.836768979290939,0.831385784150213,0.830371274081287],[0.888598898911082,0.858994257806795,0.846487690194052,0.846585924762205,0.83925898331104,0.84357238046463,0.835136180629803,0.831174609425703,0.831556287065361,0.831316984849066,0.830604440078586],[0.888027628279568,0.859914766369467,0.847931205599569,0.837275996860954,0.839238516628837,0.836508133198641,0.829435942918943,0.826494625670199,0.833350530577485,0.827436120583648,0.828890655716155],[0.886969249235017,0.855712079271332,0.842340132704494,0.839275478486389,0.839058267346781,0.830989855202164,0.831397240949449,0.823111256306281,0.822973819455133,0.818206173461681,0.820721624034365],[0.885584556182319,0.857590863568442,0.832910302464593,0.834266265760601,0.833344236048857,0.830205861164958,0.821895937352226,0.820080125873503,0.817656653196995,0.813493268185754,0.813367301899896],[0.885166481093363,0.85449475735628,0.831161473167763,0.826981365841266,0.824833819970259,0.824466293835094,0.823459909180104,0.814958114093421,0.808485552518443,0.807671235303687,0.796459206849747]],"x":[1,3,5,6,8,10,11,13,15,17],"y":[1,290,581,871,1162,1452,1743,2033,2324,2614,2904],"type":"surface","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<hr />
+</div>
+<div id="번의-결과에서-예측정확도가-가장-높은-최적의-hyper-parameter-조합은-무엇인지-밝히시오." class="section level1">
+<h1>5. 4번의 결과에서 예측정확도가 가장 높은 최적의 hyper-parameter 조합은 무엇인지 밝히시오.</h1>
+<pre class="r"><code>auc_matrix == max(auc_matrix)</code></pre>
+<pre><code>##        1   290   581   871  1162  1452  1743  2033  2324  2614  2904
+## 1  FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 3  FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 5   TRUE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 6  FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 8  FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 10 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 11 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 13 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 15 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+## 17 FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE</code></pre>
+<p>즉 <strong>mtry가 3</strong>이고, <strong>node size 가 1</strong>일 떄 가장 예측정확도가 높은 조합이다.</p>
+</div>
+
+            </div>
+
+        </article>
+
+        
+
+        
+
+
+        
+    <div class="updated-badge-container">
+        <span title="Updated @ 2020-06-09 14:49:01 KST" style="cursor:help">
+
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" class="updated-badge"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="130" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path class="updated-badge-left" d="M0 0h55v20H0z"/><path class="updated-badge-right" d="M55 0h75v20H55z"/><path fill="url(#b)" d="M0 0h130v20H0z"/></g><g fill="#fff" text-anchor="middle" font-size="110"><text x="285" y="150" fill="#010101" fill-opacity=".3" textLength="450" transform="scale(.1)">updated</text><text x="285" y="140" textLength="450" transform="scale(.1)">updated</text><text x="915" y="150" fill="#010101" fill-opacity=".3" textLength="650" transform="scale(.1)">2020-06-09</text><text x="915" y="140" textLength="650" transform="scale(.1)">2020-06-09</text></g></svg>
+        </span></div>
+
+
+
+        
+
+
+        <div class="post-share">
+
+        
+
+        <div class="share-items">
+
+            
+                <div class="share-item twitter">
+                    
+                    <a href="https://twitter.com/share?url=/posts/data_mining/3/&amp;text=%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%a7%88%ec%9d%b4%eb%8b%9d%20-%20Random%20Forest&amp;hashtags=datamining,randomforest,decisiontree,&amp;via=" title="Share on Twitter" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon twitter-icon"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg></a>
+                </div>
+            
+
+            
+                <div class="share-item facebook">
+                    
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=/posts/data_mining/3/&amp;hashtag=%23datamining" title="Share on Facebook" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon facebook-icon"><path d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z"/></svg></a>
+                </div>
+            
+
+            
+                <div class="share-item linkedin">
+                    
+                    <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=/posts/data_mining/3/&amp;title=%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%a7%88%ec%9d%b4%eb%8b%9d%20-%20Random%20Forest&amp;summary=%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%a7%88%ec%9d%b4%eb%8b%9d%20%ec%97%b0%ec%8a%b5%ec%9c%bc%eb%a1%9c%20Random%20Forest%ec%9d%84%20%ec%82%ac%ec%9a%a9%ed%95%9c%20%ec%98%88%ec%a0%9c%ec%9d%b4%eb%8b%a4.%0a%eb%a8%bc%ec%a0%80%20%ec%a0%84%ec%b2%98%eb%a6%ac%ec%97%90%ec%84%9c%20%ec%82%ac%ec%9a%a9%ed%95%9c%20packages%ec%9d%b4%eb%8b%a4.%0alibrary%28tidyverse%29%0dlibrary%28skimr%29%0d%ea%b7%b8%20%eb%8b%a4%ec%9d%8c%20%eb%aa%a8%ed%98%95%ec%9d%84%20%eb%a7%8c%eb%93%a4%ea%b3%a0%ec%9e%90%20%ed%95%98%eb%8a%94%20%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%a5%bc%20%eb%b6%88%eb%9f%ac%ec%99%94%eb%8b%a4.%20%ed%95%b4%eb%8b%b9%20%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%8a%94%20%ec%b9%b4%ea%b8%80%ec%97%90%ec%84%9c%20%ea%b0%80%ec%a7%80%ea%b3%a0%20%ec%98%a8%20%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%8b%a4.%0araw_data=read_csv%28&amp;#39;./data/ausraindata.csv&amp;#39;,col_types%20=%20cols%28Evaporation%20=%20col_double%28%29,%0dSunshine%20=%20col_double%28%29%29%20%29%0d%ed%95%b4%eb%8b%b9%20%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%8a%94%20%ec%98%a4%eb%8a%98%ec%9d%98%20%eb%82%a0%ec%94%a8%eb%a5%bc%20%eb%b0%94%ed%83%95%ec%9c%bc%eb%a1%9c%20%eb%82%b4%ec%9d%bc%ec%9d%98%20%ea%b0%95%ec%88%98%ec%9c%a0%eb%ac%b4%eb%a5%bc%20%ec%98%88%ec%b8%a1%ed%95%b4%20%eb%b3%b4%eb%8a%94%20%eb%8d%b0%ec%9d%b4%ed%84%b0%20%ec%9d%b4%eb%8b%a4.&amp;source=Leechungpa%27s%20Data%20Science%20blog" title="Share on LinkedIn" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon linkedin-icon"><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg></a>
+                </div>
+            
+
+            
+                <div class="share-item telegram">
+                    
+                    <a href="https://t.me/share/url?url=/posts/data_mining/3/&amp;text=%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%a7%88%ec%9d%b4%eb%8b%9d%20-%20Random%20Forest" title="Share on Telegram" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="icon telegram-icon"><path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm121.8 169.9l-40.7 191.8c-3 13.6-11.1 16.9-22.4 10.5l-62-45.7-29.9 28.8c-3.3 3.3-6.1 6.1-12.5 6.1l4.4-63.1 114.9-103.8c5-4.4-1.1-6.9-7.7-2.5l-142 89.4-61.2-19.1c-13.3-4.2-13.6-13.3 2.8-19.7l239.1-92.2c11.1-4 20.8 2.7 17.2 19.5z"/></svg></a>
+                </div>
+            
+
+            
+
+            
+
+            
+
+            
+
+            
+                <div class="share-item qrcode">
+                    <div class="qrcode-container" title="Share via QR Code"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon qrcode-icon"><path d="M0 224h192V32H0v192zM64 96h64v64H64V96zm192-64v192h192V32H256zm128 128h-64V96h64v64zM0 480h192V288H0v192zm64-128h64v64H64v-64zm352-64h32v128h-96v-32h-32v96h-64V288h96v32h64v-32zm0 160h32v32h-32v-32zm-64 0h32v32h-32v-32z"/></svg><div id="qrcode-img"></div>
+                    </div>
+                    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+
+<script>
+    var typeNumber = 0;
+    var errorCorrectionLevel = 'L';
+    var qr = qrcode(typeNumber, errorCorrectionLevel);
+    qr.addData('\/posts\/data_mining\/3\/');
+    qr.make();
+    document.getElementById('qrcode-img').innerHTML = qr.createImgTag();
+</script>
+
+                </div>
+            
+
+        </div>
+
+    </div>
+
+
+
+
+        
+    
+    
+        <div class="related-posts">
+            <h2 class="related-title">See Also:<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon related-icon"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm144 276c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92h-92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z"/></svg></h2>
+            <ul class="related-list">
+                
+                    <li class="related-item">
+                        <a href="/posts/data_mining/2/" class="related-link">데이터마이닝 - Decision Tree</a>
+                    </li>
+                
+                    <li class="related-item">
+                        <a href="/posts/data_mining/1/" class="related-link">데이터마이닝 - 로지스틱 회귀분석</a>
+                    </li>
+                
+                    <li class="related-item">
+                        <a href="/posts/r/1/" class="related-link">Data Science를 위한 R 초기 환경</a>
+                    </li>
+                
+            </ul>
+        </div>
+    
+
+
+
+        
+    
+        <div class="post-tags">
+            
+                
+                
+                
+                
+                    
+                    <a href="/tags/data-mining/" rel="tag" class="post-tags-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon tag-icon"><path d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"/></svg>data mining</a>
+                
+            
+                
+                
+                
+                
+                    
+                    <a href="/tags/random-forest/" rel="tag" class="post-tags-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon tag-icon"><path d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"/></svg>random forest</a>
+                
+            
+                
+                
+                
+                
+                    
+                    <a href="/tags/decision-tree/" rel="tag" class="post-tags-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon tag-icon"><path d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"/></svg>decision tree</a>
+                
+            
+        </div>
+    
+
+
+
+        
+
+
+        
+
+
+        
+    
+        
+        
+    
+    
+    
+    
+        <ul class="post-nav">
+            
+                <li class="post-nav-prev">
+                    <a href="/posts/r/1/" rel="prev">&lt; Data Science를 위한 R 초기 환경</a>
+                </li>
+            
+            
+                <li class="post-nav-next">
+                    <a href="/posts/data_mining/2/" rel="next">데이터마이닝 - Decision Tree &gt;</a>
+                </li>
+            
+        </ul>
+    
+
+
+
+        
+
+
+    </div>
+</main>
+
+
+            
+    <div id="back-to-top" class="back-to-top">
+        <a href="#"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon arrow-up"><path d="M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z"/></svg></a>
+    </div>
+
+
+            
+    <footer id="footer" class="footer">
+        <div class="footer-inner">
+            <div class="site-info">©&nbsp;2020–2020&nbsp;<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon footer-icon"><path d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>&nbsp;Lee Chung Pa</div><div class="powered-by">Powered by <a href="https://github.com/gohugoio/hugo" target="_blank" rel="noopener">Hugo</a> | Theme is <a href="https://github.com/reuixiy/hugo-theme-meme" target="_blank" rel="noopener">MemE</a></div><div class="site-copyright"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a></div>
+
+            
+    
+        <ul class="socials"><li class="socials-item">
+                    <a href="/rss.xml" target="_blank" rel="external noopener" title="RSS"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="icon social-icon"><path d="M19.199 24C19.199 13.467 10.533 4.8 0 4.8V0c13.165 0 24 10.835 24 24h-4.801zM3.291 17.415c1.814 0 3.293 1.479 3.293 3.295 0 1.813-1.485 3.29-3.301 3.29C1.47 24 0 22.526 0 20.71s1.475-3.294 3.291-3.295zM15.909 24h-4.665c0-6.169-5.075-11.245-11.244-11.245V8.09c8.727 0 15.909 7.184 15.909 15.91z"/></svg></a>
+                </li><li class="socials-item">
+                    <a href="mailto:leechungpa@naver.com" target="_blank" rel="external noopener" title="Email"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon social-icon"><path d="M464 64H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V112c0-26.51-21.49-48-48-48zm0 48v40.805c-22.422 18.259-58.168 46.651-134.587 106.49-16.841 13.247-50.201 45.072-73.413 44.701-23.208.375-56.579-31.459-73.413-44.701C106.18 199.465 70.425 171.067 48 152.805V112h416zM48 400V214.398c22.914 18.251 55.409 43.862 104.938 82.646 21.857 17.205 60.134 55.186 103.062 54.955 42.717.231 80.509-37.199 103.053-54.947 49.528-38.783 82.032-64.401 104.947-82.653V400H48z"/></svg></a>
+                </li><li class="socials-item">
+                    <a href="https://github.com/leechungpa" target="_blank" rel="external noopener" title="GitHub"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="icon social-icon"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+                </li><li class="socials-item">
+                    <a href="https://twitter.com/" target="_blank" rel="external noopener" title="Twitter"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon social-icon"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg></a>
+                </li><li class="socials-item">
+                    <a href="https://t.me/" target="_blank" rel="external noopener" title="Telegram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="icon social-icon"><path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm121.8 169.9l-40.7 191.8c-3 13.6-11.1 16.9-22.4 10.5l-62-45.7-29.9 28.8c-3.3 3.3-6.1 6.1-12.5 6.1l4.4-63.1 114.9-103.8c5-4.4-1.1-6.9-7.7-2.5l-142 89.4-61.2-19.1c-13.3-4.2-13.6-13.3 2.8-19.7l239.1-92.2c11.1-4 20.8 2.7 17.2 19.5z"/></svg></a>
+                </li></ul>
+    
+
+
+
+            
+        </div>
+    </footer>
+
+
+        </div>
+        
+    <script src="https://cdn.jsdelivr.net/gh/cferdinandi/smooth-scroll/dist/smooth-scroll.polyfills.min.js"></script>
+
+<script>
+    var scroll = new SmoothScroll('a[href*="#"]', {
+        speedAsDuration: true,
+        header: '[data-scroll-header]'
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/medium-zoom@latest/dist/medium-zoom.min.js"></script>
+
+<script>
+    mediumZoom(document.querySelectorAll('div.post-body img'), {
+        background: 'hsla(var(--color-bg-h), var(--color-bg-s), var(--color-bg-l), 0.95)'
+    })
+</script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/instant.page@3.0.0/instantpage.min.js" type="module" defer></script>
+
+
+
+
+
+
+
+
+
+
+    </body>
+</html>
