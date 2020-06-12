@@ -13,20 +13,89 @@ tags:
 editor_options: 
   chunk_output_type: inline
 output: 
-  html_document:
-    toc: yes
-    toc_float: true
+  blogdown::html_page:
+    toc: true
     highlight: tango
-    code_folding: show
     number_section: true
     self_contained: true
 ---
 
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  { background-color: #f8f8f8; }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
 
-
+<div id="TOC">
 <ul>
-<li>IDE setting for Data Science</li>
+<li><a href="#초기-설정">초기 설정</a><ul>
+<li><a href="#r-설치">R 설치</a></li>
+<li><a href="#r-studio-설치">R studio 설치</a></li>
+<li><a href="#추가-설치-git-bash-및-우분투-등">추가 설치 : Git bash 및 우분투 등</a></li>
+</ul></li>
+<li><a href="#초기-설정-확인">초기 설정 확인</a></li>
+<li><a href="#업데이트">업데이트</a></li>
 </ul>
+</div>
+
+<p>IDE setting for Data Science</p>
 <p>데이터 사이언스쪽으로 공부하고 싶어서 노트북을 새로 구매헀다. 무려 8년만에. 코드를 작성한다면 애플을 샀어야 했는데, 경제적 여건 상 국내 중소기업인 한성컴퓨터 제품을 구매헀다. <del>매우 쓰레기 였다.</del><br />
 구매하고 한달도 안되어서 사용중 셧다운 또는 자동 절전모드로 전환되는 현상이 나타났다. 서비스 센터에 입고를 했더니, 증상이 안나온다고 다시 보냈다. 직접 증상이 나오는 것을 촬영하고 보냈더니 포맷한번 하고 보냈다. 내가 보내기 전에 포맷은 수도 없이 많이 했는데. 결국 3번 보내고 나서 SSD교체를 해주었다. 문제는 터치패드 근처에 아이패드를 가져다 되면 노트북이 꺼질 수 있다는 것이다. 신재품에서도 동일하게 나타나므로 주의를 요구한다고 말했다. 내가 컴퓨터 하루이틀 만진것도 아니고, 데스크탑은 직접 부품을 사서 다 조립도 할 수 있는데 고작 그 약한 자성떄문에 꺼지는게 당연하다고… 한성은 쓰레기다. 돈 벌면 바로 애플 살것이다.<br />
 여튼 그래서 포맷을 수도없이 많이 했다. 즉 R과 Rstudio 등등 수도없이 반복해서 설치해보면서 나에게 익숙한 개발환경이 무엇인지 찾았다. 이제 본론으로 가자.</p>
@@ -78,7 +147,7 @@ output:
 <div id="초기-설정-확인" class="section level1">
 <h1>초기 설정 확인</h1>
 <p>이렇게 설치를 완료했다면 설치 및 설정이 잘되었는지 확인해 보자.</p>
-<pre class="r"><code>sessionInfo()</code></pre>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">sessionInfo</span>()</a></code></pre></div>
 <pre><code>## R version 4.0.0 (2020-04-24)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
 ## Running under: Windows 10 x64 (build 18363)
@@ -98,10 +167,10 @@ output:
 ##  [5] htmltools_0.4.0 yaml_2.2.1      Rcpp_1.0.4.6    stringi_1.4.6  
 ##  [9] rmarkdown_2.1   blogdown_0.19   knitr_1.28      stringr_1.4.0  
 ## [13] digest_0.6.25   xfun_0.14       rlang_0.4.6     evaluate_0.14</code></pre>
-<pre class="r"><code>getwd()</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">getwd</span>()</a></code></pre></div>
 <pre><code>## [1] &quot;C:/Users/User/Documents/git/blog/content/posts&quot;</code></pre>
 <p>경고표시나 중간중간 한글을 사용하면 문제가 많다. 그러는 경우 locale을 바꿔야 한다.</p>
-<pre class="r"><code>Sys.getlocale()</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">Sys.getlocale</span>()</a></code></pre></div>
 <pre><code>## [1] &quot;LC_COLLATE=Korean_Korea.949;LC_CTYPE=Korean_Korea.949;LC_MONETARY=Korean_Korea.949;LC_NUMERIC=C;LC_TIME=Korean_Korea.949&quot;</code></pre>
 <p>Sys.setlocale() 로 원하는 설정을 할 수 있다.</p>
 <hr />
@@ -109,10 +178,11 @@ output:
 <div id="업데이트" class="section level1">
 <h1>업데이트</h1>
 <p>초기 설정 이후 시간이 지나면 R과 R studio 업데이트가 필요 할 수 있다. 먼저 R은 다음의 코드를 이용하면 된다.</p>
-<pre class="r"><code># install.packages(&#39;installr&#39;)
-installr::check.for.updates.R()
-installr::install.R()</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="co"># install.packages(&#39;installr&#39;)</span></a>
+<a class="sourceLine" id="cb7-2" title="2">installr<span class="op">::</span><span class="kw">check.for.updates.R</span>()</a>
+<a class="sourceLine" id="cb7-3" title="3">installr<span class="op">::</span><span class="kw">install.R</span>()</a></code></pre></div>
 <p>R studio의 경우 Help-Check for Update 를 확인해 보면된다.</p>
 <p>마지막으로 설치된 packages를 업데이트 해주면 된다.</p>
-<pre class="r"><code>update.packages()</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">update.packages</span>()</a></code></pre></div>
 </div>
+

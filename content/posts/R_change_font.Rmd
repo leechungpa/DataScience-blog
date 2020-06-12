@@ -12,11 +12,61 @@ tags:
 editor_options: 
   chunk_output_type: inline
 output: 
-  html_document:
-    toc: yes
-    toc_float: true
+  blogdown::html_page:
+    toc: true
     highlight: tango
-    code_folding: show
     number_section: true
     self_contained: true
 ---
+
+ 아직 작성중인 내용 --
+ 
+
+# 글꼴 설치
+
+
+코딩시 주로 사용하는 한글 글꼴
+
+
+[D2 Coding 글꼴](https://github.com/naver/d2codingfont)
+[네이버 나눔코딩 글꼴](https://github.com/naver/nanumfont/blob/master/README.md)
+
+트루타입 글꼴 설치 가능
+
+# R에 적용
+
+```{r,eval=F}
+install.packages(extrafont)
+library(extrafont)
+font_import(pattern = "D2")
+```
+
+글꼴 적용 후 Tools-global options-Appearence에서 설정 가능
+
+# 알아볼 패키지
+
+showtext
+
+# 예시
+
+(오류로 추후 수정 예정)
+```{r,eval=F}
+install.packages("KoNLP") # CRAN에 없으므로 다른 방벙 알아서
+install.packages("devtools")
+devtools::install_github("lchiffon/wordcloud2")
+```
+
+
+```{r, eval =F}
+library(KoNLP)
+library(wordcloud2)
+
+
+dt <- readLines('./data/blog_text.txt', encoding = 'UTF-8')
+
+# 하다가 포기
+wordcloud2(data=dt,fontFamily = '나눔바른고딕')
+
+```
+
+이 부분은 추후 수정 예정

@@ -13,18 +13,16 @@ tags:
 editor_options: 
   chunk_output_type: inline
 output: 
-  html_document:
-    toc: yes
-    toc_float: true
+  blogdown::html_page:
+    toc: true
     highlight: tango
-    code_folding: show
     number_section: true
     self_contained: true
 ---
 
 
 
-- IDE setting for Data Science
+IDE setting for Data Science
 
 데이터 사이언스쪽으로 공부하고 싶어서 노트북을 새로 구매헀다. 무려 8년만에. 코드를 작성한다면 애플을 샀어야 했는데, 경제적 여건 상 국내 중소기업인 한성컴퓨터 제품을 구매헀다. ~~매우 쓰레기 였다.~~   
 구매하고 한달도 안되어서 사용중 셧다운 또는 자동 절전모드로 전환되는 현상이 나타났다. 서비스 센터에 입고를 했더니, 증상이 안나온다고 다시 보냈다. 직접 증상이 나오는 것을 촬영하고 보냈더니 포맷한번 하고 보냈다. 내가 보내기 전에 포맷은 수도 없이 많이 했는데. 결국 3번 보내고 나서 SSD교체를 해주었다. 문제는 터치패드 근처에 아이패드를 가져다 되면 노트북이 꺼질 수 있다는 것이다. 신재품에서도 동일하게 나타나므로 주의를 요구한다고 말했다. 내가 컴퓨터 하루이틀 만진것도 아니고, 데스크탑은 직접 부품을 사서 다 조립도 할 수 있는데 고작 그 약한 자성떄문에 꺼지는게 당연하다고... 한성은 쓰레기다. 돈 벌면 바로 애플 살것이다.   

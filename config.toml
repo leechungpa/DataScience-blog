@@ -793,7 +793,7 @@ uglyURLs = false
     ######################################
     # Table of Contents
 
-    enableTOC = false
+    enableTOC = true
     # Note: *global settings*
     #       `toc` in post’s Front Matter
     #       has a higher priority than here
@@ -935,7 +935,7 @@ uglyURLs = false
     # Blockquotes
     fontFamilyQuote = ""
     # Table of contents
-    fontFamilyTOC = ""
+    fontFamilyTOC = "'Nanum Gothic','Comfortaa',  serif"
     # Caption
     fontFamilyCaption = ""
     # Footer

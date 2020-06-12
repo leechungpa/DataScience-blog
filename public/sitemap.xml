@@ -4,52 +4,67 @@
   
   <url>
     <loc>/categories/</loc>
-    <lastmod>2020-06-09T14:49:01+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/posts/r/1/</loc>
-    <lastmod>2020-06-05T15:47:01+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/git/</loc>
-    <lastmod>2020-06-05T15:47:01+09:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/ide/</loc>
-    <lastmod>2020-06-05T15:47:01+09:00</lastmod>
+    <lastmod>2020-06-12T22:21:15+09:00</lastmod>
   </url>
   
   <url>
     <loc>/</loc>
-    <lastmod>2020-06-09T14:49:01+09:00</lastmod>
+    <lastmod>2020-06-12T22:21:15+09:00</lastmod>
   </url>
   
   <url>
     <loc>/posts/</loc>
-    <lastmod>2020-06-09T14:49:01+09:00</lastmod>
+    <lastmod>2020-06-12T22:21:15+09:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/r/</loc>
-    <lastmod>2020-06-05T15:47:01+09:00</lastmod>
+    <lastmod>2020-06-12T22:21:15+09:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/r/</loc>
-    <lastmod>2020-06-09T14:49:01+09:00</lastmod>
+    <lastmod>2020-06-12T22:21:15+09:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/rstudio/</loc>
-    <lastmod>2020-06-05T15:47:01+09:00</lastmod>
+    <loc>/tags/r-studio/</loc>
+    <lastmod>2020-06-12T22:19:46+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/r/3/</loc>
+    <lastmod>2020-06-12T22:19:46+09:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/</loc>
-    <lastmod>2020-06-09T14:49:01+09:00</lastmod>
+    <lastmod>2020-06-12T22:21:15+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/%EA%B8%80%EA%BC%B4/</loc>
+    <lastmod>2020-06-12T22:19:46+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/r/1/</loc>
+    <lastmod>2020-06-12T22:21:15+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/git/</loc>
+    <lastmod>2020-06-12T22:21:15+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/ide/</loc>
+    <lastmod>2020-06-12T22:21:15+09:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/rstudio/</loc>
+    <lastmod>2020-06-12T22:21:15+09:00</lastmod>
   </url>
   
   <url>
@@ -84,7 +99,7 @@
   
   <url>
     <loc>/about/</loc>
-    <lastmod>2020-06-09T14:45:03+09:00</lastmod>
+    <lastmod>2020-06-09T14:57:53+09:00</lastmod>
   </url>
   
   <url>
