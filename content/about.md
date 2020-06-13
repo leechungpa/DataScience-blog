@@ -1,6 +1,7 @@
 --- 
-date: "2020-04-20T19:00:00-07:00"
-title: "Resume 이력서"
+title: Resume 이력서
+author: 이청파
+date: 2020-05-15
 ---  
  
 
