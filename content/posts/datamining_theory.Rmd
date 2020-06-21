@@ -21,7 +21,7 @@ knitr::opts_chunk$set(eval = FALSE, echo=FALSE)
 
 # R 기반의 데이터 마이닝 정리
 
-![](./content/posts/data/datamining.png)
+![](https://raw.githubusercontent.com/leechungpa/DataScience-blog/master/content/posts/data/datamining.png)
 
 설명력 위주 모형 : 통계모형
 
@@ -68,7 +68,7 @@ $$MAPE = {100\% \over n} \sum (y - \hat y )^2$$
 
 단점 : 작위성이 있다 (측도에 따라,  cut-off에 따라 순위변동 가능)
 
-![](./content/posts/data/datamining-accuracy.png)
+![](https://raw.githubusercontent.com/leechungpa/DataScience-blog/master/content/posts/data/datamining-accuracy.png)
 
 모형 작성시 : sensitivity(TPR), specificity(TNR)
 
