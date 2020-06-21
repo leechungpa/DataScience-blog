@@ -1,0 +1,893 @@
+---
+title: 데이터마이닝 - 이론정리
+author: 이청파
+date: 2020-06-18
+slug: 'data_mining/0'
+categories:
+  - R
+  - data mining
+tags:
+  - data mining
+  - regression
+  - logistic
+  - random forest
+  - decision tree
+---
+
+
+
+<div id="r-기반의-데이터-마이닝-정리" class="section level1">
+<h1>R 기반의 데이터 마이닝 정리</h1>
+<p><img src="./content/posts/data/datamining.png" /></p>
+<p>설명력 위주 모형 : 통계모형</p>
+<ul>
+<li><p>예측력은 떨어지나 모형을 이해하기 좋음</p></li>
+<li><p>비교기준 : <span class="math inline">\(R^2\)</span></p>
+<ul>
+<li><p>X ~ Y 의 인과관계를 얼마나 설명하는지</p></li>
+<li><p>선형이므로 오버피팅을 무시해도됨. 즉 <span class="math inline">\(R^2\)</span>가 중요</p></li>
+</ul></li>
+</ul>
+<p>예측력 위주 모형 : 예측력은 뛰어나지만 이해와 해석이 어려움</p>
+<ul>
+<li><p>미래의 Y값을 얼마나 잘 예측하는지가 기준</p></li>
+<li><p>머신러닝은 비선형 모델로 오버피팅의 위험</p>
+<ul>
+<li>train set과 test set을 분할하여 overfiting 막음</li>
+</ul></li>
+</ul>
+<div id="예측력-회귀-모형-비교-기준" class="section level2">
+<h2>예측력 회귀 모형 비교 기준</h2>
+<p>아래의 기준들은 전부 test data를 사용해 계산함</p>
+<ol style="list-style-type: decimal">
+<li>예측 결정계수 <span class="math inline">\(R^2\)</span></li>
+</ol>
+<p><span class="math display">\[R^2=corr(y,  \hat y )^2\]</span></p>
+<ol start="2" style="list-style-type: decimal">
+<li>평균절대오차 MAE : 절대적인 오차의평균을 이용</li>
+</ol>
+<p><span class="math display">\[MAE = {1 \over n} \sum |y - \hat y |\]</span></p>
+<ol start="3" style="list-style-type: decimal">
+<li>Mean absolute percentage error MAPE : 실제값 대비 얼마나 예측값이 차이가 있었는지 %로 표현</li>
+</ol>
+<p><span class="math display">\[MAPE = {100\% \over n} \sum {|y - \hat y | \over |y|}\]</span></p>
+<ol start="4" style="list-style-type: decimal">
+<li>Mean squred error MSE : 절대값이 아닌 제곱을 취한 지표</li>
+</ol>
+<p><span class="math display">\[MAPE = {100\% \over n} \sum (y - \hat y )^2\]</span></p>
+</div>
+<div id="예측력-분류-모형-비교-기준" class="section level2">
+<h2>예측력 분류 모형 비교 기준</h2>
+<ol style="list-style-type: decimal">
+<li>Accuracy 계열</li>
+</ol>
+<p>단점 : 작위성이 있다 (측도에 따라, cut-off에 따라 순위변동 가능)</p>
+<p><img src="./content/posts/data/datamining-accuracy.png" /></p>
+<p>모형 작성시 : sensitivity(TPR), specificity(TNR)</p>
+<p>현장 적용시 : PPV, NPV</p>
+<ul>
+<li><p>정확도 : <span class="math inline">\(a+d \over a+b+c+d\)</span></p></li>
+<li><p>민감도 : TPR</p></li>
+<li><p>특이도 : TNR</p></li>
+<li><p>정밀도 : PPV</p></li>
+<li><p>F-1 score : TPR과 PPV의 조화평균</p></li>
+<li><p>BCR : TPR과 TNR의 기하평균</p></li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li>ROC 계열</li>
+</ol>
+<p>ROC : 같은 기술이라면 특이도와 민감도는 반비례관계를 이용한 그래프</p>
+<pre><code>- x축 : 1-특이도
+
+- y축 : 민감도</code></pre>
+<p>AUROC : area under the ROC curve</p>
+<pre><code>- 일반적으로 적당한 기준 : 75% 이상
+
+- 최소 기준 : 65% 이상</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>Lift Chart 계열</li>
+</ol>
+<p>3가지 종류(Response, Captured Response, Lift) 중 어느것을 사용하던 결과는 동일</p>
+<p>Lift Chart : 발생확률이 작은 순으로 정렬 후 구간화</p>
+<pre><code>- x축 : 구간화된 sample size
+
+- y축 : 반응률 Response 또는 반응검출률 Captured Response 또는 향상도 Lift
+
+    - 반응률 Response : 상위등급이 높게나오고 급락하면 good
+
+    - 향상도 Lift : 상위등급은 1보다 크고, 하위등급은 0에 가까울수록 good</code></pre>
+<p>cummulative Lift Chart : 갑자기 오르거나 내리는등 일관되지 않은 부분이 존재하여 cumulative 선호</p>
+<pre><code>- 누적 반응률 Response : 경사가 급하면 좋고, unif하면 나쁨
+
+- 누적 향상도 Lift : 1로 하강하며 상위등급이 클수록 good
+
+- 누적 반응 검출률 captured response : 유일하게 상승</code></pre>
+<p>Cumulative accruacy profile CAP : 지니계수 개념</p>
+<pre><code>- 클수록 좋음
+
+- ( 완벽한 분류시스템 누적반응검출률 면적 - 모형의 누적반응검출률 면적 ) / ( 완벽한 분류시스템 누적반응검출률 면적 - 랜덤한 누적반응검출률 면적 )</code></pre>
+<p>Profit chart : maximize profit = income - cost</p>
+<ol start="4" style="list-style-type: decimal">
+<li>K-S 통계량량</li>
+</ol>
+<p>불량 누적분포와 우량 누적분포의 차이가 가장 큰 값</p>
+<pre><code>- 차이가 클수록 좋음</code></pre>
+<p>cf. 이론적 분포함수 : 누적분포함수, 실제 data의 분포함수 : 경험분포함수</p>
+</div>
+</div>
+<div id="regression" class="section level1">
+<h1>Regression</h1>
+<ol style="list-style-type: decimal">
+<li>간섭효과 comfuounding effect 제거 방안</li>
+</ol>
+<ul>
+<li><p>통제 control : 상수화 -&gt; 일정하게 고정</p></li>
+<li><p>데이터 확장 : X변수 추가 수집 -&gt; 간섭효과를 양성화</p></li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li>범주형 독립 변수</li>
+</ol>
+<ul>
+<li>지시변수 사용 : 0 또는 1</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li><span class="math inline">\(R^2\)</span> 증가 방법</li>
+</ol>
+<p>유의한 X변수 발굴</p>
+<pre><code>- 독립적이고 다양한 X변수일 수록 유리</code></pre>
+<p>범주형 X변수의 교호작용 반영</p>
+<ol start="4" style="list-style-type: decimal">
+<li>변수 선택</li>
+</ol>
+<p>중요한 소수의 예측변수를 찾아낸는 것이 중요 : 일반적으로 AIC 기준</p>
+<ul>
+<li><p>all subsets</p></li>
+<li><p>backwrd elimination</p></li>
+<li><p>forward selection</p></li>
+<li><p>stepwise elimination</p></li>
+</ul>
+<div id="모형-해석" class="section level2">
+<h2>모형 해석</h2>
+<ol style="list-style-type: decimal">
+<li>기울기 <span class="math inline">\(\beta\)</span></li>
+</ol>
+<p>수학적 해석보다는 실무적 해석이 중요</p>
+<p>절편은 데이터 범위를 벗어난 경우 의미없으므로 해석하지 않는다.</p>
+<ol start="2" style="list-style-type: decimal">
+<li>모수<span class="math inline">\(\beta\)</span>의 p-value : 기울기 유의성 검정</li>
+</ol>
+<p>p-value가 0.05보다 작으면 <span class="math inline">\(H_0 : \beta =0\)</span>을 기각 : 즉 유의한 기울기</p>
+<ol start="3" style="list-style-type: decimal">
+<li>결정계수 <span class="math inline">\(R^2\)</span></li>
+</ol>
+<p>Y의 총 변동량 중에서 X에 의해서 설명된 분량 : 즉 회귀모형의 설명력</p>
+<pre><code>- $R^2$이 1에 가까울 수록 완전히 설명</code></pre>
+<p>Adjusted <span class="math inline">\(R^2\)</span> : X변수의 수가 많을수록 좋아지는 <span class="math inline">\(R^2\)</span>의 overfitting의 문제를 반영</p>
+<ol start="4" style="list-style-type: decimal">
+<li>모형의 p-value : 회귀모형의 유효성</li>
+</ol>
+<p>p-value가 0.05보다 작으면 <span class="math inline">\(H_0 : all \ \beta_i =0\)</span>을 기각 : 즉 적어도 하나 이상의 설명변수가 유의하다</p>
+<p>cf. <span class="math inline">\(R^2\)</span>와 p-value의 관련성</p>
+<pre><code>- 높은 $R^2$, 낮은 p-value : 데이터 품질이 높은 경우
+
+- 낮은 $R^2$, 낮은 p-value : X변수 추가 발굴 (금융 데이터)
+
+- 낮은 $R^2$, 높은 p-value :유의하지 않은 X변수로 구성된 회귀분석
+
+- 높은 $R^2$, 높은 p-value : 불가능</code></pre>
+<p><span class="math inline">\(R^2\)</span>는 분야별 유연한 기준 필요</p>
+<pre><code>- 의학 약학 분야와 같이 실험데이터는 인과관계 단순 : $R^2$ 높게 나옴
+
+- 금융 경제 분야와 같이 관찰 데이터는 많은 변수와 인과관계 복잡 : $R^2$ 낮게 나옴</code></pre>
+</div>
+<div id="모형의-타당성-검토" class="section level2">
+<h2>모형의 타당성 검토</h2>
+<p>선형회귀의 기본 가정 : p-value 계산시 F분포를 이용하기에 필요</p>
+<ul>
+<li><p>정규성 : 오차항의 분포가 평균이 0인 정규성</p>
+<ul>
+<li>normal QQ plot</li>
+</ul></li>
+<li><p>등분산성 : 오차항의 분산이 동일</p>
+<ul>
+<li><p><span class="math inline">\(\hat{y}\)</span>에 따른 잔차 그래프(residuals plot)가 메가폰 형태 같은 것이 없어야 한다.</p></li>
+<li><p><span class="math inline">\(\hat{y}\)</span> 증가시 <span class="math inline">\(R^2\)</span> 상승의 경우 Y변수 변환 필요 : log(or sqrt) scaling</p></li>
+<li><p>분산은 일정하나 <span class="math inline">\(\hat{y}\)</span> 증가시 추세가 존재할 경우 추가 X변수 발굴 필요</p></li>
+</ul></li>
+<li><p>독립성 : 오차항들이 서로 독립</p></li>
+</ul>
+<p>잔차 분석 : 모형 추정 후 오차의 추정치인 잔차를 통해 위의 가정들을 검토 가능</p>
+</div>
+<div id="가법모형과-승법모형" class="section level2">
+<h2>가법모형과 승법모형</h2>
+<p>가법모형 : 더하기만 있는 형태로 곱하기는 없음</p>
+<p>승법모형 : 교호작용과 상호작용 포함</p>
+<pre><code>- 고차(교호작용)가 유의하면 저차가 유의하지 않아도 포함 : 즉 교호작용이 유의하면 main effect에서 유의하지 않아도 포함
+
+- 참고로 $$X$$와 $$X^2$$ 사이의 다중 공산성은 거의 없음 : 다중 공산성은 직선의 관계에서 강하게 발생</code></pre>
+</div>
+<div id="코드" class="section level2">
+<h2>코드</h2>
+<p>좀 더 심화된 코드</p>
+</div>
+</div>
+<div id="logistic-regression" class="section level1">
+<h1>Logistic Regression</h1>
+<p>설명력위주의 분류분석 : 종속변수가 범주형 변수</p>
+<p>선형모델 : cut-off에 따른 hyperplane 분류경계선 자체는 선형</p>
+<pre><code>- 오분류 많이 발생 가능</code></pre>
+<p>cut-off기준 : 일반적으로 0.5이나, 불균형자료(imbalanced data)의 경우 P(y=1)가 cut-off값이 됨</p>
+<p><span class="math display">\[logit \ P(y=i)=\beta_0 + \beta_1 x\]</span></p>
+<ul>
+<li><p>장점</p>
+<ul>
+<li>X가 범주형인경우 one-hot encoding을 통해 지시변수로 사용 가능</li>
+</ul></li>
+<li><p>단점</p>
+<ul>
+<li><p>NA가 많은 경우 사용 불가능</p></li>
+<li><p>교호작용의 있을 경우 해석이 어려움</p></li>
+</ul></li>
+</ul>
+<div id="모형-해석-1" class="section level2">
+<h2>모형 해석</h2>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(\beta\)</span></li>
+</ol>
+<p><span class="math inline">\(X_1\)</span>이 1 커지면 <span class="math inline">\(e^{\beta_1}\)</span>배 만큼 오즈가 변함 : 오즈비 개념</p>
+<ol start="2" style="list-style-type: decimal">
+<li><p><span class="math inline">\(\beta\)</span>의 p-value</p></li>
+<li><p>AUROC</p></li>
+</ol>
+<p><span class="math inline">\(R^2\)</span>가 없으므로, 대신 AUROC 사용</p>
+<ol start="4" style="list-style-type: decimal">
+<li>deviance의 p-value</li>
+</ol>
+<p>모형의 유의성 확인으로 null model의 deviance와 fitted model의 deviance 비교</p>
+</div>
+<div id="코드-1" class="section level2">
+<h2>코드</h2>
+</div>
+</div>
+<div id="neural-network" class="section level1">
+<h1>Neural Network</h1>
+<p>비선형 통계 모형으로 universal approximator 범용 근사기</p>
+<p>장점</p>
+<ul>
+<li><p>예측력은 좋음</p></li>
+<li><p>회귀 모형, 분류 모형 둘다 가능</p></li>
+</ul>
+<p>단점</p>
+<ul>
+<li><p>추정해야 할 값들이 많음</p>
+<ul>
+<li>좋은 결과를 위해 많이 대입해 시도해봐야 함하며</li>
+</ul></li>
+<li><p>학습에 많은 시간이 걸림</p></li>
+<li><p>black box : 해석이 어려움</p></li>
+<li><p>overfitting의 위험이 큼</p></li>
+<li><p>input values가 반드시 numeric</p></li>
+<li><p>입증verification이 어렵다</p></li>
+</ul>
+<div id="sensitivity-analysis" class="section level2">
+<h2>sensitivity analysis</h2>
+<p>NN을 해석하기 위한 방법이지만, 다변량 분석을 단변량 분석처럼 하기에 추천하지 않는 방법</p>
+<ol style="list-style-type: decimal">
+<li><p>모든 input value의 평균값을 NN모형에 대입</p></li>
+<li><p>하나의 x변수를 바꿀때(min에서 max로) 변화하는 모형에 따른 output의 변화 측정</p>
+<ul>
+<li>하나의 x변수를 조금씩 늘려가면서 민감도 그림을 그릴 수 도 있음</li>
+</ul></li>
+<li><p>sensitive inputs을 중요한 변수로 판단함</p></li>
+</ol>
+</div>
+<div id="hidden-nodes-combination-function-activation-squashing-function" class="section level2">
+<h2>hidden nodes : combination function + activation (squashing) function</h2>
+<p>활성함수로 보통 sigmoid(logitstic) functions와 hypertangent functions 사용</p>
+<ul>
+<li><p>sigmoid functions <span class="math inline">\(sigmoid(x)={e^x\over {1+e^x}}\)</span> : 0~1 값 반환</p></li>
+<li><p>hypertangent functions <span class="math inline">\(tanh(x)={1-e^x\over {1+e^x}}\)</span> : -1~1값 반환</p></li>
+</ul>
+</div>
+<div id="output-layer-nodes" class="section level2">
+<h2>output layer nodes</h2>
+<p>회귀 목적 : identity activation function<strong>만</strong>을 사용</p>
+<p>분류 목적 : sigmoid function 사용</p>
+<pre><code>- 범주형의 경우 class마다 확률인 0~1을 가지는 하나의 output node</code></pre>
+</div>
+<div id="training-the-networks" class="section level2">
+<h2>training the networks</h2>
+<p>오차에 비례하는 objective function를 줄어들게 학습함</p>
+<p>cross entropy를 작게 만드는 계수 추정</p>
+<ul>
+<li><p>초기 weight 설정하여 error 계산</p></li>
+<li><p>gradient descent method에 따라 weight를 조정하며 error가 더이상 줄어들지 않는 지점까지 판단</p></li>
+</ul>
+</div>
+<div id="실용적인-tips" class="section level2">
+<h2>실용적인 tips</h2>
+<ol style="list-style-type: decimal">
+<li><p>단순하면서 예측을 잘하는 모형이 좋은 모형</p></li>
+<li><p>먼저 통계모형을 사용해(no hidden layer) 만들어 보기</p></li>
+</ol>
+<ul>
+<li><p>그리고 노드를 하나씩 추가하며 성능 확인하기</p></li>
+<li><p>generalization error(일종의 unseen data의 error)가 증가하기 전까지 추가 및 변형</p></li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li>NN는 input data에 매우 민감한 방법 : 좋은 데이터 타입 필요</li>
+</ol>
+<ul>
+<li><p>분산이 비슷한 연속형 변수들</p></li>
+<li><p>적절한 변수 개수</p></li>
+<li><p>범주형 변수는 지시변수를 사용하고, 개수가 지시변수별로 비슷해야 한다.</p></li>
+</ul>
+<ol start="4" style="list-style-type: decimal">
+<li>모든 변수가 0~1 또는 -1~1로 scale</li>
+</ol>
+<ul>
+<li><p>따라서 normalize by z-scores 필요 : <span class="math inline">\(new\ x={x-min\over max-min}\)</span></p>
+<ul>
+<li><p>정규화 normalize : 0~1사이의 수로 만들어 줌</p></li>
+<li><p>표준화 standardize : 평균0, 표준편차 1로 만들어줌</p></li>
+</ul></li>
+<li><p>categorical variable의 경우 지시변수 사용</p></li>
+<li><p>ordinal variables의 경우 equal spacing 사용 (0~1 or -1~1을 구간화)</p></li>
+<li><p>변수 선택도 좋은 방법 : decision tree를 만들어 variable importance를 계산해 변수 선택</p>
+<ul>
+<li>선형모형이 아닌, decision tree 같은 비선형 모형을 바탕으로 변수 선택해야 함</li>
+</ul></li>
+</ul>
+<ol start="5" style="list-style-type: decimal">
+<li>outlier가 있으면 성능을 저하시킴</li>
+</ol>
+</div>
+<div id="코드-2" class="section level2">
+<h2>코드</h2>
+<p>뉴럴 네트워크는 초기값을 이용하기에 set.seed로 고정</p>
+<p>hidden = c(3,3) : 히든 노드의 수</p>
+<p>stepmax = 1e+06 : 반복 최대 횟수 (수렴하지 않으면 stepmax 까지)</p>
+<p>threshold = 0.01 : 오차가 수렴하는 조건 (cross entropy &lt; 0.01)</p>
+<p>act.fct = ‘logistic’ : activation 함수</p>
+<p>linear.output = F : Y변수가 연속형(회귀분석)이면 T, 분류분석이면 F</p>
+<p>다른것과 다르게 predict가 아닌 compute를 사용해 예측</p>
+<p>covariate = test데이터에서 반응변수를 제외한 행렬</p>
+</div>
+</div>
+<div id="decision-tree" class="section level1">
+<h1>Decision Tree</h1>
+<p>의사결정나무는 전체 데이터 집합을 partition</p>
+<p>간단한 모형 underfitting : 설명력 높고 예측력 낮다.</p>
+<p>복잡한 모형 overfitting일 : 설명력 낮고 예측력 높다. -&gt; 완전히 성장한 나무는 overfitting 되기 쉬움</p>
+<p>장점</p>
+<pre><code>- Y가 범주형이든 연속형이등 가능 : 분류 나무, 회귀나무
+
+- 로지스틱 모형에 비해 더 계산이 빠름 : 신속한 판단 가능
+
+- 단변량 분할 one varaiable at a time
+
+    - small n, large p data 가능
+
+- X 변수
+
+    - 변수개수에 영향을 덜받음
+    
+    - 변수의 중요도 파악 가능    
+    
+    - 이상치 및 결측치 영향 최소화
+    
+    - 범주형 X변수 처리 용이
+
+        - 지시변수 불필요
+    
+    - X 변수가 범주형이면 교효작용 찾는데 탁월한 의사결정 나무 유리
+
+    - 범주들의 대범주화하여 X변수 선택 기능
+    
+        - 타 분석방법에 앞서 전처리 과정으로 사용가능
+        
+        - 신경망등 다른 분석에 선택된 변수 사용가능
+
+- 해성의 용이성
+
+- Y 변수가 소수 그룹일경우도 처리가 용이함</code></pre>
+<p>단점</p>
+<pre><code>- 분류경계선 hyperplabne 근처에서는 오분류 가능
+
+- 다른 방법에 비해 분류 정확도(예측도)가 낮을 수 있음</code></pre>
+<div id="cart-의사결정-나무-특징" class="section level2">
+<h2>CART 의사결정 나무 특징</h2>
+<p>노드가 항상 2개로 분할</p>
+<p>숫자형 X변수의 경우 부등호 사용, 범주형 X변수의 경우 부분집합 포함 여부 사용</p>
+<p>불순도를 이용하여 greedy serach</p>
+<p>매 분할마다 하나의 X변수만 사용</p>
+<div id="분류-나무의-분할-방법-불순도-측정" class="section level3">
+<h3>분류 나무의 분할 방법 : 불순도 측정</h3>
+<ol style="list-style-type: decimal">
+<li>불순도 함수</li>
+</ol>
+<ul>
+<li><p>Gini impurity 지니 불순도 : <span class="math inline">\(1-\sum^{K}_{j=1} P_j^2\)</span></p>
+<ul>
+<li><p>K : Y의 범주 개수, <span class="math inline">\(P_i\)</span> i번째 범주에 포함될 확률</p></li>
+<li><p>지니불순도 최댓값 0.5 : 완전히 균일분포(<span class="math inline">\(all\ P_i =1/K\)</span>)인 경우</p></li>
+<li><p>지니불순도 최솟값 0 : 불순도가 작을수록 좋음</p></li>
+</ul></li>
+<li><p>엔트로피 Entropy : <span class="math inline">\(-\sum^{K}_{j=1} P_j log(P_j)\)</span></p></li>
+<li><p>이탈도 Deviance : <span class="math inline">\(-2\sum^{K}_{j=1} n_j log(P_j)\)</span></p></li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li><p>불순도 측정 : 분할 이전의 노드의 불순도와, 분할 후 각각의 노드별 불순도를 측정</p></li>
+<li><p>분할 후 각각의 노드별 분순도를 표본수에 따라 가중평균</p></li>
+<li><p>분할 이후와 이전이 불순도가 감소했는지를 측정</p></li>
+<li><p>greedy search를 통해 최적의 분할을 찾음</p></li>
+</ol>
+</div>
+<div id="cart의-feture-selection-기준" class="section level3">
+<h3>CART의 feture selection 기준</h3>
+<p>parameter를 조정을 통해 최적 찾음</p>
+<ol style="list-style-type: decimal">
+<li><p>maxdepth : leaf node의 최대 깊이를 제한</p>
+<ul>
+<li>maxdepth 클수록 tree 커짐</li>
+</ul></li>
+<li><p>minsplit : 각 노드별 최소한의 관측치 수 제한</p>
+<ul>
+<li>minsplit 작을수록 tree 커짐</li>
+</ul></li>
+<li><p>최소 향상도 cp : complexity parmeter 분할시 최소한으로 작아져야 하는 불순도</p>
+<ul>
+<li>cp 작을수록 tree 커짐</li>
+</ul></li>
+</ol>
+</div>
+<div id="대안-분할-surrogate-split" class="section level3">
+<h3>대안 분할 surrogate split</h3>
+<p>missing value가 있을 경우 다른 추가적인 대안 분할 기준</p>
+<pre><code>- main split과 비슷한 속성이 있는 것을 surrogate split으로 이용함
+
+- NA일 경우 imputation(평균, 중앙값으로 NA 대체) 불필요</code></pre>
+</div>
+</div>
+<div id="pruning-가지치기" class="section level2">
+<h2>Pruning 가지치기</h2>
+<p>overfitting을 막기위해 불필요한 가지 제거</p>
+<p>데이터를 3개지로 분할 : training data, pruning data, test data</p>
+<ol style="list-style-type: decimal">
+<li><p>pruning data를 사용</p>
+<ul>
+<li>pruning data는 test데이터가 아닌 다른 데이터</li>
+</ul></li>
+<li><p>교차검증 cross-validation로 예측오차를 계산</p>
+<ul>
+<li>test data중 일부를 pruning data로 사용하고 이 과정을 여러번 반복</li>
+</ul></li>
+<li><p>예측오차가 가장 작은 모형 선택</p></li>
+</ol>
+</div>
+<div id="코드-3" class="section level2">
+<h2>코드</h2>
+<p>method = ‘class’ : 분류나무</p>
+<p>method = ‘anova’ : 회귀나무(Y가 연속형인 경우)</p>
+<p>xval : cross-validation으로 몇번 교차검정할지를 의미</p>
+<p>cp : 복잡도 cost-complexity</p>
+<p>nsplit : number of slplit</p>
+<p>rel error : (train data의) 상대오차</p>
+<p>xerror : cross-validation의 오차</p>
+<p>최종 노드의 수 = 분할의 수 + 1</p>
+<p>1 SE rule : xerror +- 1 * Xstd</p>
+<p>오차는 동일(위 같은 구간안에 있는 것들)하면서 간결한 모형 선택</p>
+<p>점선 아래의 오차들은 통계적으로 차이 없는 것들</p>
+<p>type=“prob” : 분류</p>
+<p>type=“vector” : 회귀</p>
+</div>
+</div>
+<div id="ensemble-methods" class="section level1">
+<h1>Ensemble Methods</h1>
+<pre><code>- 로지스틱 : bias가 크지만 variance는 작음
+
+    - 하나의 관측값이 변해도 큰 차이 없음
+
+    - likelihood 함수에 의존하여 다양성 확보 어려움
+  
+- 의사결정 나무, 머신러닝 : bias는 작으나 variance가 큼
+
+    - 하나의 관측값에도 크게 변화 : instability 즉 hyperplane의 변동성이 크다
+
+    - 다양성 확보 가능</code></pre>
+<p>앙상블 : instability가 큰 모델을 여러번 학습하여 bias와 variance를 줄여 오류의 감소 추구</p>
+<pre><code>- 분산 감소에 의한 오류 감소 : Bagging, Random Forest
+
+- 편향 감소에 의한 오류 감소 : Boosting(분산도 줄이지만 편향을 더 많이 줄임)
+
+- 분산과 편향 모두 감소에 의한 오류 감소 : Mixture of Exports</code></pre>
+<p><strong>다양성divesity</strong>를 어떻게 확보할 것인지가 중요, 그리고 이를 어떻게 결합aggregate할 것인가</p>
+<p>-&gt; 각각의 모델은 성능도 좋으면서 서로 다양한 형태를 나타내는 것이 가장 이상적</p>
+<ul>
+<li><p>배깅 : 데이터 변형을 통해 tree 생성</p></li>
+<li><p>부스팅 : 가중치 변형을 통해 tree 생성</p></li>
+<li><p>랜덤포레스트 : 배깅의 boostrap + 변수 임의 추출</p></li>
+</ul>
+</div>
+<div id="bagging-boostrapping-aggregating" class="section level1">
+<h1>Bagging : Boostrapping AGGregatING</h1>
+<p>classification on unweighted majority voting</p>
+<p>단점</p>
+<ul>
+<li>해석력을 잃어버림</li>
+</ul>
+<p>장점</p>
+<ul>
+<li>예측력을 높임</li>
+</ul>
+<div id="과정" class="section level2">
+<h2>과정</h2>
+<ol style="list-style-type: decimal">
+<li><p>전체 데이터 집합에서 각 학습 데이터 셋을 boostrapping 즉 복원추출하여 원래 데이터 수만큼 크기를 갖도록 생성</p>
+<ul>
+<li>Bootstrap sample training set 복원추출된 데이터셋 : <span class="math inline">\(T^{(1)},\ ...\ , T^{(B)}\)</span></li>
+</ul></li>
+<li><p>boostrap을 바탕으로 의사 결정 나무 시행, 이 과정을 반복</p>
+<ul>
+<li><p>Classifiers for each sample : <span class="math inline">\(C_1(x,T^{(1)}),\ ...\ , C_B(x,T^{(B)})\)</span></p></li>
+<li><p>각 의사결정나무는 서로 다른 학습 데이터셋을 사용하게 됨</p></li>
+</ul></li>
+<li><p>최종 예측은 각 의사나무의 예측 결과를 다수결의 방법을 통해 취합 -&gt; 분산 감소</p>
+<ul>
+<li><p>number of times that classified as j : <span class="math inline">\(N_j=\sum ^B_{b=1}I[ C_b(x,T^{(b)})=y_j]\)</span></p></li>
+<li><p>Bagging : <span class="math inline">\(C(x)=\text{argmax}_jN_j\)</span></p></li>
+</ul></li>
+</ol>
+</div>
+<div id="코드-4" class="section level2">
+<h2>코드</h2>
+<p>bagging을 할 때는 pruning 하지 않고 tree를 크게 만듦 : 분산이 커져 변동성이 증가하나 bias는 작아짐</p>
+<p>xval=0 : cross validation이 0이란 의므로 pruning 하지 않음</p>
+<p>mfinal : tree의 개수로 요즘에는 100~200이 기본</p>
+<p>변수 중요도로 숫자의 절대적 의미는 없고 상대적 의미만 있음</p>
+<p>비선형 모델의 변수중요도 : 각각의 tree마다의 변수중요도를 통합한 것 -&gt; 이 결과를 NN에도 사용 가능함</p>
+</div>
+</div>
+<div id="boosting" class="section level1">
+<h1>Boosting</h1>
+<p>classification on unequal weighted training data</p>
+<p>오분류 관측치의 가중치를 높이며 분류를 반복, 각각의 분류를 합해 최종 분류를 계산하는 방법</p>
+<pre><code>- 분류경계선 근처의 가중치가 커짐
+
+- 결국 variance와 bias 감소 (bias가 더 크게 감소)</code></pre>
+<p>부스팅의 경우 tree를 작게 만듦</p>
+<p>train set과 test set을 7대3으로 분할하면 그 속성이 남아 있게되므로, 이러한 분할도 여러번 해보는 것이 좋음</p>
+<div id="adaboost" class="section level2">
+<h2>AdaBoost</h2>
+<ol style="list-style-type: decimal">
+<li><p>먼저 초기 가중치를 줌</p>
+<ul>
+<li>Initialized weight : <span class="math inline">\(w_i=1/N\)</span></li>
+</ul></li>
+<li><p>가중치를 사용하여 분류하며 가중치를 변경하는 과정 i=1를 i=M까지 반복</p>
+<ul>
+<li><p>가중치 <span class="math inline">\(w_i\)</span>를 이용하여 classifier <span class="math inline">\(C_m(x)\)</span> 생성</p></li>
+<li><p>오차인 <span class="math inline">\(err_m={\sum^N_{i=1}w_iI(y_i\not= C_m(X)i)) \over \sum^N_{i=1}w_i}\)</span> 를 계산</p>
+<ul>
+<li>오분류시 <span class="math inline">\(I(y_i\not= C_m(X_i))=1\)</span>, 정분류시 <span class="math inline">\(I(y_i\not= C_m(X_i))=0\)</span></li>
+</ul></li>
+<li><p>tree의 가중치인 <span class="math inline">\(\alpha_m=log((1-err_m)/err_m)\)</span> 를 계산</p>
+<ul>
+<li>error가 적으면 <span class="math inline">\(\alpha\)</span>상승</li>
+</ul></li>
+<li><p>새로운 가중치 생성 <span class="math inline">\(w_i=w_i\ \text{exp}[\alpha_mI(y_i\not= C_m(X_i))]\)</span></p></li>
+<li><p>새로운 가중치 전체의 합이 1이 되도록 조정 : <span class="math inline">\(\sum w_i=1\)</span></p></li>
+</ul></li>
+<li><p>반복한 분류를 가중치를 반영하여 최종 분류를 만듦 <span class="math inline">\(C_{AD}(X)=sign[\sum^M_{m=1}\alpha_mC_M(X)]\)</span></p>
+<ul>
+<li>즉 bagging은 tree당 같은 가중치이지만, Adaboost는 tree별로 다른 가중치<span class="math inline">\(\alpha_m\)</span>를 반영</li>
+</ul></li>
+</ol>
+<div id="코드-5" class="section level3">
+<h3>코드</h3>
+<p>xval=0 : 푸루닝 하지 않음
+maxdepth=1 : 분할 한번뿐 -&gt; 일반적으로 boosting은 작을 수록 좋음 (보통 1~4)
+boos=T : 가중치 반영시 bootstrap에서 가중치 높은 것을 여러번 더 뽑을 수 있게 하면 AdaBoost 방법을 이용해 boosting 할 수 있다.</p>
+</div>
+</div>
+<div id="gradient-boost" class="section level2">
+<h2>Gradient Boost</h2>
+<p><span class="math inline">\(Y=h_1(X)+err1\)</span>에서 오류를 다시 <span class="math inline">\(err1=h_2(X)+err2\)</span>와 같이 분류하는 방법 : <span class="math inline">\(F_m(X)=F_{m-1}(X)+w_mh_m(X)\)</span></p>
+<pre><code>- 즉 error를 바탕으로 boosting을 계속하는 방법</code></pre>
+<p>Gredient Descent 알고리즘으로 최적 weight 계산</p>
+<p>각 함수별 최적 weight 찾으면 예측 정확도는 더 높아짐</p>
+</div>
+</div>
+<div id="random-forest" class="section level1">
+<h1>Random Forest</h1>
+<p>변수의 임의 추출을 통해 다양성 확보</p>
+<ul>
+<li><p>bootstrapping과 predictor subset selection을 동시에 적용하여 개별 tree의 <strong>다양성을 극대화</strong></p></li>
+<li><p>tree들이 <strong>서로 독립이</strong> 되도록 하고자 함</p></li>
+<li><p>각 노드를 분할할 때, p개의 변수 중에서 탐색하지 않고, m개 (m&lt;p)의 변수 중에서 탐색하여 분할함</p>
+<ul>
+<li>m=p이면 배깅과 동일</li>
+</ul></li>
+<li><p>m의 값이 작으면 각 나무모형들 간의 상관관계가 감소함 -&gt; m이 너무 적으면 정확도가 낮아짐</p></li>
+<li><p>일반적인 앙상블의 크기 m</p>
+<ul>
+<li><p>보통 분류 data인 경우 <span class="math inline">\(m=\sqrt{p}\)</span></p></li>
+<li><p>회귀 분류 data인 경우 <span class="math inline">\(p\over 3\)</span></p></li>
+</ul></li>
+</ul>
+<div id="과정-1" class="section level2">
+<h2>과정</h2>
+<ul>
+<li><p>boostrap 적용 : bagging과 동일</p></li>
+<li><p>변수의 부분집합 선택을 통한 다양성 확보 : X변수중 random하게 일부만 greedy search</p>
+<ul>
+<li><p>즉 decision tree에서 분할시 분할에 greedy search하게 되는 x변수가 매번 random하게 정해짐</p></li>
+<li><p>여러번 해도 모든 변수를 greedy search하면 중요한 변수는 뿌리 노드 근처에 자주 나옴</p></li>
+</ul></li>
+</ul>
+</div>
+<div id="개별-분류-모델의-결과-aggregating-방법" class="section level2">
+<h2>개별 분류 모델의 결과 aggregating 방법</h2>
+<p>majority voting : <span class="math inline">\(\hat{Y}_{Ensemble}=\text{argmax}_i(\sum_{j=1}^n\delta({Y}_j=i),\ i\in\{0,1\})\)</span></p>
+<p>weighted (각 모델의 예측정확도 <span class="math inline">\(TrnAcc_j\)</span> 사용) voting : <span class="math inline">\(\hat{Y}_{Ensemble}= \text{argmax}_i({\sum_{j=1}^n(TrnAcc_j)\delta(Y_j=i)\over\sum_{j=1}^n(TrnAcc_j)},\ i\in\{0,1\})\)</span></p>
+<p>weighted (각 class별 에측 확률) voting : <span class="math inline">\(\hat{Y}_{Ensemble}= \text{argmax}_i({{1\over n}\sum_{j=1}^nP(Y_j=i)},\ i\in\{0,1\})\)</span></p>
+</div>
+<div id="oob-error-out-of-bag-error" class="section level2">
+<h2>OOB Error : Out Of Bag error</h2>
+<p>개별 학습 데이터셋 구성시 bootstrap 되지 않은 개체들을 검증용으로 사용</p>
+<p>이 값을 test 데이터로 삼으면, test error가 계산됨</p>
+</div>
+<div id="변수-중요도" class="section level2">
+<h2>변수 중요도</h2>
+<p>회귀분석과는 다르게 개별 변수가 통계적으로 얼마나 유의한지에 대한 정보(p-value)가 없음어 간접적인 방식으로 추정</p>
+<pre><code>- 절대적인 개념이 아니라 상대적인 개념
+
+- 다른 모형에서도 OOB를 활용한 변수중요도개념 자주 활용</code></pre>
+<ol style="list-style-type: decimal">
+<li><p>원래 OOB 데이터 집합에 대해서 OOB Error <span class="math inline">\(e_j\)</span> 구함</p>
+<ul>
+<li>j 는 1부터 m개 까지의 각각의 tree</li>
+</ul></li>
+<li><p>특정 변수의 값을 임의로 뒤섞은 random permutation OOB 데이터 집합에 대해서 permutaion OOB Error <span class="math inline">\(p_j\)</span>를 구함</p>
+<ul>
+<li><p>다른 X변수와 Y변수를 제외하고, 오직 특정 X변수 하나만의 순서를 임의로 바꿈</p></li>
+<li><p>해당 특정 X변수가 noise 변수가 됨</p></li>
+</ul></li>
+<li><p>OOB Error 차이<span class="math inline">\(d_i=e_i-p_i\)</span>의 평균과 분산을 계산</p></li>
+<li><p>M개의 모든 tree를 통해 계산한 OBB Error의 차이의 편균과 표준편차로 변수중요도 계산</p>
+<ul>
+<li><p>i번째 변수의 변수 중요도 : <span class="math inline">\(v_i={\bar{d}\over s_d}\)</span></p>
+<ul>
+<li><p><span class="math inline">\(\bar{d}=\sum_{j=1}^md_j/m\)</span></p></li>
+<li><p><span class="math inline">\(s_d^2=\sum_{j}^{m-1}(d_j-\bar{d})^2/(m-1)\)</span></p></li>
+</ul></li>
+<li><p>오류율의 차이가 클수록 해당변수가 tree에서 중요한 역할</p></li>
+</ul></li>
+</ol>
+</div>
+<div id="코드-6" class="section level2">
+<h2>코드</h2>
+</div>
+<div id="코드-회귀분석의-경우" class="section level2">
+<h2>코드 : 회귀분석의 경우</h2>
+</div>
+</div>
+<div id="clustering-unsupervised-learnging" class="section level1">
+<h1>Clustering : Unsupervised Learnging</h1>
+<p>X 변수 대부분 연속형이어야 함 : distance를 사용하므로 범주형의 경우 계산 불가 (지시변수도 가능하나 좋지 못한 방법)</p>
+<p>군집분석은 자료 사이의 거리를 이용하기에, 변수별 단위가 결과에 큰 영향 -&gt; 반드시 표준화 standardization 필요</p>
+<div id="표준화-standardization" class="section level2">
+<h2>표준화 standardization</h2>
+<ol style="list-style-type: decimal">
+<li><p>관측치 표준화</p>
+<ul>
+<li><p>관측치가 사람의 경우 관측치 표준화 불필요</p></li>
+<li><p>파생변수로 관찰치 표준화가능</p>
+<ul>
+<li>파생변수 생성시 비율의 경우 관려적으로 log 취함</li>
+</ul></li>
+</ul></li>
+<li><p>변수 표준화</p>
+<ul>
+<li><p>각 변수의 관찰값으로부터 그 변수의 평균을 빼고, 그 변수의 표준편차로 나누는 것</p></li>
+<li><p>표준화된 자료는 모든 변수가 평균이 0이고 표준편차가 1</p></li>
+</ul></li>
+</ol>
+</div>
+<div id="군집화의-기준-distance" class="section level2">
+<h2>군집화의 기준 : distance</h2>
+<ul>
+<li><p>동일한 군집에 속하면 여러 속성이 비슷하고, 다른군집에 속한 관측치는 그렇지 않음</p></li>
+<li><p>유사성보다는 비유사성dissimilarity를 기준으로 하여 distance 사용</p></li>
+</ul>
+</div>
+<div id="distance-measures" class="section level2">
+<h2>distance measures</h2>
+<ol style="list-style-type: decimal">
+<li><p>유클리드 Euclidean 거리 : <span class="math inline">\(d(x,y)=(\sum_{i=1}^p(x_i-y_i)^2)^{1/2}\)</span> when p=2 (x, y)</p>
+<ul>
+<li>pairwise 거리</li>
+</ul></li>
+<li><p>Minkowski 거리 : <span class="math inline">\(d(x,y)=(\sum_{i=1}^p(x_i-y_i)^m)^{1/m}\)</span></p>
+<ul>
+<li>일반화된 형태로, m = 2 이면 Euclidean</li>
+</ul></li>
+<li><p>Manhalanobis 거리 : <span class="math inline">\(d(x,y)=\sqrt{(x-y)^TS^{-1}(x-y)}\)</span></p>
+<ul>
+<li>공분산행렬 S : correlation 반영 - 다른 거리와 다르게 ind 가정 없어서 이론적으로는 가장 우월하나 실제 s 계산이 어려움</li>
+</ul></li>
+<li><p>Manhattan Distance : <span class="math inline">\(d_{Manhattan}(x,y)=\sum^p_{i=1}|x-y|\)</span></p></li>
+</ol>
+</div>
+</div>
+<div id="hierarchical-clustering-계층적-군집분석" class="section level1">
+<h1>Hierarchical clustering 계층적 군집분석</h1>
+<p>장점</p>
+<pre><code>- 군집의 수를 알 필요가 없음 -&gt; 사후에 판단 가능
+
+- 해석에 용이
+
+    - 덴드로그램을 통해 군집화 프로세스와 결과물을 표현가능</code></pre>
+<p>단점</p>
+<pre><code>- 계산속도가 느림 
+
+   - $_nC_2$ 즉 $n^2$에 비례하여 계산량 증가
+
+- 이상치에 대한 사전검토 필요
+
+    - 이상치가 존재할 경우, 초기 단계에 잘못 분류된 군집은 분석이 끝날때까지 소속군집이 변하지 않음
+    
+    - Centroid 방법이 이상치에 덜 민감함</code></pre>
+<div id="과정-2" class="section level2">
+<h2>과정</h2>
+<ol style="list-style-type: decimal">
+<li><p>1개의 entity를 가지는 관측치 그대로인 N개의 군집으로 시작</p></li>
+<li><p>NxN symmetric 거리 행렬 <span class="math inline">\(D=\{d_{ik}\}\)</span>을 생성</p></li>
+<li><p>거리행렬 D의 원소중 가장 가까운 군집의 쌍 U와 V를 찾아 (UV)라는 하나의 군집으로 합침</p></li>
+<li><p>거리행렬 D중 새롭게 변화 되는 부분인 (UV) 와 다른 군집 W 사이의 거리 <span class="math inline">\(d_{(UV)W}\)</span>를 계산</p>
+<ul>
+<li><p>single linkage 단일연결법 : <span class="math inline">\(d_{(UV)W}=\text{min}(d_{UW},d_{VW})\)</span></p></li>
+<li><p>complete linkage 완전연결법 : <span class="math inline">\(d_{(UV)W}=\text{max}(d_{UW},d_{VW})\)</span></p></li>
+<li><p>average linkage 평균연결법 : <span class="math inline">\(d_{(UV)W}={\sum^{n_{UV}}_{i=1}\sum^{n_{W}}_{i=1}d_{ij}\over n_{UV}n_W})\)</span></p></li>
+<li><p>centroid method 중심점연결법 : <span class="math inline">\(d_{(UV)W}=\text{distance between the centroids of cluster UV and W}\)</span></p></li>
+<li><p>Ward’s Method</p></li>
+</ul></li>
+<li><p>위의 과정을 N-1 반복하여 모든 관측치가 하나의 군집으로 바꿈</p></li>
+<li><p>Dendro gram을 활용 : 어느 levels에서 어떻게 결합되어있는지 판단</p></li>
+</ol>
+</div>
+<div id="dendrogram-고드름-그림" class="section level2">
+<h2>dendrogram 고드름 그림</h2>
+<p>계층적 군집분석에만 dendrogram이 있음 : graphic to ilustrate the merges or divisions</p>
+</div>
+<div id="코드-7" class="section level2">
+<h2>코드</h2>
+</div>
+</div>
+<div id="k-means-clustering" class="section level1">
+<h1>K-means clustering</h1>
+<p>사전에 결정된 군집수 k에 기초하여 전체 데이터를 상대적으로 유사한 k개의 군집으로 구분</p>
+<p>장점</p>
+<pre><code>- 신속한 계산결과로 대용량 데이터에 적합함
+
+- 군집분석 이외에도 분류,예측을 위한 선행작업, 이상치 처리작업등 다양한 분석에 사용 : 정제 천처리 등
+
+- 단독군집이 잘 안나옴
+
+
+- 계산속도가 빠르다 : n에 비례
+
+    - 일반적으로 3번 정도 반복 -&gt; 3nk</code></pre>
+<p>단점</p>
+<pre><code>- 사전에 군집수 K를 결정하기 어려움 : 주관적 선택 필요
+
+- 군집결과의 해석이 용이하지 않을 수 있음
+
+- 초기값에 영향을 많이 받아 잘못 정하면 잘못된 결과 가능
+
+    - 일반적으로 k-means는 군집수가 비슷하게 나옴 : 그래서 초기값에 영향을 많이 받음</code></pre>
+<div id="과정-3" class="section level2">
+<h2>과정</h2>
+<ol style="list-style-type: decimal">
+<li><p>군집수 k를 결정한다.</p></li>
+<li><p>초기 k개 군집의 중심을 선택한다.</p></li>
+<li><p>각 관찰치를 그 중심과 가장 가까운 거리에 있는 군집에 할당한다.</p></li>
+<li><p>형성된 군집의 중심을 계산 : K-means 는 mean을 사용</p></li>
+<li><p>3-4의 과정을 기존의 중심과 새로운 중심의 차이가 없을 때까지 반복한다. -&gt; 재할당</p></li>
+</ol>
+</div>
+<div id="k-결정법" class="section level2">
+<h2>K 결정법</h2>
+<p>K-평균 군집분석법의 결과는 초기 군집수 k의 결정에 민감하게 반응</p>
+<ol style="list-style-type: decimal">
+<li><p>여러 가지의 k값으로 군집분석을 수행한 후 최적의 k값을 이용</p>
+<ul>
+<li><p>Elbow point 계산하여 K 선택</p></li>
+<li><p>Silhouette plot 으로 K 선택</p></li>
+</ul></li>
+<li><p>시각화된 자료 그래프를 통하여 K를 결정</p>
+<ul>
+<li>자료의 시각화를 위하여는 차원의 축소가 필수적 : PCA 사용</li>
+</ul></li>
+<li><p>빅데이터에서 sampling한 데이터로 계층적 군집분석을 수행하여 K값을 선택</p>
+<ul>
+<li>계층적 군집분석 : 소용량 데이터만 가능</li>
+</ul></li>
+</ol>
+</div>
+<div id="elbow-point" class="section level2">
+<h2>Elbow Point</h2>
+<p>K를 결정하기 위한 한 방법으로 K-means에 적합함</p>
+<p>elbow point : 군집중심과 군집내 관찰값 간의 거리제곱의 합이 급격히 감소하다 완만해지는 부분</p>
+</div>
+<div id="silhouette" class="section level2">
+<h2>silhouette</h2>
+<p><span class="math display">\[s(i)=
+{b(i)-a(i)\over \text{max}\{a(i),b(i)\}}=
+\begin{cases}
+1-a(i)/b(i)\ , &amp; \mbox{if }a(i)&lt;b(i) \\
+0\ , &amp; \mbox{if }a(i)=b(i) \\
+b(i)/a(i)-1\ , &amp; \mbox{if }a(i)&gt;b(i)
+\end{cases}\]</span></p>
+<pre><code>- 분모의 max : 관찰치의 수가 많을 수록 s(i)가 커지는 것을 방지
+
+- 1에 가까울수록 군집화가 잘 된 관찰값임
+
+
+- $a(i)$ : 개체 i로부터 같은 군집 내에 있는 모든 다른 개체들 사이의 평균 거리
+
+- $b(i)$ : 개체 i로부터 다른 군집 내에 있는 개체들 사이의 평균 거리 중 가장 작은 값 -&gt; 클수록 좋다</code></pre>
+<p>explain ##.## % : PCA의 설명력의 의미, 즉 n차원을 2차원의 그래프로 축소 (PCA 그래프)</p>
+<p>average silhouette wideth : 0.## -&gt; 평균 silhouette를 의미</p>
+<p>값이 클수록 좋은것임</p>
+<div id="코드-8" class="section level3">
+<h3>코드</h3>
+</div>
+</div>
+</div>
+<div id="k-medioid-clustering" class="section level1">
+<h1>K-medioid clustering</h1>
+<p>K-means와 비슷하나 중심화 할때 medoid 사용</p>
+<p>medoid : 변수별 중앙값의 좌표(object whose average dissimilarity to all the objects in the cluster is minimal)</p>
+<p>Euclidean distances가 아니기에 outlier에 robust함</p>
+<div id="코드-9" class="section level2">
+<h2>코드</h2>
+</div>
+</div>
+<div id="density-based-clustering" class="section level1">
+<h1>Density-based clustering</h1>
+<p>밀도(densely populated area) 기반 군집 분석</p>
+<p>장점</p>
+<ul>
+<li><p>K를 미리 결정할 필요 없음</p></li>
+<li><p>noise, outlier 에 영향 받지 않음</p></li>
+</ul>
+<p>단점</p>
+<ul>
+<li>밀도에만 의존하다 보니 군집의 해석이 어려울 수 있음</li>
+</ul>
+<div id="개의-모수" class="section level2">
+<h2>2개의 모수</h2>
+<ol style="list-style-type: decimal">
+<li><p>Eps : size of neighborhood 반지름</p>
+<ul>
+<li>반지름 안에 포함되는 point를 중심으로 또다시 반지름 -&gt; 점들이 게속 연결되어 군집이 커짐</li>
+</ul></li>
+<li><p>MinPts : minimum # of points 즉 최소 데이터 수</p></li>
+</ol>
+<ul>
+<li><p>dense point 기준점 : Min Points보다 neighborhood 안에 점이 더 많을때</p>
+<ul>
+<li><p>기준점에 속하는 neighborhood를 하나의 군집으로 분류</p></li>
+<li><p>어떠한 군집에도 속하지 않은 데이터는 noise, outlier</p></li>
+</ul></li>
+</ul>
+<div id="코드-10" class="section level3">
+<h3>코드</h3>
+<p>MinPtes=5가 기본값</p>
+<p>eps는 시행착오를 통해 최적이 무엇인지 확인 필요</p>
+<p>border : 군집 외각의 수</p>
+<p>seed : 군집 중심의 수</p>
+</div>
+</div>
+</div>

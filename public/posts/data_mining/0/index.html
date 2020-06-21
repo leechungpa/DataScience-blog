@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+    <meta charset="UTF-8" />
+
+    <meta name="generator" content="Hugo 0.71.1" /><meta name="theme-color" content="#fff" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
+    
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+    <title>데이터마이닝 - 이론정리 | Leechungpa&#39;s Data Science blog</title>
+
+    <link rel="stylesheet" href="/css/meme.min.856d643b872203ef4eaeb7f4365ffc16288b1726d845b10718b9e39461a82dd0.css" integrity="sha256-hW1kO4ciA&#43;9Orrf0Nl/8FiiLFybYRbEHGLnjlGGoLdA=" />
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/lunr@2.3.8/lunr.min.js" defer></script><script src="/js/meme.min.72023708501dc240d90316e8588e5c5abf02c8dafbcc21042950412814f50629.js" integrity="sha256-cgI3CFAdwkDZAxboWI5cWr8CyNr7zCEEKVBBKBT1Bik="></script>
+
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM&#43;Plex&#43;Serif:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Source&#43;Code&#43;Pro:ital,wght@0,400;0,700;1,400;1,700&amp;family=Comfortaa:wght@700&amp;display=swap&amp;family=Nanum&#43;Gothic:wght@400;700;800&amp;display=swap" media="print" onload="this.media='all'" />
+        <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM&#43;Plex&#43;Serif:ital,wght@0,400;0,500;0,700;1,400;1,700&amp;family=Source&#43;Code&#43;Pro:ital,wght@0,400;0,700;1,400;1,700&amp;family=Comfortaa:wght@700&amp;display=swap&amp;family=Nanum&#43;Gothic:wght@400;700;800&amp;display=swap" /></noscript>
+
+    <meta name="author" content="이청파" /><meta name="description" content="R 기반의 데이터 마이닝 정리설명력 위주 모형 : 통계모형
+예측력은 떨어지나 모형을 이해하기 좋음
+비교기준 : \(R^2\)
+X ~ Y 의 인과관계를 얼마나 설명하는지
+선형이므로 오버피팅을 무시해도됨. 즉 \(R^2\)가 중요
+예측력 위주 모형 : 예측력은 뛰어나지만 이해와 해석이 어려움" />
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#2a6df4" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Leechungpa&#39;s Data Science blog" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="Leechungpa&#39;s Data Science blog" />
+    <meta name="msapplication-starturl" content="../../../" />
+    <meta name="msapplication-TileColor" content="#fff" />
+    <meta name="msapplication-TileImage" content="../../../icons/mstile-150x150.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    
+    
+
+    
+    <link rel="canonical" href="/posts/data_mining/0/" />
+    
+
+<script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "datePublished": "2020-06-18T00:00:00+00:00",
+        "dateModified": "2020-06-21T19:09:13+09:00",
+        "url": "/posts/data_mining/0/",
+        "headline": "데이터마이닝 - 이론정리",
+        "description": "R 기반의 데이터 마이닝 정리\r설명력 위주 모형 : 통계모형\n\r예측력은 떨어지나 모형을 이해하기 좋음\n\r비교기준 : \\(R^2\\)\n\rX ~ Y 의 인과관계를 얼마나 설명하는지\n\r선형이므로 오버피팅을 무시해도됨. 즉 \\(R^2\\)가 중요\n\r\r\r예측력 위주 모형 : 예측력은 뛰어나지만 이해와 해석이 어려움",
+        "inLanguage" : "en-us",
+        "articleSection": "posts",
+        "wordCount":  3250 ,
+        "image": ["/content/posts/data/datamining.png","/content/posts/data/datamining-accuracy.png"],
+        "author": {
+            "@type": "Person",
+            "description": "나라는 사람이 좀 더 바르고 사회를 위한 존재로 거듭나길 오늘도 노력한다.",
+            "email": "leechungpa@naver.com",
+            "image": "/icons/apple-touch-icon.png",
+            "url": "https://leechungpa.netlify.app/",
+            "name": "Lee Chung Pa"
+        },
+        "license": "[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)",
+        "publisher": {
+            "@type": "Organization",
+            "name": "Leechungpa's Data Science blog",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "/icons/apple-touch-icon.png"
+            },
+            "url": "/"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebSite",
+            "@id": "/"
+        }
+    }
+</script>
+
+    
+
+<meta name="twitter:card" content="summary_large_image" />
+
+
+<meta name="twitter:creator" content="@reuixiy" />
+
+    
+
+
+
+<meta property="og:title" content="데이터마이닝 - 이론정리" />
+<meta property="og:description" content="R 기반의 데이터 마이닝 정리설명력 위주 모형 : 통계모형
+예측력은 떨어지나 모형을 이해하기 좋음
+비교기준 : \(R^2\)
+X ~ Y 의 인과관계를 얼마나 설명하는지
+선형이므로 오버피팅을 무시해도됨. 즉 \(R^2\)가 중요
+예측력 위주 모형 : 예측력은 뛰어나지만 이해와 해석이 어려움" />
+<meta property="og:url" content="/posts/data_mining/0/" />
+<meta property="og:site_name" content="Leechungpa&#39;s Data Science blog" />
+<meta property="og:locale" content="en" /><meta property="og:image" content="/content/posts/data/datamining.png" />
+<meta property="og:type" content="article" />
+    <meta property="article:published_time" content="2020-06-18T00:00:00&#43;00:00" />
+    <meta property="article:modified_time" content="2020-06-21T19:09:13&#43;09:00" />
+    
+    <meta property="article:section" content="posts" />
+
+
+
+    
+</head>
+
+    <body>
+        <div class="container">
+            
+    <header class="header" data-scroll-header>
+        
+            <div class="header-wrapper">
+                <div class="header-inner single">
+                    
+    <div class="site-brand">
+        
+            <a href="/" class="brand">Leechungpa&#39;s Data Science blog</a>
+        
+    </div>
+
+                    <nav class="nav">
+    <ul class="menu" id="menu">
+        
+            
+        
+        
+        
+        
+            
+                <li class="menu-item"><a href="/posts/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon archive"><path d="M32 448c0 17.7 14.3 32 32 32h384c17.7 0 32-14.3 32-32V160H32v288zm160-212c0-6.6 5.4-12 12-12h104c6.6 0 12 5.4 12 12v8c0 6.6-5.4 12-12 12H204c-6.6 0-12-5.4-12-12v-8zM480 32H32C14.3 32 0 46.3 0 64v48c0 8.8 7.2 16 16 16h480c8.8 0 16-7.2 16-16V64c0-17.7-14.3-32-32-32z"/></svg><span class="menu-item-name">Posts</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/categories/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon th"><path d="M149.333 56v80c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V56c0-13.255 10.745-24 24-24h101.333c13.255 0 24 10.745 24 24zm181.334 240v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm32-240v80c0 13.255 10.745 24 24 24H488c13.255 0 24-10.745 24-24V56c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24zm-32 80V56c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm-205.334 56H24c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24zM0 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H24c-13.255 0-24 10.745-24 24zm386.667-56H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zm0 160H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zM181.333 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24z"/></svg><span class="menu-item-name">Categories</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/tags/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" class="icon tags"><path d="M497.941 225.941L286.059 14.059A48 48 0 0 0 252.118 0H48C21.49 0 0 21.49 0 48v204.118a48 48 0 0 0 14.059 33.941l211.882 211.882c18.744 18.745 49.136 18.746 67.882 0l204.118-204.118c18.745-18.745 18.745-49.137 0-67.882zM112 160c-26.51 0-48-21.49-48-48s21.49-48 48-48 48 21.49 48 48-21.49 48-48 48zm513.941 133.823L421.823 497.941c-18.745 18.745-49.137 18.745-67.882 0l-.36-.36L527.64 323.522c16.999-16.999 26.36-39.6 26.36-63.64s-9.362-46.641-26.36-63.64L331.397 0h48.721a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882z"/></svg><span class="menu-item-name">Tags</span></a>
+                </li>
+            
+        
+            
+                <li class="menu-item"><a href="/about/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="icon user-circle"><path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"/></svg><span class="menu-item-name">About</span></a>
+                </li>
+            
+        
+            
+                
+                    
+                    
+                        <li class="menu-item">
+                            <a id="theme-switcher" href="#"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon theme-icon-light"><path d="M193.2 104.5l48.8-97.5a18 18 0 0128 0l48.8 97.5 103.4 -34.5a18 18 0 0119.8 19.8l-34.5 103.4l97.5 48.8a18 18 0 010 28l-97.5 48.8 34.5 103.4a18 18 0 01-19.8 19.8l-103.4-34.5-48.8 97.5a18 18 0 01-28 0l-48.8-97.5l-103.4 34.5a18 18 0 01-19.8-19.8l34.5-103.4-97.5-48.8a18 18 0 010-28l97.5-48.8-34.5-103.4a18 18 0 0119.8-19.8zM256 128a128 128 0 10.01 0M256 160a96 96 0 10.01 0"/></svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon theme-icon-dark"><path d="M27 412a256 256 0 10154-407a11.5 11.5 0 00-5 20a201.5 201.5 0 01-134 374a11.5 11.5 0 00-15 13"/></svg></a>
+                        </li>
+                    
+                
+            
+        
+            
+                
+            
+        
+            
+                <li class="menu-item search-item">
+                        <form id="search" class="search" role="search">
+    <label for="search-input"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon search-icon"><path d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg></label>
+    <input type="search" id="search-input" class="search-input">
+</form>
+
+<template id="search-result" hidden>
+    <article class="content post">
+        <h2 class="post-title"><a class="summary-title-link"></a></h2>
+        <summary class="summary"></summary>
+        <div class="read-more-container">
+            <a class="read-more-link">Read More »</a>
+        </div>
+    </article>
+</template>
+
+                    </li>
+                
+            
+        
+    </ul>
+</nav>
+
+                    
+                </div>
+            </div>
+            
+    <input type="checkbox" id="nav-toggle" aria-hidden="true" />
+    <label for="nav-toggle" class="nav-toggle"></label>
+    <label for="nav-toggle" class="nav-curtain"></label>
+
+
+        
+    </header>
+
+
+
+
+            
+            
+    <main class="main single" id="main">
+    <div class="main-inner">
+
+        
+
+        <article class="content post" data-small-caps="true" data-align="default" data-type="posts" data-toc-num="true">
+
+            <h1 class="post-title">데이터마이닝 - 이론정리</h1>
+
+            
+
+            
+                
+            
+
+            
+                
+
+<div class="post-meta">
+    
+        
+        <time datetime="2020-06-18T00:00:00&#43;00:00" class="post-meta-item published"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon post-meta-icon"><path d="M148 288h-40c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm108-12v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 96v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm-96 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-40c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm96-260v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V112c0-26.5 21.5-48 48-48h48V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h128V12c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h48c26.5 0 48 21.5 48 48zm-48 346V160H48v298c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"/></svg>&nbsp;2020.6.18</time>
+    
+    
+        
+        <time datetime="2020-06-21T19:09:13&#43;09:00" class="post-meta-item modified"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon post-meta-icon"><path d="M400 64h-48V12c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v52H160V12c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v52H48C21.49 64 0 85.49 0 112v352c0 26.51 21.49 48 48 48h352c26.51 0 48-21.49 48-48V112c0-26.51-21.49-48-48-48zm-6 400H54a6 6 0 0 1-6-6V160h352v298a6 6 0 0 1-6 6zm-52.849-200.65L198.842 404.519c-4.705 4.667-12.303 4.637-16.971-.068l-75.091-75.699c-4.667-4.705-4.637-12.303.068-16.971l22.719-22.536c4.705-4.667 12.303-4.637 16.97.069l44.104 44.461 111.072-110.181c4.705-4.667 12.303-4.637 16.971.068l22.536 22.718c4.667 4.705 4.636 12.303-.069 16.97z"/></svg>&nbsp;2020.6.21</time>
+    
+    
+    
+        
+        
+        
+            
+                <span class="post-meta-item category"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M464 128H272l-54.63-54.63c-6-6-14.14-9.37-22.63-9.37H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V176c0-26.51-21.49-48-48-48zm0 272H48V112h140.12l54.63 54.63c6 6 14.14 9.37 22.63 9.37H464v224z"/></svg>&nbsp;<a href="/categories/r/" class="category-link">R</a>/<a href="/categories/data-mining/" class="category-link">data mining</a></span>
+            
+        
+    
+    
+        
+        <span class="post-meta-item wordcount"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3 0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9 0l60.1 60.1c18.8 18.7 18.8 49.1 0 67.9zM284.2 99.8L21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3 0-17l-111-111c-4.8-4.7-12.4-4.7-17.1 0zM124.1 339.9c-5.5-5.5-5.5-14.3 0-19.8l154-154c5.5-5.5 14.3-5.5 19.8 0s5.5 14.3 0 19.8l-154 154c-5.5 5.5-14.3 5.5-19.8 0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z"/></svg>&nbsp;3250</span>
+    
+    
+        
+        <span class="post-meta-item reading-time"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon post-meta-icon"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5 0-200-89.5-200-200S145.5 56 256 56s200 89.5 200 200-89.5 200-200 200zm61.8-104.4l-84.9-61.7c-3.1-2.3-4.9-5.9-4.9-9.7V116c0-6.6 5.4-12 12-12h32c6.6 0 12 5.4 12 12v141.7l66.8 48.6c5.4 3.9 6.5 11.4 2.6 16.8L334.6 349c-3.9 5.3-11.4 6.5-16.8 2.6z"/></svg>&nbsp;16&nbsp;mins</span>
+    
+    
+    
+</div>
+
+            
+
+            <div class="post-body">
+              
+
+
+<div id="r-기반의-데이터-마이닝-정리" class="section level1">
+<h1>R 기반의 데이터 마이닝 정리</h1>
+<p><img src="./content/posts/data/datamining.png" /></p>
+<p style="text-indent:0"><span class="drop-cap">설</span>명력 위주 모형 : 통계모형</p>
+<ul>
+<li><p>예측력은 떨어지나 모형을 이해하기 좋음</p></li>
+<li><p>비교기준 : <span class="math inline">\(R^2\)</span></p>
+<ul>
+<li><p>X ~ Y 의 인과관계를 얼마나 설명하는지</p></li>
+<li><p>선형이므로 오버피팅을 무시해도됨. 즉 <span class="math inline">\(R^2\)</span>가 중요</p></li>
+</ul></li>
+</ul>
+<p>예측력 위주 모형 : 예측력은 뛰어나지만 이해와 해석이 어려움</p>
+<ul>
+<li><p>미래의 Y값을 얼마나 잘 예측하는지가 기준</p></li>
+<li><p>머신러닝은 비선형 모델로 오버피팅의 위험</p>
+<ul>
+<li>train set과 test set을 분할하여 overfiting 막음</li>
+</ul></li>
+</ul>
+<div id="예측력-회귀-모형-비교-기준" class="section level2">
+<h2>예측력 회귀 모형 비교 기준</h2>
+<p>아래의 기준들은 전부 test data를 사용해 계산함</p>
+<ol style="list-style-type: decimal">
+<li>예측 결정계수 <span class="math inline">\(R^2\)</span></li>
+</ol>
+<p><span class="math display">\[R^2=corr(y,  \hat y )^2\]</span></p>
+<ol start="2" style="list-style-type: decimal">
+<li>평균절대오차 MAE : 절대적인 오차의평균을 이용</li>
+</ol>
+<p><span class="math display">\[MAE = {1 \over n} \sum |y - \hat y |\]</span></p>
+<ol start="3" style="list-style-type: decimal">
+<li>Mean absolute percentage error MAPE : 실제값 대비 얼마나 예측값이 차이가 있었는지 %로 표현</li>
+</ol>
+<p><span class="math display">\[MAPE = {100\% \over n} \sum {|y - \hat y | \over |y|}\]</span></p>
+<ol start="4" style="list-style-type: decimal">
+<li>Mean squred error MSE : 절대값이 아닌 제곱을 취한 지표</li>
+</ol>
+<p><span class="math display">\[MAPE = {100\% \over n} \sum (y - \hat y )^2\]</span></p>
+</div>
+<div id="예측력-분류-모형-비교-기준" class="section level2">
+<h2>예측력 분류 모형 비교 기준</h2>
+<ol style="list-style-type: decimal">
+<li>Accuracy 계열</li>
+</ol>
+<p>단점 : 작위성이 있다 (측도에 따라, cut-off에 따라 순위변동 가능)</p>
+<p><img src="./content/posts/data/datamining-accuracy.png" /></p>
+<p>모형 작성시 : sensitivity(TPR), specificity(TNR)</p>
+<p>현장 적용시 : PPV, NPV</p>
+<ul>
+<li><p>정확도 : <span class="math inline">\(a+d \over a+b+c+d\)</span></p></li>
+<li><p>민감도 : TPR</p></li>
+<li><p>특이도 : TNR</p></li>
+<li><p>정밀도 : PPV</p></li>
+<li><p>F-1 score : TPR과 PPV의 조화평균</p></li>
+<li><p>BCR : TPR과 TNR의 기하평균</p></li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li>ROC 계열</li>
+</ol>
+<p>ROC : 같은 기술이라면 특이도와 민감도는 반비례관계를 이용한 그래프</p>
+<pre><code>- x축 : 1-특이도
+
+- y축 : 민감도</code></pre>
+<p>AUROC : area under the ROC curve</p>
+<pre><code>- 일반적으로 적당한 기준 : 75% 이상
+
+- 최소 기준 : 65% 이상</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>Lift Chart 계열</li>
+</ol>
+<p>3가지 종류(Response, Captured Response, Lift) 중 어느것을 사용하던 결과는 동일</p>
+<p>Lift Chart : 발생확률이 작은 순으로 정렬 후 구간화</p>
+<pre><code>- x축 : 구간화된 sample size
+
+- y축 : 반응률 Response 또는 반응검출률 Captured Response 또는 향상도 Lift
+
+    - 반응률 Response : 상위등급이 높게나오고 급락하면 good
+
+    - 향상도 Lift : 상위등급은 1보다 크고, 하위등급은 0에 가까울수록 good</code></pre>
+<p>cummulative Lift Chart : 갑자기 오르거나 내리는등 일관되지 않은 부분이 존재하여 cumulative 선호</p>
+<pre><code>- 누적 반응률 Response : 경사가 급하면 좋고, unif하면 나쁨
+
+- 누적 향상도 Lift : 1로 하강하며 상위등급이 클수록 good
+
+- 누적 반응 검출률 captured response : 유일하게 상승</code></pre>
+<p>Cumulative accruacy profile CAP : 지니계수 개념</p>
+<pre><code>- 클수록 좋음
+
+- ( 완벽한 분류시스템 누적반응검출률 면적 - 모형의 누적반응검출률 면적 ) / ( 완벽한 분류시스템 누적반응검출률 면적 - 랜덤한 누적반응검출률 면적 )</code></pre>
+<p>Profit chart : maximize profit = income - cost</p>
+<ol start="4" style="list-style-type: decimal">
+<li>K-S 통계량량</li>
+</ol>
+<p>불량 누적분포와 우량 누적분포의 차이가 가장 큰 값</p>
+<pre><code>- 차이가 클수록 좋음</code></pre>
+<p>cf. 이론적 분포함수 : 누적분포함수, 실제 data의 분포함수 : 경험분포함수</p>
+</div>
+</div>
+<div id="regression" class="section level1">
+<h1>Regression</h1>
+<ol style="list-style-type: decimal">
+<li>간섭효과 comfuounding effect 제거 방안</li>
+</ol>
+<ul>
+<li><p>통제 control : 상수화 -&gt; 일정하게 고정</p></li>
+<li><p>데이터 확장 : X변수 추가 수집 -&gt; 간섭효과를 양성화</p></li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li>범주형 독립 변수</li>
+</ol>
+<ul>
+<li>지시변수 사용 : 0 또는 1</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li><span class="math inline">\(R^2\)</span> 증가 방법</li>
+</ol>
+<p>유의한 X변수 발굴</p>
+<pre><code>- 독립적이고 다양한 X변수일 수록 유리</code></pre>
+<p>범주형 X변수의 교호작용 반영</p>
+<ol start="4" style="list-style-type: decimal">
+<li>변수 선택</li>
+</ol>
+<p>중요한 소수의 예측변수를 찾아낸는 것이 중요 : 일반적으로 AIC 기준</p>
+<ul>
+<li><p>all subsets</p></li>
+<li><p>backwrd elimination</p></li>
+<li><p>forward selection</p></li>
+<li><p>stepwise elimination</p></li>
+</ul>
+<div id="모형-해석" class="section level2">
+<h2>모형 해석</h2>
+<ol style="list-style-type: decimal">
+<li>기울기 <span class="math inline">\(\beta\)</span></li>
+</ol>
+<p>수학적 해석보다는 실무적 해석이 중요</p>
+<p>절편은 데이터 범위를 벗어난 경우 의미없으므로 해석하지 않는다.</p>
+<ol start="2" style="list-style-type: decimal">
+<li>모수<span class="math inline">\(\beta\)</span>의 p-value : 기울기 유의성 검정</li>
+</ol>
+<p>p-value가 0.05보다 작으면 <span class="math inline">\(H_0 : \beta =0\)</span>을 기각 : 즉 유의한 기울기</p>
+<ol start="3" style="list-style-type: decimal">
+<li>결정계수 <span class="math inline">\(R^2\)</span></li>
+</ol>
+<p>Y의 총 변동량 중에서 X에 의해서 설명된 분량 : 즉 회귀모형의 설명력</p>
+<pre><code>- $R^2$이 1에 가까울 수록 완전히 설명</code></pre>
+<p>Adjusted <span class="math inline">\(R^2\)</span> : X변수의 수가 많을수록 좋아지는 <span class="math inline">\(R^2\)</span>의 overfitting의 문제를 반영</p>
+<ol start="4" style="list-style-type: decimal">
+<li>모형의 p-value : 회귀모형의 유효성</li>
+</ol>
+<p>p-value가 0.05보다 작으면 <span class="math inline">\(H_0 : all \ \beta_i =0\)</span>을 기각 : 즉 적어도 하나 이상의 설명변수가 유의하다</p>
+<p>cf. <span class="math inline">\(R^2\)</span>와 p-value의 관련성</p>
+<pre><code>- 높은 $R^2$, 낮은 p-value : 데이터 품질이 높은 경우
+
+- 낮은 $R^2$, 낮은 p-value : X변수 추가 발굴 (금융 데이터)
+
+- 낮은 $R^2$, 높은 p-value :유의하지 않은 X변수로 구성된 회귀분석
+
+- 높은 $R^2$, 높은 p-value : 불가능</code></pre>
+<p><span class="math inline">\(R^2\)</span>는 분야별 유연한 기준 필요</p>
+<pre><code>- 의학 약학 분야와 같이 실험데이터는 인과관계 단순 : $R^2$ 높게 나옴
+
+- 금융 경제 분야와 같이 관찰 데이터는 많은 변수와 인과관계 복잡 : $R^2$ 낮게 나옴</code></pre>
+</div>
+<div id="모형의-타당성-검토" class="section level2">
+<h2>모형의 타당성 검토</h2>
+<p>선형회귀의 기본 가정 : p-value 계산시 F분포를 이용하기에 필요</p>
+<ul>
+<li><p>정규성 : 오차항의 분포가 평균이 0인 정규성</p>
+<ul>
+<li>normal QQ plot</li>
+</ul></li>
+<li><p>등분산성 : 오차항의 분산이 동일</p>
+<ul>
+<li><p><span class="math inline">\(\hat{y}\)</span>에 따른 잔차 그래프(residuals plot)가 메가폰 형태 같은 것이 없어야 한다.</p></li>
+<li><p><span class="math inline">\(\hat{y}\)</span> 증가시 <span class="math inline">\(R^2\)</span> 상승의 경우 Y변수 변환 필요 : log(or sqrt) scaling</p></li>
+<li><p>분산은 일정하나 <span class="math inline">\(\hat{y}\)</span> 증가시 추세가 존재할 경우 추가 X변수 발굴 필요</p></li>
+</ul></li>
+<li><p>독립성 : 오차항들이 서로 독립</p></li>
+</ul>
+<p>잔차 분석 : 모형 추정 후 오차의 추정치인 잔차를 통해 위의 가정들을 검토 가능</p>
+</div>
+<div id="가법모형과-승법모형" class="section level2">
+<h2>가법모형과 승법모형</h2>
+<p>가법모형 : 더하기만 있는 형태로 곱하기는 없음</p>
+<p>승법모형 : 교호작용과 상호작용 포함</p>
+<pre><code>- 고차(교호작용)가 유의하면 저차가 유의하지 않아도 포함 : 즉 교호작용이 유의하면 main effect에서 유의하지 않아도 포함
+
+- 참고로 $$X$$와 $$X^2$$ 사이의 다중 공산성은 거의 없음 : 다중 공산성은 직선의 관계에서 강하게 발생</code></pre>
+</div>
+<div id="코드" class="section level2">
+<h2>코드</h2>
+<p>좀 더 심화된 코드</p>
+</div>
+</div>
+<div id="logistic-regression" class="section level1">
+<h1>Logistic Regression</h1>
+<p>설명력위주의 분류분석 : 종속변수가 범주형 변수</p>
+<p>선형모델 : cut-off에 따른 hyperplane 분류경계선 자체는 선형</p>
+<pre><code>- 오분류 많이 발생 가능</code></pre>
+<p>cut-off기준 : 일반적으로 0.5이나, 불균형자료(imbalanced data)의 경우 P(y=1)가 cut-off값이 됨</p>
+<p><span class="math display">\[logit \ P(y=i)=\beta_0 + \beta_1 x\]</span></p>
+<ul>
+<li><p>장점</p>
+<ul>
+<li>X가 범주형인경우 one-hot encoding을 통해 지시변수로 사용 가능</li>
+</ul></li>
+<li><p>단점</p>
+<ul>
+<li><p>NA가 많은 경우 사용 불가능</p></li>
+<li><p>교호작용의 있을 경우 해석이 어려움</p></li>
+</ul></li>
+</ul>
+<div id="모형-해석-1" class="section level2">
+<h2>모형 해석</h2>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(\beta\)</span></li>
+</ol>
+<p><span class="math inline">\(X_1\)</span>이 1 커지면 <span class="math inline">\(e^{\beta_1}\)</span>배 만큼 오즈가 변함 : 오즈비 개념</p>
+<ol start="2" style="list-style-type: decimal">
+<li><p><span class="math inline">\(\beta\)</span>의 p-value</p></li>
+<li><p>AUROC</p></li>
+</ol>
+<p><span class="math inline">\(R^2\)</span>가 없으므로, 대신 AUROC 사용</p>
+<ol start="4" style="list-style-type: decimal">
+<li>deviance의 p-value</li>
+</ol>
+<p>모형의 유의성 확인으로 null model의 deviance와 fitted model의 deviance 비교</p>
+</div>
+<div id="코드-1" class="section level2">
+<h2>코드</h2>
+</div>
+</div>
+<div id="neural-network" class="section level1">
+<h1>Neural Network</h1>
+<p>비선형 통계 모형으로 universal approximator 범용 근사기</p>
+<p>장점</p>
+<ul>
+<li><p>예측력은 좋음</p></li>
+<li><p>회귀 모형, 분류 모형 둘다 가능</p></li>
+</ul>
+<p>단점</p>
+<ul>
+<li><p>추정해야 할 값들이 많음</p>
+<ul>
+<li>좋은 결과를 위해 많이 대입해 시도해봐야 함하며</li>
+</ul></li>
+<li><p>학습에 많은 시간이 걸림</p></li>
+<li><p>black box : 해석이 어려움</p></li>
+<li><p>overfitting의 위험이 큼</p></li>
+<li><p>input values가 반드시 numeric</p></li>
+<li><p>입증verification이 어렵다</p></li>
+</ul>
+<div id="sensitivity-analysis" class="section level2">
+<h2>sensitivity analysis</h2>
+<p>NN을 해석하기 위한 방법이지만, 다변량 분석을 단변량 분석처럼 하기에 추천하지 않는 방법</p>
+<ol style="list-style-type: decimal">
+<li><p>모든 input value의 평균값을 NN모형에 대입</p></li>
+<li><p>하나의 x변수를 바꿀때(min에서 max로) 변화하는 모형에 따른 output의 변화 측정</p>
+<ul>
+<li>하나의 x변수를 조금씩 늘려가면서 민감도 그림을 그릴 수 도 있음</li>
+</ul></li>
+<li><p>sensitive inputs을 중요한 변수로 판단함</p></li>
+</ol>
+</div>
+<div id="hidden-nodes-combination-function-activation-squashing-function" class="section level2">
+<h2>hidden nodes : combination function + activation (squashing) function</h2>
+<p>활성함수로 보통 sigmoid(logitstic) functions와 hypertangent functions 사용</p>
+<ul>
+<li><p>sigmoid functions <span class="math inline">\(sigmoid(x)={e^x\over {1+e^x}}\)</span> : 0~1 값 반환</p></li>
+<li><p>hypertangent functions <span class="math inline">\(tanh(x)={1-e^x\over {1+e^x}}\)</span> : -1~1값 반환</p></li>
+</ul>
+</div>
+<div id="output-layer-nodes" class="section level2">
+<h2>output layer nodes</h2>
+<p>회귀 목적 : identity activation function<strong>만</strong>을 사용</p>
+<p>분류 목적 : sigmoid function 사용</p>
+<pre><code>- 범주형의 경우 class마다 확률인 0~1을 가지는 하나의 output node</code></pre>
+</div>
+<div id="training-the-networks" class="section level2">
+<h2>training the networks</h2>
+<p>오차에 비례하는 objective function를 줄어들게 학습함</p>
+<p>cross entropy를 작게 만드는 계수 추정</p>
+<ul>
+<li><p>초기 weight 설정하여 error 계산</p></li>
+<li><p>gradient descent method에 따라 weight를 조정하며 error가 더이상 줄어들지 않는 지점까지 판단</p></li>
+</ul>
+</div>
+<div id="실용적인-tips" class="section level2">
+<h2>실용적인 tips</h2>
+<ol style="list-style-type: decimal">
+<li><p>단순하면서 예측을 잘하는 모형이 좋은 모형</p></li>
+<li><p>먼저 통계모형을 사용해(no hidden layer) 만들어 보기</p></li>
+</ol>
+<ul>
+<li><p>그리고 노드를 하나씩 추가하며 성능 확인하기</p></li>
+<li><p>generalization error(일종의 unseen data의 error)가 증가하기 전까지 추가 및 변형</p></li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li>NN는 input data에 매우 민감한 방법 : 좋은 데이터 타입 필요</li>
+</ol>
+<ul>
+<li><p>분산이 비슷한 연속형 변수들</p></li>
+<li><p>적절한 변수 개수</p></li>
+<li><p>범주형 변수는 지시변수를 사용하고, 개수가 지시변수별로 비슷해야 한다.</p></li>
+</ul>
+<ol start="4" style="list-style-type: decimal">
+<li>모든 변수가 0~1 또는 -1~1로 scale</li>
+</ol>
+<ul>
+<li><p>따라서 normalize by z-scores 필요 : <span class="math inline">\(new\ x={x-min\over max-min}\)</span></p>
+<ul>
+<li><p>정규화 normalize : 0~1사이의 수로 만들어 줌</p></li>
+<li><p>표준화 standardize : 평균0, 표준편차 1로 만들어줌</p></li>
+</ul></li>
+<li><p>categorical variable의 경우 지시변수 사용</p></li>
+<li><p>ordinal variables의 경우 equal spacing 사용 (0~1 or -1~1을 구간화)</p></li>
+<li><p>변수 선택도 좋은 방법 : decision tree를 만들어 variable importance를 계산해 변수 선택</p>
+<ul>
+<li>선형모형이 아닌, decision tree 같은 비선형 모형을 바탕으로 변수 선택해야 함</li>
+</ul></li>
+</ul>
+<ol start="5" style="list-style-type: decimal">
+<li>outlier가 있으면 성능을 저하시킴</li>
+</ol>
+</div>
+<div id="코드-2" class="section level2">
+<h2>코드</h2>
+<p>뉴럴 네트워크는 초기값을 이용하기에 set.seed로 고정</p>
+<p>hidden = c(3,3) : 히든 노드의 수</p>
+<p>stepmax = 1e+06 : 반복 최대 횟수 (수렴하지 않으면 stepmax 까지)</p>
+<p>threshold = 0.01 : 오차가 수렴하는 조건 (cross entropy &lt; 0.01)</p>
+<p>act.fct = ‘logistic’ : activation 함수</p>
+<p>linear.output = F : Y변수가 연속형(회귀분석)이면 T, 분류분석이면 F</p>
+<p>다른것과 다르게 predict가 아닌 compute를 사용해 예측</p>
+<p>covariate = test데이터에서 반응변수를 제외한 행렬</p>
+</div>
+</div>
+<div id="decision-tree" class="section level1">
+<h1>Decision Tree</h1>
+<p>의사결정나무는 전체 데이터 집합을 partition</p>
+<p>간단한 모형 underfitting : 설명력 높고 예측력 낮다.</p>
+<p>복잡한 모형 overfitting일 : 설명력 낮고 예측력 높다. -&gt; 완전히 성장한 나무는 overfitting 되기 쉬움</p>
+<p>장점</p>
+<pre><code>- Y가 범주형이든 연속형이등 가능 : 분류 나무, 회귀나무
+
+- 로지스틱 모형에 비해 더 계산이 빠름 : 신속한 판단 가능
+
+- 단변량 분할 one varaiable at a time
+
+    - small n, large p data 가능
+
+- X 변수
+
+    - 변수개수에 영향을 덜받음
+    
+    - 변수의 중요도 파악 가능    
+    
+    - 이상치 및 결측치 영향 최소화
+    
+    - 범주형 X변수 처리 용이
+
+        - 지시변수 불필요
+    
+    - X 변수가 범주형이면 교효작용 찾는데 탁월한 의사결정 나무 유리
+
+    - 범주들의 대범주화하여 X변수 선택 기능
+    
+        - 타 분석방법에 앞서 전처리 과정으로 사용가능
+        
+        - 신경망등 다른 분석에 선택된 변수 사용가능
+
+- 해성의 용이성
+
+- Y 변수가 소수 그룹일경우도 처리가 용이함</code></pre>
+<p>단점</p>
+<pre><code>- 분류경계선 hyperplabne 근처에서는 오분류 가능
+
+- 다른 방법에 비해 분류 정확도(예측도)가 낮을 수 있음</code></pre>
+<div id="cart-의사결정-나무-특징" class="section level2">
+<h2>CART 의사결정 나무 특징</h2>
+<p>노드가 항상 2개로 분할</p>
+<p>숫자형 X변수의 경우 부등호 사용, 범주형 X변수의 경우 부분집합 포함 여부 사용</p>
+<p>불순도를 이용하여 greedy serach</p>
+<p>매 분할마다 하나의 X변수만 사용</p>
+<div id="분류-나무의-분할-방법-불순도-측정" class="section level3">
+<h3>분류 나무의 분할 방법 : 불순도 측정</h3>
+<ol style="list-style-type: decimal">
+<li>불순도 함수</li>
+</ol>
+<ul>
+<li><p>Gini impurity 지니 불순도 : <span class="math inline">\(1-\sum^{K}_{j=1} P_j^2\)</span></p>
+<ul>
+<li><p>K : Y의 범주 개수, <span class="math inline">\(P_i\)</span> i번째 범주에 포함될 확률</p></li>
+<li><p>지니불순도 최댓값 0.5 : 완전히 균일분포(<span class="math inline">\(all\ P_i =1/K\)</span>)인 경우</p></li>
+<li><p>지니불순도 최솟값 0 : 불순도가 작을수록 좋음</p></li>
+</ul></li>
+<li><p>엔트로피 Entropy : <span class="math inline">\(-\sum^{K}_{j=1} P_j log(P_j)\)</span></p></li>
+<li><p>이탈도 Deviance : <span class="math inline">\(-2\sum^{K}_{j=1} n_j log(P_j)\)</span></p></li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li><p>불순도 측정 : 분할 이전의 노드의 불순도와, 분할 후 각각의 노드별 불순도를 측정</p></li>
+<li><p>분할 후 각각의 노드별 분순도를 표본수에 따라 가중평균</p></li>
+<li><p>분할 이후와 이전이 불순도가 감소했는지를 측정</p></li>
+<li><p>greedy search를 통해 최적의 분할을 찾음</p></li>
+</ol>
+</div>
+<div id="cart의-feture-selection-기준" class="section level3">
+<h3>CART의 feture selection 기준</h3>
+<p>parameter를 조정을 통해 최적 찾음</p>
+<ol style="list-style-type: decimal">
+<li><p>maxdepth : leaf node의 최대 깊이를 제한</p>
+<ul>
+<li>maxdepth 클수록 tree 커짐</li>
+</ul></li>
+<li><p>minsplit : 각 노드별 최소한의 관측치 수 제한</p>
+<ul>
+<li>minsplit 작을수록 tree 커짐</li>
+</ul></li>
+<li><p>최소 향상도 cp : complexity parmeter 분할시 최소한으로 작아져야 하는 불순도</p>
+<ul>
+<li>cp 작을수록 tree 커짐</li>
+</ul></li>
+</ol>
+</div>
+<div id="대안-분할-surrogate-split" class="section level3">
+<h3>대안 분할 surrogate split</h3>
+<p>missing value가 있을 경우 다른 추가적인 대안 분할 기준</p>
+<pre><code>- main split과 비슷한 속성이 있는 것을 surrogate split으로 이용함
+
+- NA일 경우 imputation(평균, 중앙값으로 NA 대체) 불필요</code></pre>
+</div>
+</div>
+<div id="pruning-가지치기" class="section level2">
+<h2>Pruning 가지치기</h2>
+<p>overfitting을 막기위해 불필요한 가지 제거</p>
+<p>데이터를 3개지로 분할 : training data, pruning data, test data</p>
+<ol style="list-style-type: decimal">
+<li><p>pruning data를 사용</p>
+<ul>
+<li>pruning data는 test데이터가 아닌 다른 데이터</li>
+</ul></li>
+<li><p>교차검증 cross-validation로 예측오차를 계산</p>
+<ul>
+<li>test data중 일부를 pruning data로 사용하고 이 과정을 여러번 반복</li>
+</ul></li>
+<li><p>예측오차가 가장 작은 모형 선택</p></li>
+</ol>
+</div>
+<div id="코드-3" class="section level2">
+<h2>코드</h2>
+<p>method = ‘class’ : 분류나무</p>
+<p>method = ‘anova’ : 회귀나무(Y가 연속형인 경우)</p>
+<p>xval : cross-validation으로 몇번 교차검정할지를 의미</p>
+<p>cp : 복잡도 cost-complexity</p>
+<p>nsplit : number of slplit</p>
+<p>rel error : (train data의) 상대오차</p>
+<p>xerror : cross-validation의 오차</p>
+<p>최종 노드의 수 = 분할의 수 + 1</p>
+<p>1 SE rule : xerror +- 1 * Xstd</p>
+<p>오차는 동일(위 같은 구간안에 있는 것들)하면서 간결한 모형 선택</p>
+<p>점선 아래의 오차들은 통계적으로 차이 없는 것들</p>
+<p>type=“prob” : 분류</p>
+<p>type=“vector” : 회귀</p>
+</div>
+</div>
+<div id="ensemble-methods" class="section level1">
+<h1>Ensemble Methods</h1>
+<pre><code>- 로지스틱 : bias가 크지만 variance는 작음
+
+    - 하나의 관측값이 변해도 큰 차이 없음
+
+    - likelihood 함수에 의존하여 다양성 확보 어려움
+  
+- 의사결정 나무, 머신러닝 : bias는 작으나 variance가 큼
+
+    - 하나의 관측값에도 크게 변화 : instability 즉 hyperplane의 변동성이 크다
+
+    - 다양성 확보 가능</code></pre>
+<p>앙상블 : instability가 큰 모델을 여러번 학습하여 bias와 variance를 줄여 오류의 감소 추구</p>
+<pre><code>- 분산 감소에 의한 오류 감소 : Bagging, Random Forest
+
+- 편향 감소에 의한 오류 감소 : Boosting(분산도 줄이지만 편향을 더 많이 줄임)
+
+- 분산과 편향 모두 감소에 의한 오류 감소 : Mixture of Exports</code></pre>
+<p><strong>다양성divesity</strong>를 어떻게 확보할 것인지가 중요, 그리고 이를 어떻게 결합aggregate할 것인가</p>
+<p>-&gt; 각각의 모델은 성능도 좋으면서 서로 다양한 형태를 나타내는 것이 가장 이상적</p>
+<ul>
+<li><p>배깅 : 데이터 변형을 통해 tree 생성</p></li>
+<li><p>부스팅 : 가중치 변형을 통해 tree 생성</p></li>
+<li><p>랜덤포레스트 : 배깅의 boostrap + 변수 임의 추출</p></li>
+</ul>
+</div>
+<div id="bagging-boostrapping-aggregating" class="section level1">
+<h1>Bagging : Boostrapping AGGregatING</h1>
+<p>classification on unweighted majority voting</p>
+<p>단점</p>
+<ul>
+<li>해석력을 잃어버림</li>
+</ul>
+<p>장점</p>
+<ul>
+<li>예측력을 높임</li>
+</ul>
+<div id="과정" class="section level2">
+<h2>과정</h2>
+<ol style="list-style-type: decimal">
+<li><p>전체 데이터 집합에서 각 학습 데이터 셋을 boostrapping 즉 복원추출하여 원래 데이터 수만큼 크기를 갖도록 생성</p>
+<ul>
+<li>Bootstrap sample training set 복원추출된 데이터셋 : <span class="math inline">\(T^{(1)},\ ...\ , T^{(B)}\)</span></li>
+</ul></li>
+<li><p>boostrap을 바탕으로 의사 결정 나무 시행, 이 과정을 반복</p>
+<ul>
+<li><p>Classifiers for each sample : <span class="math inline">\(C_1(x,T^{(1)}),\ ...\ , C_B(x,T^{(B)})\)</span></p></li>
+<li><p>각 의사결정나무는 서로 다른 학습 데이터셋을 사용하게 됨</p></li>
+</ul></li>
+<li><p>최종 예측은 각 의사나무의 예측 결과를 다수결의 방법을 통해 취합 -&gt; 분산 감소</p>
+<ul>
+<li><p>number of times that classified as j : <span class="math inline">\(N_j=\sum ^B_{b=1}I[ C_b(x,T^{(b)})=y_j]\)</span></p></li>
+<li><p>Bagging : <span class="math inline">\(C(x)=\text{argmax}_jN_j\)</span></p></li>
+</ul></li>
+</ol>
+</div>
+<div id="코드-4" class="section level2">
+<h2>코드</h2>
+<p>bagging을 할 때는 pruning 하지 않고 tree를 크게 만듦 : 분산이 커져 변동성이 증가하나 bias는 작아짐</p>
+<p>xval=0 : cross validation이 0이란 의므로 pruning 하지 않음</p>
+<p>mfinal : tree의 개수로 요즘에는 100~200이 기본</p>
+<p>변수 중요도로 숫자의 절대적 의미는 없고 상대적 의미만 있음</p>
+<p>비선형 모델의 변수중요도 : 각각의 tree마다의 변수중요도를 통합한 것 -&gt; 이 결과를 NN에도 사용 가능함</p>
+</div>
+</div>
+<div id="boosting" class="section level1">
+<h1>Boosting</h1>
+<p>classification on unequal weighted training data</p>
+<p>오분류 관측치의 가중치를 높이며 분류를 반복, 각각의 분류를 합해 최종 분류를 계산하는 방법</p>
+<pre><code>- 분류경계선 근처의 가중치가 커짐
+
+- 결국 variance와 bias 감소 (bias가 더 크게 감소)</code></pre>
+<p>부스팅의 경우 tree를 작게 만듦</p>
+<p>train set과 test set을 7대3으로 분할하면 그 속성이 남아 있게되므로, 이러한 분할도 여러번 해보는 것이 좋음</p>
+<div id="adaboost" class="section level2">
+<h2>AdaBoost</h2>
+<ol style="list-style-type: decimal">
+<li><p>먼저 초기 가중치를 줌</p>
+<ul>
+<li>Initialized weight : <span class="math inline">\(w_i=1/N\)</span></li>
+</ul></li>
+<li><p>가중치를 사용하여 분류하며 가중치를 변경하는 과정 i=1를 i=M까지 반복</p>
+<ul>
+<li><p>가중치 <span class="math inline">\(w_i\)</span>를 이용하여 classifier <span class="math inline">\(C_m(x)\)</span> 생성</p></li>
+<li><p>오차인 <span class="math inline">\(err_m={\sum^N_{i=1}w_iI(y_i\not= C_m(X)i)) \over \sum^N_{i=1}w_i}\)</span> 를 계산</p>
+<ul>
+<li>오분류시 <span class="math inline">\(I(y_i\not= C_m(X_i))=1\)</span>, 정분류시 <span class="math inline">\(I(y_i\not= C_m(X_i))=0\)</span></li>
+</ul></li>
+<li><p>tree의 가중치인 <span class="math inline">\(\alpha_m=log((1-err_m)/err_m)\)</span> 를 계산</p>
+<ul>
+<li>error가 적으면 <span class="math inline">\(\alpha\)</span>상승</li>
+</ul></li>
+<li><p>새로운 가중치 생성 <span class="math inline">\(w_i=w_i\ \text{exp}[\alpha_mI(y_i\not= C_m(X_i))]\)</span></p></li>
+<li><p>새로운 가중치 전체의 합이 1이 되도록 조정 : <span class="math inline">\(\sum w_i=1\)</span></p></li>
+</ul></li>
+<li><p>반복한 분류를 가중치를 반영하여 최종 분류를 만듦 <span class="math inline">\(C_{AD}(X)=sign[\sum^M_{m=1}\alpha_mC_M(X)]\)</span></p>
+<ul>
+<li>즉 bagging은 tree당 같은 가중치이지만, Adaboost는 tree별로 다른 가중치<span class="math inline">\(\alpha_m\)</span>를 반영</li>
+</ul></li>
+</ol>
+<div id="코드-5" class="section level3">
+<h3>코드</h3>
+<p>xval=0 : 푸루닝 하지 않음
+maxdepth=1 : 분할 한번뿐 -&gt; 일반적으로 boosting은 작을 수록 좋음 (보통 1~4)
+boos=T : 가중치 반영시 bootstrap에서 가중치 높은 것을 여러번 더 뽑을 수 있게 하면 AdaBoost 방법을 이용해 boosting 할 수 있다.</p>
+</div>
+</div>
+<div id="gradient-boost" class="section level2">
+<h2>Gradient Boost</h2>
+<p><span class="math inline">\(Y=h_1(X)+err1\)</span>에서 오류를 다시 <span class="math inline">\(err1=h_2(X)+err2\)</span>와 같이 분류하는 방법 : <span class="math inline">\(F_m(X)=F_{m-1}(X)+w_mh_m(X)\)</span></p>
+<pre><code>- 즉 error를 바탕으로 boosting을 계속하는 방법</code></pre>
+<p>Gredient Descent 알고리즘으로 최적 weight 계산</p>
+<p>각 함수별 최적 weight 찾으면 예측 정확도는 더 높아짐</p>
+</div>
+</div>
+<div id="random-forest" class="section level1">
+<h1>Random Forest</h1>
+<p>변수의 임의 추출을 통해 다양성 확보</p>
+<ul>
+<li><p>bootstrapping과 predictor subset selection을 동시에 적용하여 개별 tree의 <strong>다양성을 극대화</strong></p></li>
+<li><p>tree들이 <strong>서로 독립이</strong> 되도록 하고자 함</p></li>
+<li><p>각 노드를 분할할 때, p개의 변수 중에서 탐색하지 않고, m개 (m&lt;p)의 변수 중에서 탐색하여 분할함</p>
+<ul>
+<li>m=p이면 배깅과 동일</li>
+</ul></li>
+<li><p>m의 값이 작으면 각 나무모형들 간의 상관관계가 감소함 -&gt; m이 너무 적으면 정확도가 낮아짐</p></li>
+<li><p>일반적인 앙상블의 크기 m</p>
+<ul>
+<li><p>보통 분류 data인 경우 <span class="math inline">\(m=\sqrt{p}\)</span></p></li>
+<li><p>회귀 분류 data인 경우 <span class="math inline">\(p\over 3\)</span></p></li>
+</ul></li>
+</ul>
+<div id="과정-1" class="section level2">
+<h2>과정</h2>
+<ul>
+<li><p>boostrap 적용 : bagging과 동일</p></li>
+<li><p>변수의 부분집합 선택을 통한 다양성 확보 : X변수중 random하게 일부만 greedy search</p>
+<ul>
+<li><p>즉 decision tree에서 분할시 분할에 greedy search하게 되는 x변수가 매번 random하게 정해짐</p></li>
+<li><p>여러번 해도 모든 변수를 greedy search하면 중요한 변수는 뿌리 노드 근처에 자주 나옴</p></li>
+</ul></li>
+</ul>
+</div>
+<div id="개별-분류-모델의-결과-aggregating-방법" class="section level2">
+<h2>개별 분류 모델의 결과 aggregating 방법</h2>
+<p>majority voting : <span class="math inline">\(\hat{Y}_{Ensemble}=\text{argmax}_i(\sum_{j=1}^n\delta({Y}_j=i),\ i\in\{0,1\})\)</span></p>
+<p>weighted (각 모델의 예측정확도 <span class="math inline">\(TrnAcc_j\)</span> 사용) voting : <span class="math inline">\(\hat{Y}_{Ensemble}= \text{argmax}_i({\sum_{j=1}^n(TrnAcc_j)\delta(Y_j=i)\over\sum_{j=1}^n(TrnAcc_j)},\ i\in\{0,1\})\)</span></p>
+<p>weighted (각 class별 에측 확률) voting : <span class="math inline">\(\hat{Y}_{Ensemble}= \text{argmax}_i({{1\over n}\sum_{j=1}^nP(Y_j=i)},\ i\in\{0,1\})\)</span></p>
+</div>
+<div id="oob-error-out-of-bag-error" class="section level2">
+<h2>OOB Error : Out Of Bag error</h2>
+<p>개별 학습 데이터셋 구성시 bootstrap 되지 않은 개체들을 검증용으로 사용</p>
+<p>이 값을 test 데이터로 삼으면, test error가 계산됨</p>
+</div>
+<div id="변수-중요도" class="section level2">
+<h2>변수 중요도</h2>
+<p>회귀분석과는 다르게 개별 변수가 통계적으로 얼마나 유의한지에 대한 정보(p-value)가 없음어 간접적인 방식으로 추정</p>
+<pre><code>- 절대적인 개념이 아니라 상대적인 개념
+
+- 다른 모형에서도 OOB를 활용한 변수중요도개념 자주 활용</code></pre>
+<ol style="list-style-type: decimal">
+<li><p>원래 OOB 데이터 집합에 대해서 OOB Error <span class="math inline">\(e_j\)</span> 구함</p>
+<ul>
+<li>j 는 1부터 m개 까지의 각각의 tree</li>
+</ul></li>
+<li><p>특정 변수의 값을 임의로 뒤섞은 random permutation OOB 데이터 집합에 대해서 permutaion OOB Error <span class="math inline">\(p_j\)</span>를 구함</p>
+<ul>
+<li><p>다른 X변수와 Y변수를 제외하고, 오직 특정 X변수 하나만의 순서를 임의로 바꿈</p></li>
+<li><p>해당 특정 X변수가 noise 변수가 됨</p></li>
+</ul></li>
+<li><p>OOB Error 차이<span class="math inline">\(d_i=e_i-p_i\)</span>의 평균과 분산을 계산</p></li>
+<li><p>M개의 모든 tree를 통해 계산한 OBB Error의 차이의 편균과 표준편차로 변수중요도 계산</p>
+<ul>
+<li><p>i번째 변수의 변수 중요도 : <span class="math inline">\(v_i={\bar{d}\over s_d}\)</span></p>
+<ul>
+<li><p><span class="math inline">\(\bar{d}=\sum_{j=1}^md_j/m\)</span></p></li>
+<li><p><span class="math inline">\(s_d^2=\sum_{j}^{m-1}(d_j-\bar{d})^2/(m-1)\)</span></p></li>
+</ul></li>
+<li><p>오류율의 차이가 클수록 해당변수가 tree에서 중요한 역할</p></li>
+</ul></li>
+</ol>
+</div>
+<div id="코드-6" class="section level2">
+<h2>코드</h2>
+</div>
+<div id="코드-회귀분석의-경우" class="section level2">
+<h2>코드 : 회귀분석의 경우</h2>
+</div>
+</div>
+<div id="clustering-unsupervised-learnging" class="section level1">
+<h1>Clustering : Unsupervised Learnging</h1>
+<p>X 변수 대부분 연속형이어야 함 : distance를 사용하므로 범주형의 경우 계산 불가 (지시변수도 가능하나 좋지 못한 방법)</p>
+<p>군집분석은 자료 사이의 거리를 이용하기에, 변수별 단위가 결과에 큰 영향 -&gt; 반드시 표준화 standardization 필요</p>
+<div id="표준화-standardization" class="section level2">
+<h2>표준화 standardization</h2>
+<ol style="list-style-type: decimal">
+<li><p>관측치 표준화</p>
+<ul>
+<li><p>관측치가 사람의 경우 관측치 표준화 불필요</p></li>
+<li><p>파생변수로 관찰치 표준화가능</p>
+<ul>
+<li>파생변수 생성시 비율의 경우 관려적으로 log 취함</li>
+</ul></li>
+</ul></li>
+<li><p>변수 표준화</p>
+<ul>
+<li><p>각 변수의 관찰값으로부터 그 변수의 평균을 빼고, 그 변수의 표준편차로 나누는 것</p></li>
+<li><p>표준화된 자료는 모든 변수가 평균이 0이고 표준편차가 1</p></li>
+</ul></li>
+</ol>
+</div>
+<div id="군집화의-기준-distance" class="section level2">
+<h2>군집화의 기준 : distance</h2>
+<ul>
+<li><p>동일한 군집에 속하면 여러 속성이 비슷하고, 다른군집에 속한 관측치는 그렇지 않음</p></li>
+<li><p>유사성보다는 비유사성dissimilarity를 기준으로 하여 distance 사용</p></li>
+</ul>
+</div>
+<div id="distance-measures" class="section level2">
+<h2>distance measures</h2>
+<ol style="list-style-type: decimal">
+<li><p>유클리드 Euclidean 거리 : <span class="math inline">\(d(x,y)=(\sum_{i=1}^p(x_i-y_i)^2)^{1/2}\)</span> when p=2 (x, y)</p>
+<ul>
+<li>pairwise 거리</li>
+</ul></li>
+<li><p>Minkowski 거리 : <span class="math inline">\(d(x,y)=(\sum_{i=1}^p(x_i-y_i)^m)^{1/m}\)</span></p>
+<ul>
+<li>일반화된 형태로, m = 2 이면 Euclidean</li>
+</ul></li>
+<li><p>Manhalanobis 거리 : <span class="math inline">\(d(x,y)=\sqrt{(x-y)^TS^{-1}(x-y)}\)</span></p>
+<ul>
+<li>공분산행렬 S : correlation 반영 - 다른 거리와 다르게 ind 가정 없어서 이론적으로는 가장 우월하나 실제 s 계산이 어려움</li>
+</ul></li>
+<li><p>Manhattan Distance : <span class="math inline">\(d_{Manhattan}(x,y)=\sum^p_{i=1}|x-y|\)</span></p></li>
+</ol>
+</div>
+</div>
+<div id="hierarchical-clustering-계층적-군집분석" class="section level1">
+<h1>Hierarchical clustering 계층적 군집분석</h1>
+<p>장점</p>
+<pre><code>- 군집의 수를 알 필요가 없음 -&gt; 사후에 판단 가능
+
+- 해석에 용이
+
+    - 덴드로그램을 통해 군집화 프로세스와 결과물을 표현가능</code></pre>
+<p>단점</p>
+<pre><code>- 계산속도가 느림 
+
+   - $_nC_2$ 즉 $n^2$에 비례하여 계산량 증가
+
+- 이상치에 대한 사전검토 필요
+
+    - 이상치가 존재할 경우, 초기 단계에 잘못 분류된 군집은 분석이 끝날때까지 소속군집이 변하지 않음
+    
+    - Centroid 방법이 이상치에 덜 민감함</code></pre>
+<div id="과정-2" class="section level2">
+<h2>과정</h2>
+<ol style="list-style-type: decimal">
+<li><p>1개의 entity를 가지는 관측치 그대로인 N개의 군집으로 시작</p></li>
+<li><p>NxN symmetric 거리 행렬 <span class="math inline">\(D=\{d_{ik}\}\)</span>을 생성</p></li>
+<li><p>거리행렬 D의 원소중 가장 가까운 군집의 쌍 U와 V를 찾아 (UV)라는 하나의 군집으로 합침</p></li>
+<li><p>거리행렬 D중 새롭게 변화 되는 부분인 (UV) 와 다른 군집 W 사이의 거리 <span class="math inline">\(d_{(UV)W}\)</span>를 계산</p>
+<ul>
+<li><p>single linkage 단일연결법 : <span class="math inline">\(d_{(UV)W}=\text{min}(d_{UW},d_{VW})\)</span></p></li>
+<li><p>complete linkage 완전연결법 : <span class="math inline">\(d_{(UV)W}=\text{max}(d_{UW},d_{VW})\)</span></p></li>
+<li><p>average linkage 평균연결법 : <span class="math inline">\(d_{(UV)W}={\sum^{n_{UV}}_{i=1}\sum^{n_{W}}_{i=1}d_{ij}\over n_{UV}n_W})\)</span></p></li>
+<li><p>centroid method 중심점연결법 : <span class="math inline">\(d_{(UV)W}=\text{distance between the centroids of cluster UV and W}\)</span></p></li>
+<li><p>Ward’s Method</p></li>
+</ul></li>
+<li><p>위의 과정을 N-1 반복하여 모든 관측치가 하나의 군집으로 바꿈</p></li>
+<li><p>Dendro gram을 활용 : 어느 levels에서 어떻게 결합되어있는지 판단</p></li>
+</ol>
+</div>
+<div id="dendrogram-고드름-그림" class="section level2">
+<h2>dendrogram 고드름 그림</h2>
+<p>계층적 군집분석에만 dendrogram이 있음 : graphic to ilustrate the merges or divisions</p>
+</div>
+<div id="코드-7" class="section level2">
+<h2>코드</h2>
+</div>
+</div>
+<div id="k-means-clustering" class="section level1">
+<h1>K-means clustering</h1>
+<p>사전에 결정된 군집수 k에 기초하여 전체 데이터를 상대적으로 유사한 k개의 군집으로 구분</p>
+<p>장점</p>
+<pre><code>- 신속한 계산결과로 대용량 데이터에 적합함
+
+- 군집분석 이외에도 분류,예측을 위한 선행작업, 이상치 처리작업등 다양한 분석에 사용 : 정제 천처리 등
+
+- 단독군집이 잘 안나옴
+
+
+- 계산속도가 빠르다 : n에 비례
+
+    - 일반적으로 3번 정도 반복 -&gt; 3nk</code></pre>
+<p>단점</p>
+<pre><code>- 사전에 군집수 K를 결정하기 어려움 : 주관적 선택 필요
+
+- 군집결과의 해석이 용이하지 않을 수 있음
+
+- 초기값에 영향을 많이 받아 잘못 정하면 잘못된 결과 가능
+
+    - 일반적으로 k-means는 군집수가 비슷하게 나옴 : 그래서 초기값에 영향을 많이 받음</code></pre>
+<div id="과정-3" class="section level2">
+<h2>과정</h2>
+<ol style="list-style-type: decimal">
+<li><p>군집수 k를 결정한다.</p></li>
+<li><p>초기 k개 군집의 중심을 선택한다.</p></li>
+<li><p>각 관찰치를 그 중심과 가장 가까운 거리에 있는 군집에 할당한다.</p></li>
+<li><p>형성된 군집의 중심을 계산 : K-means 는 mean을 사용</p></li>
+<li><p>3-4의 과정을 기존의 중심과 새로운 중심의 차이가 없을 때까지 반복한다. -&gt; 재할당</p></li>
+</ol>
+</div>
+<div id="k-결정법" class="section level2">
+<h2>K 결정법</h2>
+<p>K-평균 군집분석법의 결과는 초기 군집수 k의 결정에 민감하게 반응</p>
+<ol style="list-style-type: decimal">
+<li><p>여러 가지의 k값으로 군집분석을 수행한 후 최적의 k값을 이용</p>
+<ul>
+<li><p>Elbow point 계산하여 K 선택</p></li>
+<li><p>Silhouette plot 으로 K 선택</p></li>
+</ul></li>
+<li><p>시각화된 자료 그래프를 통하여 K를 결정</p>
+<ul>
+<li>자료의 시각화를 위하여는 차원의 축소가 필수적 : PCA 사용</li>
+</ul></li>
+<li><p>빅데이터에서 sampling한 데이터로 계층적 군집분석을 수행하여 K값을 선택</p>
+<ul>
+<li>계층적 군집분석 : 소용량 데이터만 가능</li>
+</ul></li>
+</ol>
+</div>
+<div id="elbow-point" class="section level2">
+<h2>Elbow Point</h2>
+<p>K를 결정하기 위한 한 방법으로 K-means에 적합함</p>
+<p>elbow point : 군집중심과 군집내 관찰값 간의 거리제곱의 합이 급격히 감소하다 완만해지는 부분</p>
+</div>
+<div id="silhouette" class="section level2">
+<h2>silhouette</h2>
+<p><span class="math display">\[s(i)=
+{b(i)-a(i)\over \text{max}\{a(i),b(i)\}}=
+\begin{cases}
+1-a(i)/b(i)\ , &amp; \mbox{if }a(i)&lt;b(i) \\
+0\ , &amp; \mbox{if }a(i)=b(i) \\
+b(i)/a(i)-1\ , &amp; \mbox{if }a(i)&gt;b(i)
+\end{cases}\]</span></p>
+<pre><code>- 분모의 max : 관찰치의 수가 많을 수록 s(i)가 커지는 것을 방지
+
+- 1에 가까울수록 군집화가 잘 된 관찰값임
+
+
+- $a(i)$ : 개체 i로부터 같은 군집 내에 있는 모든 다른 개체들 사이의 평균 거리
+
+- $b(i)$ : 개체 i로부터 다른 군집 내에 있는 개체들 사이의 평균 거리 중 가장 작은 값 -&gt; 클수록 좋다</code></pre>
+<p>explain ##.## % : PCA의 설명력의 의미, 즉 n차원을 2차원의 그래프로 축소 (PCA 그래프)</p>
+<p>average silhouette wideth : 0.## -&gt; 평균 silhouette를 의미</p>
+<p>값이 클수록 좋은것임</p>
+<div id="코드-8" class="section level3">
+<h3>코드</h3>
+</div>
+</div>
+</div>
+<div id="k-medioid-clustering" class="section level1">
+<h1>K-medioid clustering</h1>
+<p>K-means와 비슷하나 중심화 할때 medoid 사용</p>
+<p>medoid : 변수별 중앙값의 좌표(object whose average dissimilarity to all the objects in the cluster is minimal)</p>
+<p>Euclidean distances가 아니기에 outlier에 robust함</p>
+<div id="코드-9" class="section level2">
+<h2>코드</h2>
+</div>
+</div>
+<div id="density-based-clustering" class="section level1">
+<h1>Density-based clustering</h1>
+<p>밀도(densely populated area) 기반 군집 분석</p>
+<p>장점</p>
+<ul>
+<li><p>K를 미리 결정할 필요 없음</p></li>
+<li><p>noise, outlier 에 영향 받지 않음</p></li>
+</ul>
+<p>단점</p>
+<ul>
+<li>밀도에만 의존하다 보니 군집의 해석이 어려울 수 있음</li>
+</ul>
+<div id="개의-모수" class="section level2">
+<h2>2개의 모수</h2>
+<ol style="list-style-type: decimal">
+<li><p>Eps : size of neighborhood 반지름</p>
+<ul>
+<li>반지름 안에 포함되는 point를 중심으로 또다시 반지름 -&gt; 점들이 게속 연결되어 군집이 커짐</li>
+</ul></li>
+<li><p>MinPts : minimum # of points 즉 최소 데이터 수</p></li>
+</ol>
+<ul>
+<li><p>dense point 기준점 : Min Points보다 neighborhood 안에 점이 더 많을때</p>
+<ul>
+<li><p>기준점에 속하는 neighborhood를 하나의 군집으로 분류</p></li>
+<li><p>어떠한 군집에도 속하지 않은 데이터는 noise, outlier</p></li>
+</ul></li>
+</ul>
+<div id="코드-10" class="section level3">
+<h3>코드</h3>
+<p>MinPtes=5가 기본값</p>
+<p>eps는 시행착오를 통해 최적이 무엇인지 확인 필요</p>
+<p>border : 군집 외각의 수</p>
+<p>seed : 군집 중심의 수</p>
+</div>
+</div>
+</div>
+
+            </div>
+
+        </article>
+
+        
+
+        
+
+
+        
+    <div class="updated-badge-container">
+        <span title="Updated @ 2020-06-21 19:09:13 KST" style="cursor:help">
+
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="20" class="updated-badge"><linearGradient id="b" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="a"><rect width="130" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#a)"><path class="updated-badge-left" d="M0 0h55v20H0z"/><path class="updated-badge-right" d="M55 0h75v20H55z"/><path fill="url(#b)" d="M0 0h130v20H0z"/></g><g fill="#fff" text-anchor="middle" font-size="110"><text x="285" y="150" fill="#010101" fill-opacity=".3" textLength="450" transform="scale(.1)">updated</text><text x="285" y="140" textLength="450" transform="scale(.1)">updated</text><text x="915" y="150" fill="#010101" fill-opacity=".3" textLength="650" transform="scale(.1)">2020-06-21</text><text x="915" y="140" textLength="650" transform="scale(.1)">2020-06-21</text></g></svg>
+        </span></div>
+
+
+
+        
+
+
+        <div class="post-share">
+
+        
+
+        <div class="share-items">
+
+            
+                <div class="share-item twitter">
+                    
+                    <a href="https://twitter.com/share?url=/posts/data_mining/0/&amp;text=%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%a7%88%ec%9d%b4%eb%8b%9d%20-%20%ec%9d%b4%eb%a1%a0%ec%a0%95%eb%a6%ac&amp;hashtags=datamining,regression,logistic,randomforest,decisiontree,&amp;via=" title="Share on Twitter" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon twitter-icon"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg></a>
+                </div>
+            
+
+            
+                <div class="share-item facebook">
+                    
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=/posts/data_mining/0/&amp;hashtag=%23datamining" title="Share on Facebook" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon facebook-icon"><path d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z"/></svg></a>
+                </div>
+            
+
+            
+                <div class="share-item linkedin">
+                    
+                    <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=/posts/data_mining/0/&amp;title=%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%a7%88%ec%9d%b4%eb%8b%9d%20-%20%ec%9d%b4%eb%a1%a0%ec%a0%95%eb%a6%ac&amp;summary=R%20%ea%b8%b0%eb%b0%98%ec%9d%98%20%eb%8d%b0%ec%9d%b4%ed%84%b0%20%eb%a7%88%ec%9d%b4%eb%8b%9d%20%ec%a0%95%eb%a6%ac%0d%ec%84%a4%eb%aa%85%eb%a0%a5%20%ec%9c%84%ec%a3%bc%20%eb%aa%a8%ed%98%95%20:%20%ed%86%b5%ea%b3%84%eb%aa%a8%ed%98%95%0a%0d%ec%98%88%ec%b8%a1%eb%a0%a5%ec%9d%80%20%eb%96%a8%ec%96%b4%ec%a7%80%eb%82%98%20%eb%aa%a8%ed%98%95%ec%9d%84%20%ec%9d%b4%ed%95%b4%ed%95%98%ea%b8%b0%20%ec%a2%8b%ec%9d%8c%0a%0d%eb%b9%84%ea%b5%90%ea%b8%b0%ec%a4%80%20:%20%5c%28R%5e2%5c%29%0a%0dX%20~%20Y%20%ec%9d%98%20%ec%9d%b8%ea%b3%bc%ea%b4%80%ea%b3%84%eb%a5%bc%20%ec%96%bc%eb%a7%88%eb%82%98%20%ec%84%a4%eb%aa%85%ed%95%98%eb%8a%94%ec%a7%80%0a%0d%ec%84%a0%ed%98%95%ec%9d%b4%eb%af%80%eb%a1%9c%20%ec%98%a4%eb%b2%84%ed%94%bc%ed%8c%85%ec%9d%84%20%eb%ac%b4%ec%8b%9c%ed%95%b4%eb%8f%84%eb%90%a8.%20%ec%a6%89%20%5c%28R%5e2%5c%29%ea%b0%80%20%ec%a4%91%ec%9a%94%0a%0d%0d%0d%ec%98%88%ec%b8%a1%eb%a0%a5%20%ec%9c%84%ec%a3%bc%20%eb%aa%a8%ed%98%95%20:%20%ec%98%88%ec%b8%a1%eb%a0%a5%ec%9d%80%20%eb%9b%b0%ec%96%b4%eb%82%98%ec%a7%80%eb%a7%8c%20%ec%9d%b4%ed%95%b4%ec%99%80%20%ed%95%b4%ec%84%9d%ec%9d%b4%20%ec%96%b4%eb%a0%a4%ec%9b%80&amp;source=Leechungpa%27s%20Data%20Science%20blog" title="Share on LinkedIn" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon linkedin-icon"><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg></a>
+                </div>
+            
+
+            
+                <div class="share-item telegram">
+                    
+                    <a href="https://t.me/share/url?url=/posts/data_mining/0/&amp;text=%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%a7%88%ec%9d%b4%eb%8b%9d%20-%20%ec%9d%b4%eb%a1%a0%ec%a0%95%eb%a6%ac" title="Share on Telegram" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="icon telegram-icon"><path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm121.8 169.9l-40.7 191.8c-3 13.6-11.1 16.9-22.4 10.5l-62-45.7-29.9 28.8c-3.3 3.3-6.1 6.1-12.5 6.1l4.4-63.1 114.9-103.8c5-4.4-1.1-6.9-7.7-2.5l-142 89.4-61.2-19.1c-13.3-4.2-13.6-13.3 2.8-19.7l239.1-92.2c11.1-4 20.8 2.7 17.2 19.5z"/></svg></a>
+                </div>
+            
+
+            
+
+            
+
+            
+
+            
+
+            
+                <div class="share-item qrcode">
+                    <div class="qrcode-container" title="Share via QR Code"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon qrcode-icon"><path d="M0 224h192V32H0v192zM64 96h64v64H64V96zm192-64v192h192V32H256zm128 128h-64V96h64v64zM0 480h192V288H0v192zm64-128h64v64H64v-64zm352-64h32v128h-96v-32h-32v96h-64V288h96v32h64v-32zm0 160h32v32h-32v-32zm-64 0h32v32h-32v-32z"/></svg><div id="qrcode-img"></div>
+                    </div>
+                    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+
+<script>
+    var typeNumber = 0;
+    var errorCorrectionLevel = 'L';
+    var qr = qrcode(typeNumber, errorCorrectionLevel);
+    qr.addData('\/posts\/data_mining\/0\/');
+    qr.make();
+    document.getElementById('qrcode-img').innerHTML = qr.createImgTag();
+</script>
+
+                </div>
+            
+
+        </div>
+
+    </div>
+
+
+
+
+        
+    
+    
+        <div class="related-posts">
+            <h2 class="related-title">See Also:<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon related-icon"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm144 276c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92h-92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z"/></svg></h2>
+            <ul class="related-list">
+                
+                    <li class="related-item">
+                        <a href="/posts/data_mining/3/" class="related-link">데이터마이닝 - Random Forest</a>
+                    </li>
+                
+                    <li class="related-item">
+                        <a href="/posts/data_mining/2/" class="related-link">데이터마이닝 - Decision Tree</a>
+                    </li>
+                
+                    <li class="related-item">
+                        <a href="/posts/data_mining/1/" class="related-link">데이터마이닝 - 로지스틱 회귀분석</a>
+                    </li>
+                
+                    <li class="related-item">
+                        <a href="/posts/r/3/" class="related-link">R 글꼴 변경</a>
+                    </li>
+                
+                    <li class="related-item">
+                        <a href="/posts/r/1/" class="related-link">Data Science를 위한 R 초기 환경</a>
+                    </li>
+                
+            </ul>
+        </div>
+    
+
+
+
+        
+    
+        <div class="post-tags">
+            
+                
+                
+                
+                
+                    
+                    <a href="/tags/data-mining/" rel="tag" class="post-tags-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon tag-icon"><path d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"/></svg>data mining</a>
+                
+            
+                
+                
+                
+                
+                    
+                    <a href="/tags/regression/" rel="tag" class="post-tags-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon tag-icon"><path d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"/></svg>regression</a>
+                
+            
+                
+                
+                
+                
+                    
+                    <a href="/tags/logistic/" rel="tag" class="post-tags-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon tag-icon"><path d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"/></svg>logistic</a>
+                
+            
+                
+                
+                
+                
+                    
+                    <a href="/tags/random-forest/" rel="tag" class="post-tags-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon tag-icon"><path d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"/></svg>random forest</a>
+                
+            
+                
+                
+                
+                
+                    
+                    <a href="/tags/decision-tree/" rel="tag" class="post-tags-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon tag-icon"><path d="M0 252.118V48C0 21.49 21.49 0 48 0h204.118a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882L293.823 497.941c-18.745 18.745-49.137 18.745-67.882 0L14.059 286.059A48 48 0 0 1 0 252.118zM112 64c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48z"/></svg>decision tree</a>
+                
+            
+        </div>
+    
+
+
+
+        
+
+
+        
+
+
+        
+    
+        
+        
+    
+    
+    
+    
+        <ul class="post-nav">
+            
+            
+                <li class="post-nav-next">
+                    <a href="/posts/r/3/" rel="next">R 글꼴 변경 &gt;</a>
+                </li>
+            
+        </ul>
+    
+
+
+
+        
+
+
+    </div>
+</main>
+
+
+            
+    <div id="back-to-top" class="back-to-top">
+        <a href="#"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon arrow-up"><path d="M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z"/></svg></a>
+    </div>
+
+
+            
+    <footer id="footer" class="footer">
+        <div class="footer-inner">
+            <div class="site-info">©&nbsp;2020–2020&nbsp;<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon footer-icon"><path d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>&nbsp;Lee Chung Pa</div><div class="powered-by">Powered by <a href="https://github.com/gohugoio/hugo" target="_blank" rel="noopener">Hugo</a> | Theme is <a href="https://github.com/reuixiy/hugo-theme-meme" target="_blank" rel="noopener">MemE</a></div><div class="site-copyright"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a></div>
+
+            
+    
+        <ul class="socials"><li class="socials-item">
+                    <a href="/rss.xml" target="_blank" rel="external noopener" title="RSS"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="icon social-icon"><path d="M19.199 24C19.199 13.467 10.533 4.8 0 4.8V0c13.165 0 24 10.835 24 24h-4.801zM3.291 17.415c1.814 0 3.293 1.479 3.293 3.295 0 1.813-1.485 3.29-3.301 3.29C1.47 24 0 22.526 0 20.71s1.475-3.294 3.291-3.295zM15.909 24h-4.665c0-6.169-5.075-11.245-11.244-11.245V8.09c8.727 0 15.909 7.184 15.909 15.91z"/></svg></a>
+                </li><li class="socials-item">
+                    <a href="mailto:leechungpa@naver.com" target="_blank" rel="external noopener" title="Email"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon social-icon"><path d="M464 64H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V112c0-26.51-21.49-48-48-48zm0 48v40.805c-22.422 18.259-58.168 46.651-134.587 106.49-16.841 13.247-50.201 45.072-73.413 44.701-23.208.375-56.579-31.459-73.413-44.701C106.18 199.465 70.425 171.067 48 152.805V112h416zM48 400V214.398c22.914 18.251 55.409 43.862 104.938 82.646 21.857 17.205 60.134 55.186 103.062 54.955 42.717.231 80.509-37.199 103.053-54.947 49.528-38.783 82.032-64.401 104.947-82.653V400H48z"/></svg></a>
+                </li><li class="socials-item">
+                    <a href="https://github.com/leechungpa" target="_blank" rel="external noopener" title="GitHub"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="icon social-icon"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+                </li><li class="socials-item">
+                    <a href="https://twitter.com/" target="_blank" rel="external noopener" title="Twitter"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon social-icon"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg></a>
+                </li><li class="socials-item">
+                    <a href="https://t.me/" target="_blank" rel="external noopener" title="Telegram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="icon social-icon"><path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm121.8 169.9l-40.7 191.8c-3 13.6-11.1 16.9-22.4 10.5l-62-45.7-29.9 28.8c-3.3 3.3-6.1 6.1-12.5 6.1l4.4-63.1 114.9-103.8c5-4.4-1.1-6.9-7.7-2.5l-142 89.4-61.2-19.1c-13.3-4.2-13.6-13.3 2.8-19.7l239.1-92.2c11.1-4 20.8 2.7 17.2 19.5z"/></svg></a>
+                </li></ul>
+    
+
+
+
+            
+        </div>
+    </footer>
+
+
+        </div>
+        
+    <script src="https://cdn.jsdelivr.net/gh/cferdinandi/smooth-scroll/dist/smooth-scroll.polyfills.min.js"></script>
+
+<script>
+    var scroll = new SmoothScroll('a[href*="#"]', {
+        speedAsDuration: true,
+        header: '[data-scroll-header]'
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/medium-zoom@latest/dist/medium-zoom.min.js"></script>
+
+<script>
+    mediumZoom(document.querySelectorAll('div.post-body img'), {
+        background: 'hsla(var(--color-bg-h), var(--color-bg-s), var(--color-bg-l), 0.95)'
+    })
+</script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/instant.page@3.0.0/instantpage.min.js" type="module" defer></script>
+
+
+
+
+
+
+
+
+
+
+    </body>
+</html>
