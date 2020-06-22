@@ -1,3 +1,15 @@
+--- 
+title : "Resume 이력서"
+author : 이청파
+date : "2020-05-15"
+output: 
+  blogdown::html_page:
+    toc: true
+    highlight: tango
+    number_section: true
+    self_contained: true
+---  
+
 
 <div id="TOC">
 <ul>
@@ -9,6 +21,7 @@
 <li><a href="#study-and-project">📝 Study and Project</a><ul>
 <li><a href="#주간-음원차트-예측"><em>주간 음원차트 예측</em></a></li>
 <li><a href="#application-of-mcnn-for-estimating-crowd-size"><em>Application of MCNN for estimating crowd size</em></a></li>
+<li><a href="#by-using-neural-network-predict-interest-rate-from-put-call-parity"><em>By using Neural Network, predict interest rate from Put-Call Parity</em></a></li>
 </ul></li>
 <li><a href="#courses">📚 Courses</a><ul>
 <li><a href="#대학-수강-목록">대학 수강 목록</a></li>
@@ -19,13 +32,15 @@
 
 <p>해당 블로그는 <a href="https://github.com/rstudio/blogdown"><strong>blogdown package</strong></a>를 바탕으로 제작되었습니다. 2020학년도 1학기 <a href="https://statkclee.github.io/ds-intro-2020/">데이터사이언스 입문</a> 수업에서 배운 내용을 바탕으로 데이터 사이언스를 위한 블로그입니다.</p>
 <hr />
+<center>
 <div id="portfolio" class="section level1">
 <h1>Portfolio</h1>
+</center>
 <div id="about-me" class="section level2">
 <h2>💻 About me</h2>
 <ul>
 <li>이청파 Lee Chungpa</li>
-<li>E-mail: <a href="mailto:leechungpa@gmail.com" class="email">leechungpa@gmail.com</a></li>
+<li>E-mail : <a href="mailto:leechungpa@gmail.com" class="email">leechungpa@gmail.com</a></li>
 <li>익숙한 기술 : R(tidyverse), Python, Git</li>
 <li>공부중인 기술 : SQL, POSIX, Python 패키지들</li>
 </ul>
@@ -54,12 +69,17 @@
 <div id="주간-음원차트-예측" class="section level3">
 <h3><em>주간 음원차트 예측</em></h3>
 <p><code>Python</code>, <code>R</code>, <code>Machine Learning</code> <a href="https://github.com/YooGunWook/1nurse4stat">Github Link</a></p>
-<p>음원 데이터를 활용한 주간음원순위 예측 프로젝트</p>
+<p>2019년 발표된 문화체육관광부의 자료에 따르면 음악 산업 시장은 2016년부터 2018년까지 꾸준하게 매출액이 증가하고 있다. 성장하는 음원시장의 대표적인 지표로 음원 순위를 말할 수 있는데 18년도 음원 데이터 및 소셜데이터를 활용하여 주간음원순위를 예측하고자 한다. Catboost XGboost Random forest 등을 사용하며 모델링을 하였고 shiny를 통해 시각화 하였다.</p>
 </div>
 <div id="application-of-mcnn-for-estimating-crowd-size" class="section level3">
 <h3><em>Application of MCNN for estimating crowd size</em></h3>
 <p><code>Python</code>, <code>Machine Learning</code> <a href="https://github.com/Seungmi122/2019FS_DL">Github Link</a></p>
 <p>Have you ever seen a news article concerning the number of people at political rallies? It has gone through a lot of controversy lately because the organizers and the opposite parties differed on the estimate of the crowd number. We can easily handle these problems by giving an objective estimate with a crowd counting machine. The domain of crowd counting can also be extended to other areas such as counting cells or bacteria from a microscopic image, counting animals in wildlife, or estimating the number of vehicles at transportation hubs.</p>
+</div>
+<div id="by-using-neural-network-predict-interest-rate-from-put-call-parity" class="section level3">
+<h3><em>By using Neural Network, predict interest rate from Put-Call Parity</em></h3>
+<p><code>Python</code>, <code>Machine Learning</code> <a href="https://github.com/leechungpa/FinancialEngineering-intro">Github Link</a></p>
+<p>By using elementary Neural Network wich is 9 by 3 by 1 Cummulative Nerual Network, predict interest rate. We made artificial data set from Put-Call Parity formula comes from paper ‘option pricing : a simplified approach (1979) John C.COX Stephen A.ROSS Mark RUBINSETIN’.</p>
 </div>
 </div>
 <div id="courses" class="section level2">
