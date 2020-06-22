@@ -1,7 +1,7 @@
 --- 
-title: Resume 이력서
-author: 이청파
-date: 2020-05-15
+title : "Resume 이력서"
+author : 이청파
+date : "2020-05-15"
 ---  
  
 
@@ -14,7 +14,7 @@ date: 2020-05-15
 ## 💻 About me
 
 - 이청파 Lee Chungpa
-- E-mail: leechungpa@gmail.com
+- E-mail : leechungpa@gmail.com
 - 익숙한 기술 : R(tidyverse), Python, Git
 - 공부중인 기술 : SQL, POSIX, Python 패키지들
  
@@ -39,7 +39,7 @@ date: 2020-05-15
 ### _주간 음원차트 예측_
 `Python`, `R`, `Machine Learning` [Github Link](https://github.com/YooGunWook/1nurse4stat)
 
-음원 데이터를 활용한 주간음원순위 예측 프로젝트
+2019년 발표된 문화체육관광부의 자료에 따르면 음악 산업 시장은 2016년부터 2018년까지 꾸준하게 매출액이 증가하고 있다. 성장하는 음원시장의 대표적인 지표로 음원 순위를 말할 수 있는데 18년도 음원 데이터 및 소셜데이터를 활용하여 주간음원순위를 예측하고자 한다. Catboost XGboost Random forest 등을 사용하며 모델링을 하였고 shiny를 통해 시각화 하였다.
 
 
 ### _Application of MCNN for estimating crowd size_
@@ -48,6 +48,11 @@ date: 2020-05-15
 
 Have you ever seen a news article concerning the number of people at political rallies? It has gone through a lot of controversy lately because the organizers and the opposite parties differed on the estimate of the crowd number. We can easily handle these problems by giving an objective estimate with a crowd counting machine. The domain of crowd counting can also be extended to other areas such as counting cells or bacteria from a microscopic image, counting animals in wildlife, or estimating the number of vehicles at transportation hubs.
 
+### _By using Neural Network, predict interest rate from Put-Call Parity_
+
+`Python`, `Machine Learning` [Github Link](https://github.com/leechungpa/FinancialEngineering-intro)
+
+By using elementary Neural Network wich is 9 by 3 by 1 Cummulative Nerual Network, predict interest rate. We made artificial data set from Put-Call Parity formula comes from paper 'option pricing : a simplified approach (1979) John C.COX Stephen A.ROSS Mark RUBINSETIN'.
 
 
 ## 📚 Courses

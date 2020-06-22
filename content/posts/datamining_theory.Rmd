@@ -12,16 +12,24 @@ tags:
   - logistic
   - random forest
   - decision tree
+editor_options: 
+  chunk_output_type: inline
+output: 
+  blogdown::html_page:
+    toc: true
+    highlight: tango
+    number_section: true
+    self_contained: true
 ---
 
 
 ```{r setup, echo=F}
-knitr::opts_chunk$set(eval = FALSE, echo=FALSE)
+knitr::opts_chunk$set(eval = TRUE, warning=FALSE)
 ```
 
 # R 기반의 데이터 마이닝 정리
 
-![](https://raw.githubusercontent.com/leechungpa/DataScience-blog/master/content/posts/data/datamining.png)
+![](./data/datamining.png)
 
 설명력 위주 모형 : 통계모형
 
@@ -68,7 +76,7 @@ $$MAPE = {100\% \over n} \sum (y - \hat y )^2$$
 
 단점 : 작위성이 있다 (측도에 따라,  cut-off에 따라 순위변동 가능)
 
-![](https://raw.githubusercontent.com/leechungpa/DataScience-blog/master/content/posts/data/datamining-accuracy.png)
+![](./data/datamining-accuracy.png)
 
 모형 작성시 : sensitivity(TPR), specificity(TNR)
 
@@ -211,20 +219,20 @@ p-value가 0.05보다 작으면 $H_0 : all \ \beta_i =0$을 기각 : 즉 적어�
 
 cf. $R^2$와 p-value의 관련성
 
-    - 높은 $R^2$, 낮은 p-value : 데이터 품질이 높은 경우
+    - 높은 R-squre, 낮은 p-value : 데이터 품질이 높은 경우
 
-    - 낮은 $R^2$, 낮은 p-value : X변수 추가 발굴 (금융 데이터)
+    - 낮은 R-squre, 낮은 p-value : X변수 추가 발굴 (금융 데이터)
 
-    - 낮은 $R^2$, 높은 p-value :유의하지 않은 X변수로 구성된 회귀분석
+    - 낮은 R-squre, 높은 p-value :유의하지 않은 X변수로 구성된 회귀분석
 
-    - 높은 $R^2$, 높은 p-value : 불가능
+    - 높은 R-squre, 높은 p-value : 불가능
 
 
 $R^2$는 분야별 유연한 기준 필요
 
-    - 의학 약학 분야와 같이 실험데이터는 인과관계 단순 : $R^2$ 높게 나옴
+    - 의학 약학 분야와 같이 실험데이터는 인과관계 단순 : R-squre 높게 나옴
 
-    - 금융 경제 분야와 같이 관찰 데이터는 많은 변수와 인과관계 복잡 : $R^2$ 낮게 나옴
+    - 금융 경제 분야와 같이 관찰 데이터는 많은 변수와 인과관계 복잡 : R-squre 낮게 나옴
 
 
 ## 모형의 타당성 검토
@@ -237,11 +245,11 @@ $R^2$는 분야별 유연한 기준 필요
 
 - 등분산성 : 오차항의 분산이 동일
 
-    - $\hat{y}$에 따른 잔차 그래프(residuals plot)가 메가폰 형태 같은 것이 없어야 한다.
+  - $\hat{y}$에 따른 잔차 그래프(residuals plot)가 메가폰 형태 같은 것이 없어야 한다.
 
-    - $\hat{y}$ 증가시 $R^2$ 상승의 경우 Y변수 변환 필요 : log(or sqrt) scaling
+  - $\hat{y}$ 증가시 $R^2$ 상승의 경우 Y변수 변환 필요 : log(or sqrt) scaling
 
-    - 분산은 일정하나 $\hat{y}$ 증가시 추세가 존재할 경우 추가 X변수 발굴 필요
+  - 분산은 일정하나 $\hat{y}$ 증가시 추세가 존재할 경우 추가 X변수 발굴 필요
 
     
 - 독립성 : 오차항들이 서로 독립
@@ -267,9 +275,7 @@ $R^2$는 분야별 유연한 기준 필요
 ## 코드
 
 ```{r echo=FALSE}
-usedcar2 <- read.csv("../data/usedcar2.csv",header = T)
-head(usedcar2)
-summary(usedcar2)
+usedcar2 <- read.csv("./data/usedcar2.csv",header = T)
 ```
 
 
@@ -280,7 +286,6 @@ summary(usedcar2)
 # indicator variables
 usedcar2$Ind1<-as.numeric(usedcar2$Color == 'white')
 usedcar2$Ind2<-as.numeric(usedcar2$Color == 'silver')
-head(usedcar2,5)
 
 # training and test data
 set.seed(1234)
@@ -295,22 +300,11 @@ lm_used<-lm(Price ~ Odometer + Ind1 + Ind2 + Ind1:Odometer, data=train)
 summary(lm_used)
 
 
-# plotting
-plot(Price~Odometer,data=usedcar2,col=ifelse(usedcar2$Color=='silver','black',
-                                             ifelse(usedcar2$Color=='white','blue','red')))
-lines(x <- c(19000,49300), y=16700.6-0.0555*x, lty=3)    
-text(32000, 14500, "y=16700.6-0.0555*x")
-lines(x <- c(19000,49300), y=16791.1-0.0555*x, lty=2)    
-text(40000, 14800, "y=16791.1-0.0555*x")
-lines(x <- c(19000,49300), y=16996.1-0.0555*x, lty=1)    
-text(31000, 15500, "y=16996.1-0.0555*x")
-
-
 # Trellis plot : 범주별 그래프
 library(lattice)
 mypanel <- function(x, y) {
   panel.xyplot(x, y)
-  panel.loess(x, y, col="red", lwd=2, lty=2)
+  panel.loess(x, y, col="red", lwd=2, lty=2)  #loess : 비선형 회귀분석의 이름 
   panel.lmline(x, y, col="black", lwd=2, lty=3)
 }
 xyplot(Price~Odometer|Color,data=usedcar2,panel=mypanel) # color라는 범주별 그래프를 그려줌
@@ -323,7 +317,6 @@ plot(lm_used,which=1) ## fitted values vs. residuals
 
 # stepwise
 ls_st = step(lm_used, direction='both')
-
 
 
 
@@ -346,95 +339,7 @@ sqrt(mean((test$Price - pred1)^2))
 ```
 
 
-좀 더 심화된 코드
 
-```{r}
-#setwd("c:/DMdata")
-dat <- read.csv("../data/insurance.csv",header = T)
-head(dat)
-summary(dat)
-dat$smoker = as.factor(dat$smoker)
-dat$sex = as.factor(dat$sex)
-dat$region = as.factor(dat$region)
-```
-
-
-```{r}
-### Trellis plot
-library(lattice)
-mypanel <- function(x, y) {
-  panel.xyplot(x, y)
-  panel.loess(x, y, col="red", lwd=2, lty=2) #loess : 비선형 회귀분석의 이름 
-}
-
-xyplot(charges~age|smoker,data=dat,panel=mypanel) # 조건부에서는 범주만 가능
-xyplot(charges~sex|smoker,data=dat,panel=mypanel)
-xyplot(charges~bmi|smoker,data=dat,panel=mypanel) # 흡연여부와 bmi의 교호작용을 의심할 수 있음
-xyplot(charges~children|smoker,data=dat,panel=mypanel )
-xyplot(charges~region|smoker,data=dat,panel=mypanel )
-
-xyplot(charges~bmi|smoker*sex,data=dat,panel=mypanel ) #흡연여부와 남여부 총 4가지 조건부
-xyplot(charges~age|smoker*sex,data=dat,panel=mypanel )
-xyplot(charges~bmi|smoker*region,data=dat,panel=mypanel )
-
-### Linear Regression ###
-lm1=lm(charges ~ age+sex+bmi+children+smoker+region, data=dat) # 지시변수 안만들어도 자동으로 만들어 줌 
-summary(lm1) 
-plot(lm1,which=1) # 잔차분석 회귀진단 : 문제가 있음 (R^2은 높으나 문제 있음)
-lm2=lm(charges ~ age+sex+bmi+children+smoker+region+bmi:smoker, data=dat) # 교호작용 포함
-summary(lm2)
-plot(lm2,which=1)
-# identifying risk factors : 잔차의 패턴이 있는 이유를 세밀하게 찾기 위해 charges 말고 lm2$residuals 사용
-xyplot(lm2$residuals~age|smoker,data=dat,panel=mypanel)
-xyplot(lm2$residuals~sex|smoker,data=dat,panel=mypanel)
-xyplot(lm2$residuals~bmi|smoker,data=dat,panel=mypanel) # 잔차에 패턴이 남아 있음
-xyplot(lm2$residuals~children|smoker,data=dat,panel=mypanel)
-xyplot(lm2$residuals~region|smoker,data=dat,panel=mypanel)
-
-
-## Regression tree
-library(rpart)
-library(rpart.plot)
-# maximal tree
-tree1 = rpart(charges ~ age+sex+bmi+children+smoker+region, data = dat, method="anova")
-      # rpart는 자동적으로 교호작용이 포함되므로 포함해서 작성하면 안됨
-      # method="anova" : Y변수가 연속형이라는 의미
-
-prp(tree1, type=4, extra=1, digits=3) # 시각화
-      # 흡연자 안에 2그룹이 있는 것을 볼 수 있음 (age는 그래프상 크게 다르지 않으므로 사용X) : 흡연시 "bmi>=30" 찾음
-
-### Categorizing "bmi>=30"
-dat$risk <- dat$bmi >= 30
-xyplot(charges~age|risk*smoker,data=dat,panel=mypanel)  # smoker*risk라고 해도 동일함
-xyplot(charges~bmi|risk*smoker,data=dat,panel=mypanel)
-
-lm3=lm(charges ~ age+sex+bmi+children+smoker+region+risk:smoker, data=dat)
-      # bmi:smoker대신 risk:smoker로 바꿈
-summary(lm3)
-plot(lm3,which=1)
-# identifying risk factors
-xyplot(lm3$residuals~age|smoker,data=dat,panel=mypanel)
-xyplot(lm3$residuals~sex|smoker,data=dat,panel=mypanel)
-xyplot(lm3$residuals~bmi|smoker,data=dat,panel=mypanel)
-xyplot(lm3$residuals~children|smoker,data=dat,panel=mypanel)
-xyplot(lm3$residuals~region|smoker,data=dat,panel=mypanel)
-
-lm4=lm(charges ~ age+sex+bmi+children+smoker+region+risk:smoker+bmi:smoker, data=dat)
-        # lm3$residuals~bmi의 오차에 패턴이 있으므로 bmi:smoker도 추가
-summary(lm4)
-plot(lm4,which=1)
-
-# identifying risk factors
-xyplot(lm4$residuals~age|smoker,data=dat,panel=mypanel)
-xyplot(lm4$residuals~sex|smoker,data=dat,panel=mypanel)
-xyplot(lm4$residuals~bmi|smoker,data=dat,panel=mypanel) # 이전과 다르게 문제가 없음
-xyplot(lm4$residuals~children|smoker,data=dat,panel=mypanel)
-xyplot(lm4$residuals~region|smoker,data=dat,panel=mypanel)
-
-step(lm4, direction = 'both') # lm4 is final model
-
-
-```
 
 
 
@@ -489,8 +394,7 @@ $R^2$가 없으므로, 대신 AUROC 사용
 ## 코드
 
 ```{r echo=FALSE}
-directmail = read.csv('data/directmail.csv')
-head(directmail)
+directmail = read.csv('./data/directmail.csv')
 ```
 
 
@@ -501,59 +405,36 @@ table(complete)
 directmail1<-directmail[complete,]
 dim(directmail1)
 
+# training and test data
+set.seed(1234)
+i = sample(1:ncol(directmail1), round(ncol(directmail1)*0.7)) #70% for training data, 30% for testdata
+train = directmail1[i,] 
+test = directmail1[-i,]
+
 # fitting full model
-full_model = glm(RESPOND~. , family="binomial",data=directmail1)
+full_model = glm(RESPOND~. , family="binomial",data=train)
 summary(full_model)
 
 # model's significance
-empty_model = glm(RESPOND~1, family="binomial", data=directmail1)
+empty_model = glm(RESPOND~1, family="binomial", data=train)
 anova(full_model, empty_model, test="Chisq")
 
 # variable selection
 step_model = step(full_model, direction='both') # direction='backward' is default
-summary(step_model)
+
+# predicted probability
+prob_pred1 = predict(step_model, newdata=test, type='response')
 
 
 # odds ratio
 exp(coef(step_model))
-```
 
 
-```{r echo=FALSE}
-directmail = read.csv('data/directmail.csv')
-head(directmail)
-```
-
-
-```{r}
-### Model Evaluation for classification###
-# Fitting by training data and validating by test data
-complete=complete.cases(directmail)
-directmail1<-directmail[complete,]
-nobs=nrow(directmail1)
-
-# training and test data
-set.seed(1234)
-i = sample(1:nobs, round(nobs*0.7)) #70% for training data, 30% for testdata
-train = directmail1[i,] 
-test = directmail1[-i,]
-
-# several models
-model1 = glm(RESPOND~AGE+BUY18+CLIMATE+FICO+MARRIED+OWNHOME,family="binomial", data=train)
-model2 = glm(RESPOND~AGE+BUY18+CLIMATE+FICO,family="binomial", data=train)
-
-# predicted probability
-prob_pred1 = predict(model1, newdata=test, type='response')
-prob_pred2 = predict(model2, newdata=test, type='response')
 
 y_pred1 = as.numeric(prob_pred1 > 0.075)
 tab1=table(test$RESPOND, y_pred1)
 print(tab1)
 sum(diag(tab1))/sum(tab1)
-y_pred2 = as.numeric(prob_pred2 > 0.075)
-tab2=table(test$RESPOND, y_pred2)
-print(tab2)
-sum(diag(tab2))/sum(tab2)
 
 ```
 
@@ -564,38 +445,47 @@ sum(diag(tab2))/sum(tab2)
 # ROC curve
 library(pROC)
 roccurve1 <- roc(test$RESPOND ~ prob_pred1)
-roccurve2 <- roc(test$RESPOND ~ prob_pred2)
 plot(roccurve1, col="red", print.auc=TRUE, print.auc.adj=c(1,-7), auc.polygon=TRUE)
-plot(roccurve2, col="blue", add=TRUE,  print.auc=TRUE, print.auc.adj=c(0,-4))
-legend("bottomright", legend=c("stepwise","simple"), col=c("red","blue"), lwd=2)
+
 
 # Scored data
 scored_dat = cbind(prob_pred1,test$RESPOND)
 head(scored_dat)
 head(scored_dat[order(-prob_pred1),],30)
+```
 
+
+```{r eval=FALSE}
 # List Chart 1
 library(BCA)
 layout(matrix(c(1,2), 2, 1))
 test$RESPOND=factor(test$RESPOND)
-lift.chart(c("model1","model2"), data=test, targLevel="1",
-           trueResp=0.07, type="incremental", sub="Test")
-lift.chart(c("model1","model2"), data=test, targLevel="1",
-           trueResp=0.07, type="cumulative", sub="Test")
+lift.chart("step_model", data=test, targLevel="1", trueResp=0.07, type="incremental", sub="Test")
+lift.chart("step_model", data=test, targLevel="1", trueResp=0.07, type="cumulative", sub="Test")
+```
 
+BCA 패키지는 Y값이 factor
+
+targLevel="1" : 1을 센다는 의미
+
+type="incremental" : 누적이 아닌경우
+
+type="cumulative" : 누적인 경우
+
+trueResp=0.07 : 임의의 가이드라인
+
+```{r eval=FALSE}
 # List Chart 2
 library(ROCR)
 pred1 = prediction(prob_pred1, test$RESPOND)
 perf1 = performance(pred1,"lift","rpp")
-pred2 = prediction(prob_pred2, test$RESPOND)
-perf2 = performance(pred2,"lift","rpp")
 plot(perf1, main="lift chart")
-plot(perf2, add=TRUE, lty=2, col="red")
+# plot(perf2, add=TRUE, lty=2, col="red")
 legend(0.7, 3, legend=c("Model 1", "Model 2"),col=c("black", "red"), lty=1:2)
+
 
 # K-S statistics
 ks.test(prob_pred1[test$RESPOND==1], prob_pred1[test$RESPOND==0])
-ks.test(prob_pred2[test$RESPOND==1], prob_pred2[test$RESPOND==0])
 
 ```
 
@@ -734,7 +624,7 @@ cross entropy를 작게 만드는 계수 추정
 ## 코드
 
 ```{r echo=FALSE}
-directmail = read.csv('../data/directmail.csv')
+directmail = read.csv('./data/directmail.csv')
 ```
 
 
@@ -751,9 +641,8 @@ directmail1$CLIMATE <- nor(directmail1$CLIMATE)
 directmail1$FICO <- nor(directmail1$FICO)
 directmail1$INCOME <- nor(directmail1$INCOME)
 
-directmail1$GENDER<-as.numeric(directmail1$GENDER == 'F')
+directmail1$GENDER <- as.numeric(directmail1$GENDER == 'F')
 
-head(directmail1)
 
 
 # training and test data
@@ -765,10 +654,12 @@ train = directmail1[i,]  ; test = directmail1[-i,]
 library(neuralnet)
 set.seed(1234)
 nn1<-neuralnet(RESPOND~AGE+BUY18+CLIMATE+FICO+INCOME+MARRIED+OWNHOME+GENDER, 
-               data=train, hidden=c(3,2), stepmax = 1e+05, threshold = 0.01, 
+               data=train, hidden=c(2,2), stepmax = 1e+05, threshold = 0.1, 
                act.fct='logistic', linear.output=F) 
 print(nn1$weights)
+
 head(nn1$net.result[[1]])
+
 plot(nn1)
 
 ```
@@ -787,15 +678,14 @@ linear.output = F : Y변수가 연속형(회귀분석)이면 T, 분류분석이�
 
 ```{r}
 # comparison
-pred1<-compute(nn1,covariate=test[,-1]) #except "RESPOND"
+pred1 <- compute(nn1,covariate=test[,-1])
 head(pred1$net.result,10)
 
 ```
 
-
 다른것과 다르게 predict가 아닌 compute를 사용해 예측
 
-covariate = test데이터에서 반응변수를 제외한 행렬
+covariate = test데이터에서 반응변수("RESPOND")를 제외한 행렬
 
 ```{r}
 library(pROC)
@@ -887,9 +777,9 @@ plot(roccurve1, col="red", print.auc=TRUE, print.auc.adj=c(1,7), auc.polygon=TRU
     
 - Gini impurity 지니 불순도 : $1-\sum^{K}_{j=1} P_j^2$
     
-    - K : Y의 범주 개수, $P_i$ i번째 범주에 포함될 확률
+    - K : Y의 범주 개수, P_i : i번째 범주에 포함될 확률
     
-    - 지니불순도 최댓값 0.5 : 완전히 균일분포($all\ P_i =1/K$)인 경우
+    - 지니불순도 최댓값 0.5 : 완전히 균일분포(all\ P_i =1/K)인 경우
     
     - 지니불순도 최솟값 0 : 불순도가 작을수록 좋음
     
@@ -958,7 +848,7 @@ overfitting을 막기위해 불필요한 가지 제거
 ## 코드
 
 ```{r echo=FALSE}
-hmeq<-read.table("../data/hmeq.txt",header=T,sep='\t')
+hmeq<-read.table("./data/hmeq.txt",header=T,sep='\t')
 levels(hmeq$REASON)[levels(hmeq$REASON)==""]<-NA
 levels(hmeq$JOB)[levels(hmeq$JOB)==""]<-NA
 ```
@@ -970,14 +860,21 @@ i = sample(1:nrow(hmeq), round(nrow(hmeq)*0.6)) #60% for training data, 40% for 
 train = hmeq[i,] 
 test = hmeq[-i,]
 
+library(rpart)
 # default tree
 tree0 <- rpart(BAD ~ ., data = train, method="class")
-prp(tree0, type=4, extra=2, digits=3)
+
+library(rpart.plot)
+prp(tree0, type=4, extra=2, digits=3) # 시각화
+summary(tree0)
 ```
+
+rpart는 자동적으로 교호작용이 포함되므로 포함해서 작성하면 안됨
 
 method = 'class' : 분류나무
 
-method = 'anova' : 회귀나무(Y가 연속형인 경우)
+method = 'anova' : 회귀나무 (Y가 연속형인 경우)
+
 
 
 ```{r}
@@ -993,16 +890,6 @@ xval : cross-validation으로 몇번 교차검정할지를 의미
 
 
 ```{r}
-#stunting
-my.control <- rpart.control(xval=0, cp=0.01, minsplit=100)
-tree2 <- rpart(BAD ~ ., data = train, method="class", control=my.control)
-prp(tree2, type=4, extra=2, digits=3)
-summary(tree2)
-```
-
-
-
-```{r}
 printcp(tree1)
 ```
 
@@ -1013,6 +900,8 @@ nsplit : number of slplit
 rel error : (train data의) 상대오차
 
 xerror : cross-validation의 오차
+
+
 
 ```{r}
 plotcp(tree1)
@@ -1036,15 +925,10 @@ prp(tree1.prun, type=4, extra=2, digits=3)
 
 
 
-
-
-
-
 ```{r}
 # comparison of trees
 prob0 <- predict(tree0, newdata=test, type="prob") 
 prob1 <- predict(tree1.prun, newdata=test, type="prob") 
-prob2 <- predict(tree2, newdata=test, type="prob")
 ```
 
 type="prob" : 분류
@@ -1055,16 +939,14 @@ type="vector" : 회귀
 library(pROC)
 roccurve0 <- roc(test$BAD ~ prob0[,2])
 roccurve1 <- roc(test$BAD ~ prob1[,2])
-roccurve2 <- roc(test$BAD ~ prob2[,2])
 plot(roccurve1, col="red", print.auc=TRUE, print.auc.adj=c(2.5,-8), auc.polygon=TRUE)
-plot(roccurve2, col="blue", add=TRUE,  print.auc=TRUE, print.auc.adj=c(-1,-8))
 plot(roccurve0, col="green", add=TRUE,  print.auc=TRUE, print.auc.adj=c(-1,-5))
-legend("bottomright", legend=c("pruning", "stunting","default"), col=c("red", "blue","green"), lwd=2)
 ```
 
+아래는 회귀나무
 
 ```{r echo=F}
-usedcar2 <- read.csv("../data/usedcar2.csv",header = T)
+usedcar2 <- read.csv("./data/usedcar2.csv",header = T)
 ```
 
 ```{r}
@@ -1102,11 +984,11 @@ prp(tree_prun, type=4, extra=1, digits=3)
 # Ensemble Methods
 
 ```{r echo=FALSE}
-german = read.table("../data/germandata.txt",header=T) 
+german = read.table("./data/germandata.txt",header=T) 
 german$numcredits = factor(german$numcredits)
 german$residence = factor(german$residence)
 german$residpeople = factor(german$residpeople)
-summary(german)
+german$y = factor(german$y)
 ```
     
     - 로지스틱 : bias가 크지만 variance는 작음
@@ -1163,19 +1045,27 @@ classification on unweighted majority voting
 
 1. 전체 데이터 집합에서 각 학습 데이터 셋을 boostrapping 즉 복원추출하여 원래 데이터 수만큼 크기를 갖도록 생성
 
-    - Bootstrap sample training set 복원추출된 데이터셋 : $T^{(1)},\ ...\ , T^{(B)}$
+    - Bootstrap sample training set 복원추출된 데이터셋 : 
+    
+$$T^{(1)},\ ...\ , T^{(B)}$$
 
 2. boostrap을 바탕으로 의사 결정 나무 시행, 이 과정을 반복
 
-    - Classifiers for each sample : $C_1(x,T^{(1)}),\ ...\ , C_B(x,T^{(B)})$
+    - Classifiers for each sample :
+    
+$$C_1(x,T^{(1)}),\ ...\ , C_B(x,T^{(B)})$$
 
     - 각 의사결정나무는 서로 다른 학습 데이터셋을 사용하게 됨
   
 3. 최종 예측은 각 의사나무의 예측 결과를 다수결의 방법을 통해 취합 -> 분산 감소
 
-    - number of times that classified as j : $N_j=\sum ^B_{b=1}I[ C_b(x,T^{(b)})=y_j]$
+    - number of times that classified as j : 
+    
+$$N_j=\sum ^B_{b=1}I[ C_b(x,T^{(b)})=y_j]$$
 
-    - Bagging : $C(x)=\text{argmax}_jN_j$
+    - Bagging : 
+    
+$$C(x)=\text{argmax}_jN_j$$
 
 
 
@@ -1188,6 +1078,8 @@ set.seed(1234)
 i = sample(1:nrow(german), round(nrow(german)*0.7)) #70% for training data, 30% for testdata
 german.train = german[i,] 
 german.test = german[-i,]
+
+
 my.control <- rpart.control(xval=0, cp=0, minsplit=5, maxdepth=10)
 bag.train.german <- bagging(y ~ ., data = german.train, mfinal=50, control=my.control)
 ```
@@ -1201,7 +1093,7 @@ mfinal : tree의 개수로 요즘에는 100~200이 기본
 
 ```{r}
 pred.bag.german <- predict.bagging(bag.train.german, newdata=german.test)
-print(bag.german$importance)
+print(bag.train.german$importance)
 ```
 
 변수 중요도로 숫자의 절대적 의미는 없고 상대적 의미만 있음
@@ -1211,13 +1103,14 @@ print(bag.german$importance)
 
 
 ```{r}
-1-sum(diag(pred.bag.german$confusion))/sum(pred.bag.german$confusion)
+1-sum( diag(pred.bag.german$confusion) ) / sum(pred.bag.german$confusion)
+
 head(pred.bag.german$prob)
+
 library(pROC)
 roccurve <- roc(german.test$y ~ pred.bag.german$prob[,1])
 plot(roccurve)
 auc(roccurve)
-rocbag = roccurve
 ```
 
 # Boosting
@@ -1241,52 +1134,68 @@ train set과 test set을 7대3으로 분할하면 그 속성이 남아 있게되
 
 1. 먼저 초기 가중치를 줌
 
-    - Initialized weight : $w_i=1/N$
+- Initialized weight : $w_i=1/N$
 
 2. 가중치를 사용하여 분류하며 가중치를 변경하는 과정 i=1를 i=M까지 반복
 
-    - 가중치 $w_i$를 이용하여 classifier $C_m(x)$ 생성
+- 가중치 $w_i$를 이용하여 classifier $C_m(x)$ 생성
     
-    - 오차인 $err_m={\sum^N_{i=1}w_iI(y_i\not= C_m(X)i)) \over \sum^N_{i=1}w_i}$ 를 계산
-    
-        - 오분류시 $I(y_i\not= C_m(X_i))=1$, 정분류시 $I(y_i\not= C_m(X_i))=0$
-    
-    - tree의 가중치인 $\alpha_m=log((1-err_m)/err_m)$ 를 계산
-    
-        - error가 적으면 $\alpha$상승
+- 오차인 $err_m={\sum^N_{i=1}w_iI(y_i\not= C_m(X)i)) \over \sum^N_{i=1}w_i}$ 를 계산 : 오분류시 $I(y_i\not= C_m(X_i))=1$, 정분류시 $I(y_i\not= C_m(X_i))=0$
+  
+- tree의 가중치인 $\alpha_m=log((1-err_m)/err_m)$ 를 계산 : error가 적으면 $\alpha$상승
         
-    - 새로운 가중치 생성 $w_i=w_i\ \text{exp}[\alpha_mI(y_i\not= C_m(X_i))]$
+- 새로운 가중치 생성 $w_i=w_i\ \text{exp}[\alpha_mI(y_i\not= C_m(X_i))]$
     
-    - 새로운 가중치 전체의 합이 1이 되도록 조정 : $\sum w_i=1$
+- 새로운 가중치 전체의 합이 1이 되도록 조정 : $\sum w_i=1$
 
 3. 반복한 분류를 가중치를 반영하여 최종 분류를 만듦 $C_{AD}(X)=sign[\sum^M_{m=1}\alpha_mC_M(X)]$
 
-    - 즉 bagging은 tree당 같은 가중치이지만, Adaboost는 tree별로 다른 가중치$\alpha_m$를 반영
+- 즉 bagging은 tree당 같은 가중치이지만, Adaboost는 tree별로 다른 가중치$\alpha_m$를 반영
 
 
 ### 코드
 
-```{r}
+```{r echo=FALSE}
+german = read.table("./data/germandata.txt",header=T) 
+german$numcredits = factor(german$numcredits)
+german$residence = factor(german$residence)
+german$residpeople = factor(german$residpeople)
+
+```
+
+```{r eval=FALSE}
+##### Boosting
 library(rpart)
 library(adabag)
 set.seed(1234)
-i = sample(1:nrow(german), round(nrow(german)*0.7)) #70% for training data, 30% for testdata
-german.train = german[i,] 
-german.test = german[-i,]
 my.control <- rpart.control(xval=0, cp=0, maxdepth=1)
-boo.train.german <- boosting(y ~ ., data = german.train, boos=T, mfinal=100, control=my.control)
-pred.boo.german <- predict.boosting(boo.train.german, newdata=german.test)
+boo.german <- boosting(y ~ ., data = german, boos=T, mfinal=100, control=my.control)
+
+summary(boo.german)
+
+boo.german$trees
+
+print(boo.german$importance)
+importanceplot(boo.german)
+
+pred.boo.german <- predict.boosting(boo.german, newdata=german) # 원래는 데이터 분할 필요
+head(pred.boo.german$prob,10)
+
 print(pred.boo.german$confusion)
 1-sum(diag(pred.boo.german$confusion))/sum(pred.boo.german$confusion)
-head(pred.boo.german$prob)
-roccurve <- roc(german.test$y ~ pred.boo.german$prob[,1])
+evol.german=errorevol(boo.german, newdata=german)
+plot.errorevol(evol.german)
+
+
+roccurve <- roc(german$y ~ pred.boo.german$prob[,1])
 plot(roccurve)
 auc(roccurve)
-rocboost = roccurve
 ```
 
 xval=0 : 푸루닝 하지 않음
-maxdepth=1 : 분할 한번뿐 -> 일반적으로 boosting은 작을 수록 좋음 (보통 1~4)
+
+maxdepth=1 : 분할 한번뿐 -> 일반적으로 boosting은 작을 수록 좋음 (보통 1~4
+
 boos=T : 가중치 반영시 bootstrap에서 가중치 높은 것을 여러번 더 뽑을 수 있게 하면 AdaBoost 방법을 이용해 boosting 할 수 있다.
 
 
@@ -1327,11 +1236,7 @@ Gredient Descent 알고리즘으로 최적 weight 계산
 
 - m의 값이 작으면 각 나무모형들 간의 상관관계가 감소함 -> m이 너무 적으면 정확도가 낮아짐
 
-- 일반적인 앙상블의 크기 m
-
-    - 보통 분류 data인 경우 $m=\sqrt{p}$
-
-    - 회귀 분류 data인 경우 $p\over 3$
+- 일반적인 앙상블의 크기 m : 분류 data인 경우 $m=\sqrt{p}$, 회귀 data인 경우 $p\over 3$
 
 
 
@@ -1386,49 +1291,48 @@ weighted (각 class별 에측 확률) voting : $\hat{Y}_{Ensemble}= \text{argmax
 
 4. M개의 모든 tree를 통해 계산한 OBB Error의 차이의 편균과 표준편차로 변수중요도 계산
 
-    - i번째 변수의 변수 중요도 : $v_i={\bar{d}\over s_d}$
+    - i번째 변수의 변수 중요도 : 
     
-        - $\bar{d}=\sum_{j=1}^md_j/m$
-        
-        - $s_d^2=\sum_{j}^{m-1}(d_j-\bar{d})^2/(m-1)$
+$$v_i={\bar{d}\over s_d}$$
+    
+$\bar{d}=\sum_{j=1}^md_j/m$ 및 $s_d^2=\sum_{j}^{m-1}(d_j-\bar{d})^2/(m-1)$
 
     - 오류율의 차이가 클수록 해당변수가 tree에서 중요한 역할
 
 
 ## 코드
-```{r}
+```{r eval=FALSE}
 library(randomForest)
 set.seed(1234)
 i = sample(1:nrow(german), round(nrow(german)*0.7)) #70% for training data, 30% for testdata
 german.train = german[i,] 
 german.test = german[-i,]
+
 rf.train.german <- randomForest(y ~ ., data = german.train, ntree=100, mtry=5, 
                                 importance=T, na.action=na.omit)
 pred.rf.german <- predict(rf.train.german, newdata=german.test)
+
 tab=table(german.test$y,pred.rf.german, dnn=c("Actual","Predicted"))
 print(tab)
 1-sum(diag(tab))/sum(tab)
 prob.rf.german <- predict(rf.train.german, newdata=german.test, type="prob")
 head(prob.rf.german)
-roccurve <- roc(german.test$y ~ prob.rf.german[,1])
-plot(roccurve, col="red", print.auc=TRUE, print.auc.adj=c(2.5,3), auc.polygon=TRUE)
-plot(rocbag, col="green", print.auc=TRUE, print.auc.adj=c(2.5,1), add=T)
-plot(rocboost, col="blue", print.auc=TRUE, print.auc.adj=c(2.5,-1), add=T)
 
 ```
 
-```{r echo=FALSE}
-usedcar2 <- read.csv("../data/usedcar2.csv",header = T)
-```
 
 
 
 ## 코드 : 회귀분석의 경우
+```{r echo=FALSE}
+usedcar2 <- read.csv("./data/usedcar2.csv",header = T)
+```
 
 ```{r}
 ### Random Forest ###
 ## Regression
 nobs=nrow(usedcar2)
+
 # indicator variables
 usedcar2$Ind1<-as.numeric(usedcar2$Color == 'white')
 usedcar2$Ind2<-as.numeric(usedcar2$Color == 'silver')
@@ -1447,18 +1351,23 @@ summary(model1)
 library(randomForest)
 model2 <- randomForest(Price ~ Odometer + Color, data = train, ntree=100, mtry=2,
                            importance=T, na.action=na.omit)
+
 # predicted values
 pred1 = predict(model1, newdata=test, type='response')
 pred2 = predict(model2, newdata=test, type='response')
+
 # predictive R^2
 cor(test$Price, pred1)^2
 cor(test$Price, pred2)^2
+
 # MAE
 mean(abs(test$Price - pred1))
 mean(abs(test$Price - pred2))
+
 # MAPE
 mean(abs(test$Price - pred1)/abs(test$Price))*100
 mean(abs(test$Price - pred2)/abs(test$Price))*100
+
 # variable importance of Random Forest
 model2$importance
 ```
@@ -1512,7 +1421,6 @@ X 변수 대부분 연속형이어야 함 : distance를 사용하므로 범주�
     - 일반화된 형태로, m = 2 이면 Euclidean
 
 
-
 3. Manhalanobis 거리 : $d(x,y)=\sqrt{(x-y)^TS^{-1}(x-y)}$
 
 
@@ -1539,7 +1447,7 @@ X 변수 대부분 연속형이어야 함 : distance를 사용하므로 범주�
     
     - 계산속도가 느림 
     
-       - $_nC_2$ 즉 $n^2$에 비례하여 계산량 증가
+       - nC2 즉 n^2에 비례하여 계산량 증가
     
     - 이상치에 대한 사전검토 필요
     
@@ -1559,13 +1467,21 @@ X 변수 대부분 연속형이어야 함 : distance를 사용하므로 범주�
 
 4. 거리행렬 D중 새롭게 변화 되는 부분인 (UV) 와 다른 군집 W 사이의 거리 $d_{(UV)W}$를 계산
 
-    - single linkage 단일연결법 : $d_{(UV)W}=\text{min}(d_{UW},d_{VW})$
+    - single linkage 단일연결법 : 
 
-    - complete linkage 완전연결법 : $d_{(UV)W}=\text{max}(d_{UW},d_{VW})$
+$$d_{(UV)W}=\text{min}(d_{UW},d_{VW})$$
 
-    - average linkage 평균연결법 : $d_{(UV)W}={\sum^{n_{UV}}_{i=1}\sum^{n_{W}}_{i=1}d_{ij}\over n_{UV}n_W})$
+    - complete linkage 완전연결법 : 
+    
+$$d_{(UV)W}=\text{max}(d_{UW},d_{VW})$$
 
-    - centroid method 중심점연결법 : $d_{(UV)W}=\text{distance between the centroids of cluster UV and W}$
+    - average linkage 평균연결법 : 
+    
+$$d_{(UV)W}={\sum^{n_{UV}}_{i=1}\sum^{n_{W}}_{i=1}d_{ij}\over n_{UV}n_W})$$
+
+    - centroid method 중심점연결법 : 
+    
+$$d_{(UV)W}=\text{distance between the centroids of cluster UV and W}$$
 
     - Ward's Method
 
@@ -1587,15 +1503,16 @@ X 변수 대부분 연속형이어야 함 : distance를 사용하므로 범주�
 
 ```{r}
 ### Hierarchical Clustering
-head(USArrests)
 zUSArrests=scale(USArrests) # scale() : 변수 표준화
-summary(zUSArrests)
-dist(zUSArrests) # dist() : distnace
+
+dist(zUSArrests) # dist() : 거리행렬
+
 hc1=hclust(dist(zUSArrests),method="average") # hclust() : hierarchical clustering
 plot(hc1, hang = -1)
 rect.hclust(hc1, k=5)
-cutree(hc1, k=5)
+
 cluster <- cutree(hc1, k=5) #cutree() : 군집별 번호 매김
+
 cent <- NULL
 for (k in 1:5){
   cent <- rbind(cent, colMeans(USArrests[cluster == k,]))
@@ -1701,23 +1618,10 @@ b(i)/a(i)-1\ , & \mbox{if }a(i)>b(i)
     - 1에 가까울수록 군집화가 잘 된 관찰값임
 
 
-    - $a(i)$ : 개체 i로부터 같은 군집 내에 있는 모든 다른 개체들 사이의 평균 거리
+    - a(i) : 개체 i로부터 같은 군집 내에 있는 모든 다른 개체들 사이의 평균 거리
 
-    - $b(i)$ : 개체 i로부터 다른 군집 내에 있는 개체들 사이의 평균 거리 중 가장 작은 값 -> 클수록 좋다
+    - b(i) : 개체 i로부터 다른 군집 내에 있는 개체들 사이의 평균 거리 중 가장 작은 값 -> 클수록 좋다
 
-
-
-```{r}
-plot(kmed$pamobject)
-```
-
-explain ##.## % : PCA의 설명력의 의미, 즉 n차원을 2차원의 그래프로 축소 (PCA 그래프)
-
-average silhouette wideth : 0.## -> 평균 silhouette를 의미
-
-
-
-값이 클수록 좋은것임
 
 
 
@@ -1733,7 +1637,6 @@ pairs(zUSArrests, col=kmc1$cluster, pch=16)
 ## Elbow point
 wss = 0
 for (i in 1:10) wss[i] = sum(kmeans(zUSArrests,center=i)$withinss)
-
 plot(1:10, wss, type='b', xlab="Number of Clusters", ylab="Within group sum of squares")
 ```
 
@@ -1741,13 +1644,11 @@ plot(1:10, wss, type='b', xlab="Number of Clusters", ylab="Within group sum of s
 
 ```{r echo=FALSE}
 ### Dungaree Data
-dungaree = read.table('../data/dungaree.csv',sep=',',header=T)
-head(dungaree,10)
+dungaree = read.table('./data/dungaree.csv',sep=',',header=T)
 dungaree$fratio = with(dungaree, log(fashion/original))
 dungaree$lratio = with(dungaree, log(leisure/original))
 dungaree$sratio = with(dungaree, log(stretch/original))
 dungratio = dungaree[,c("fratio", "lratio", "sratio")]
-summary(dungratio)
 ```
 
 
@@ -1757,24 +1658,21 @@ zdungratio = scale(dungratio)
 summary(zdungratio)
 
 # k 찾기 : 3D plot
-library(rgl)
-plot3d(zdungratio[,1], zdungratio[,2], zdungratio[,3], col="blue", size=5) 
+# library(rgl)
+# plot3d(zdungratio[,1], zdungratio[,2], zdungratio[,3], col="blue", size=5) 
 
 # k찾기 : hierarchical clustering
 hc_dung=hclust(dist(zdungratio), method="average")
 plot(hc_dung, hang = -1)
 rect.hclust(hc_dung, k=3)
+
 # initial points
 tmp <- data.frame(zdungratio)
 tmp$cluster <- cutree(hc_dung, k=3)
 cent <- NULL
-for (k in 1:3){
-  cent <- rbind(cent, colMeans(tmp[tmp$cluster == k,]))
-}
+for (k in 1:3){  cent <- rbind(cent, colMeans(tmp[tmp$cluster == k,]))  }
 cent
-x1 <- c(0,0,-6)
-x2 <- c(0,0,0)
-x3 <- c(0,-3,0)
+x1 <- c(0,0,-6) ; x2 <- c(0,0,0) ; x3 <- c(0,-3,0)
 kcenters <- data.frame(x1,x2,x3)
 
 # K-means clustering
@@ -1808,14 +1706,16 @@ kmed
 pairs(USArrests, col=kmed$pamobject$clustering, pch=16)
 par(mfrow=c(1,2))
 plot(kmed$pamobject)
-
-kmed1 = pamk(zUSArrests,4)
-kmed1
-pairs(zUSArrests, col=kmed1$pamobject$clustering, pch=16)
-par(mfrow=c(1,2))
-plot(kmed1$pamobject)
-par(mfrow=c(1,1))
 ```
+
+explain ##.## % : PCA의 설명력의 의미, 즉 n차원을 2차원의 그래프로 축소 (PCA 그래프)
+
+average silhouette wideth : 0.## -> 평균 silhouette를 의미
+
+
+
+값이 클수록 좋은것임
+
 
 
 
@@ -1864,16 +1764,5 @@ eps는 시행착오를 통해 최적이 무엇인지 확인 필요
 border : 군집 외각의 수
 
 seed : 군집 중심의 수
-
-
-```{r}
-pairs(zUSArrests, col=dbs$cluster+1, pch=16)
-cent <- NULL
-for (k in 0:2){
-  cent <- rbind(cent, colMeans(USArrests[dbs$cluster == k,]))
-}
-cent
-```
-
 
 

@@ -25,10 +25,10 @@ defaultContentLanguageInSubdir = false
 pluralizeListTitles = false
 
 # The length of text in words to show in summary
-summaryLength = 42
+summaryLength = 30
 
 # Enable Emoji emoticons support?
-enableEmoji = false
+enableEmoji = true
 
 # Text to display for footnote return links
 footnoteReturnLinkContents = "↩"
@@ -1254,7 +1254,7 @@ uglyURLs = false
     maxHeight = 1000
     # Unit: em
 
-    enableCopy = true
+    enableCopy = false
     enableCopyAutoHide = true
 
 

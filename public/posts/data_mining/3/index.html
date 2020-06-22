@@ -14,10 +14,10 @@
 
     <title>데이터마이닝 - Random Forest | Leechungpa&#39;s Data Science blog</title>
 
-    <link rel="stylesheet" href="/css/meme.min.856d643b872203ef4eaeb7f4365ffc16288b1726d845b10718b9e39461a82dd0.css" integrity="sha256-hW1kO4ciA&#43;9Orrf0Nl/8FiiLFybYRbEHGLnjlGGoLdA=" />
+    <link rel="stylesheet" href="/css/meme.min.376e760f248778bedccfba8c2cdbded7216d571d76e4407e1847a82105a2d62d.css" integrity="sha256-N252DySHeL7cz7qMLNve1yFtVx125EB&#43;GEeoIQWi1i0=" />
 
     
-    <script src="https://cdn.jsdelivr.net/npm/lunr@2.3.8/lunr.min.js" defer></script><script src="/js/meme.min.72023708501dc240d90316e8588e5c5abf02c8dafbcc21042950412814f50629.js" integrity="sha256-cgI3CFAdwkDZAxboWI5cWr8CyNr7zCEEKVBBKBT1Bik="></script>
+    <script src="https://cdn.jsdelivr.net/npm/lunr@2.3.8/lunr.min.js" defer></script><script src="/js/meme.min.f2c6dca54c755a253aa9a37f589519c7e9c106dc33745484c7138dc820778d9c.js" integrity="sha256-8sbcpUx1WiU6qaN/WJUZx&#43;nBBtwzdFSExxONyCB3jZw="></script>
 
 
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -27,8 +27,7 @@
 
     <meta name="author" content="이청파" /><meta name="description" content="데이터마이닝 연습으로 Random Forest을 사용한 예제이다.
 먼저 전처리에서 사용한 packages이다.
-library(tidyverse)library(skimr)그 다음 모형을 만들고자 하는 데이터를 불러왔다. 해당 데이터는 카글에서 가지고 온 데이터다.
-raw_data=read_csv(&amp;#39;./data/ausraindata.csv&amp;#39;,col_types = cols(Evaporation = col_double(),Sunshine = col_double()) )해당 데이터는 오늘의 날씨를 바탕으로 내일의 강수유무를 예측해 보는 데이터 이다." />
+library(tidyverse)library(skimr)그 다음 모형을 만들고자 하는 데이터를 불러왔다. 해당 데이터는 카글에서 가지고 온 데이터다." />
 
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#2a6df4" />
@@ -58,7 +57,7 @@ raw_data=read_csv(&amp;#39;./data/ausraindata.csv&amp;#39;,col_types = cols(Evap
         "dateModified": "2020-06-09T14:49:01+09:00",
         "url": "/posts/data_mining/3/",
         "headline": "데이터마이닝 - Random Forest",
-        "description": "데이터마이닝 연습으로 Random Forest을 사용한 예제이다.\n먼저 전처리에서 사용한 packages이다.\nlibrary(tidyverse)\rlibrary(skimr)\r그 다음 모형을 만들고자 하는 데이터를 불러왔다. 해당 데이터는 카글에서 가지고 온 데이터다.\nraw_data=read_csv(\u0026#39;./data/ausraindata.csv\u0026#39;,col_types = cols(Evaporation = col_double(),\rSunshine = col_double()) )\r해당 데이터는 오늘의 날씨를 바탕으로 내일의 강수유무를 예측해 보는 데이터 이다.",
+        "description": "데이터마이닝 연습으로 Random Forest을 사용한 예제이다.\n먼저 전처리에서 사용한 packages이다.\nlibrary(tidyverse)\rlibrary(skimr)\r그 다음 모형을 만들고자 하는 데이터를 불러왔다. 해당 데이터는 카글에서 가지고 온 데이터다.",
         "inLanguage" : "en-us",
         "articleSection": "posts",
         "wordCount":  3431 ,
@@ -101,8 +100,7 @@ raw_data=read_csv(&amp;#39;./data/ausraindata.csv&amp;#39;,col_types = cols(Evap
 <meta property="og:title" content="데이터마이닝 - Random Forest" />
 <meta property="og:description" content="데이터마이닝 연습으로 Random Forest을 사용한 예제이다.
 먼저 전처리에서 사용한 packages이다.
-library(tidyverse)library(skimr)그 다음 모형을 만들고자 하는 데이터를 불러왔다. 해당 데이터는 카글에서 가지고 온 데이터다.
-raw_data=read_csv(&amp;#39;./data/ausraindata.csv&amp;#39;,col_types = cols(Evaporation = col_double(),Sunshine = col_double()) )해당 데이터는 오늘의 날씨를 바탕으로 내일의 강수유무를 예측해 보는 데이터 이다." />
+library(tidyverse)library(skimr)그 다음 모형을 만들고자 하는 데이터를 불러왔다. 해당 데이터는 카글에서 가지고 온 데이터다." />
 <meta property="og:url" content="/posts/data_mining/3/" />
 <meta property="og:site_name" content="Leechungpa&#39;s Data Science blog" />
 <meta property="og:locale" content="en" /><meta property="og:image" content="/icons/apple-touch-icon.png" />
@@ -1329,7 +1327,7 @@ auc_matrix</code></pre>
             
                 <div class="share-item linkedin">
                     
-                    <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=/posts/data_mining/3/&amp;title=%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%a7%88%ec%9d%b4%eb%8b%9d%20-%20Random%20Forest&amp;summary=%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%a7%88%ec%9d%b4%eb%8b%9d%20%ec%97%b0%ec%8a%b5%ec%9c%bc%eb%a1%9c%20Random%20Forest%ec%9d%84%20%ec%82%ac%ec%9a%a9%ed%95%9c%20%ec%98%88%ec%a0%9c%ec%9d%b4%eb%8b%a4.%0a%eb%a8%bc%ec%a0%80%20%ec%a0%84%ec%b2%98%eb%a6%ac%ec%97%90%ec%84%9c%20%ec%82%ac%ec%9a%a9%ed%95%9c%20packages%ec%9d%b4%eb%8b%a4.%0alibrary%28tidyverse%29%0dlibrary%28skimr%29%0d%ea%b7%b8%20%eb%8b%a4%ec%9d%8c%20%eb%aa%a8%ed%98%95%ec%9d%84%20%eb%a7%8c%eb%93%a4%ea%b3%a0%ec%9e%90%20%ed%95%98%eb%8a%94%20%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%a5%bc%20%eb%b6%88%eb%9f%ac%ec%99%94%eb%8b%a4.%20%ed%95%b4%eb%8b%b9%20%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%8a%94%20%ec%b9%b4%ea%b8%80%ec%97%90%ec%84%9c%20%ea%b0%80%ec%a7%80%ea%b3%a0%20%ec%98%a8%20%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%8b%a4.%0araw_data=read_csv%28&amp;#39;./data/ausraindata.csv&amp;#39;,col_types%20=%20cols%28Evaporation%20=%20col_double%28%29,%0dSunshine%20=%20col_double%28%29%29%20%29%0d%ed%95%b4%eb%8b%b9%20%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%8a%94%20%ec%98%a4%eb%8a%98%ec%9d%98%20%eb%82%a0%ec%94%a8%eb%a5%bc%20%eb%b0%94%ed%83%95%ec%9c%bc%eb%a1%9c%20%eb%82%b4%ec%9d%bc%ec%9d%98%20%ea%b0%95%ec%88%98%ec%9c%a0%eb%ac%b4%eb%a5%bc%20%ec%98%88%ec%b8%a1%ed%95%b4%20%eb%b3%b4%eb%8a%94%20%eb%8d%b0%ec%9d%b4%ed%84%b0%20%ec%9d%b4%eb%8b%a4.&amp;source=Leechungpa%27s%20Data%20Science%20blog" title="Share on LinkedIn" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon linkedin-icon"><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg></a>
+                    <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=/posts/data_mining/3/&amp;title=%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%a7%88%ec%9d%b4%eb%8b%9d%20-%20Random%20Forest&amp;summary=%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%a7%88%ec%9d%b4%eb%8b%9d%20%ec%97%b0%ec%8a%b5%ec%9c%bc%eb%a1%9c%20Random%20Forest%ec%9d%84%20%ec%82%ac%ec%9a%a9%ed%95%9c%20%ec%98%88%ec%a0%9c%ec%9d%b4%eb%8b%a4.%0a%eb%a8%bc%ec%a0%80%20%ec%a0%84%ec%b2%98%eb%a6%ac%ec%97%90%ec%84%9c%20%ec%82%ac%ec%9a%a9%ed%95%9c%20packages%ec%9d%b4%eb%8b%a4.%0alibrary%28tidyverse%29%0dlibrary%28skimr%29%0d%ea%b7%b8%20%eb%8b%a4%ec%9d%8c%20%eb%aa%a8%ed%98%95%ec%9d%84%20%eb%a7%8c%eb%93%a4%ea%b3%a0%ec%9e%90%20%ed%95%98%eb%8a%94%20%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%a5%bc%20%eb%b6%88%eb%9f%ac%ec%99%94%eb%8b%a4.%20%ed%95%b4%eb%8b%b9%20%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%8a%94%20%ec%b9%b4%ea%b8%80%ec%97%90%ec%84%9c%20%ea%b0%80%ec%a7%80%ea%b3%a0%20%ec%98%a8%20%eb%8d%b0%ec%9d%b4%ed%84%b0%eb%8b%a4.&amp;source=Leechungpa%27s%20Data%20Science%20blog" title="Share on LinkedIn" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon linkedin-icon"><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg></a>
                 </div>
             
 
@@ -1390,6 +1388,10 @@ auc_matrix</code></pre>
                 
                     <li class="related-item">
                         <a href="/posts/data_mining/1/" class="related-link">데이터마이닝 - 로지스틱 회귀분석</a>
+                    </li>
+                
+                    <li class="related-item">
+                        <a href="/posts/r/3/" class="related-link">R 글꼴 변경</a>
                     </li>
                 
                     <li class="related-item">
