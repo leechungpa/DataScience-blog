@@ -597,7 +597,7 @@ uglyURLs = false
     ######################################
     # KaTeX (chemical equation supported)
 
-    enableKaTeX = false
+    enableKaTeX = true
     # Note: *global settings*
     #       `katex` in post’s Front Matter
     #       has a higher priority than here
