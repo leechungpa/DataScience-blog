@@ -1,0 +1,172 @@
+---
+title: R 마크다운
+author: 이청파
+date: '2020-06-26'
+slug: 'r/4'
+categories:
+  - R
+tags:
+  - R
+  - R studio
+  - R 마크다운
+editor_options: 
+  chunk_output_type: inline
+output: 
+  blogdown::html_page:
+    toc: true
+    highlight: tango
+    number_section: true
+    self_contained: true
+---
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  { background-color: #f8f8f8; }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<div id="TOC">
+<ul>
+<li><a href="#r-마크다운의-기본원리">R 마크다운의 기본원리</a></li>
+<li><a href="#yaml-헤더">YAML 헤더</a></li>
+<li><a href="#코드청크">코드청크</a></li>
+<li><a href="#기본-문법">기본 문법</a></li>
+</ul>
+</div>
+
+<div id="r-마크다운의-기본원리" class="section level1">
+<h1>R 마크다운의 기본원리</h1>
+<p>먼저 R마크다운은 .md가 아니라 .Rmd이다. 즉 Rmd가 knitr패키지에 의해 md가 되고 이 파일을 pandoc이 처리하게 된다.</p>
+<p>하지만 수식이나 띄어쓰기 한글 등에서 종종 자주 문제가 발생한다. 실제로 Rmd 출력시 다양한 형태 심지어 ppt도 가능하나, 매우 형편없다. 개인적으로는 html_document이나 word_document가 좋다. 현 페이지는 blogdown::html_page를 사용하였다.</p>
+</div>
+<div id="yaml-헤더" class="section level1">
+<h1>YAML 헤더</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="op">---</span></a>
+<a class="sourceLine" id="cb1-2" title="2">layout<span class="op">:</span><span class="st"> </span>page</a>
+<a class="sourceLine" id="cb1-3" title="3">title<span class="op">:</span><span class="st"> &quot;제목&quot;</span></a>
+<a class="sourceLine" id="cb1-4" title="4">subtitle<span class="op">:</span><span class="st"> &quot;부제목&quot;</span></a>
+<a class="sourceLine" id="cb1-5" title="5">author<span class="op">:</span></a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="st">    </span>name<span class="op">:</span><span class="st"> &quot;[이청파](https://github.com/leechungpa/)&quot;</span></a>
+<a class="sourceLine" id="cb1-7" title="7">date<span class="op">:</span><span class="st"> &quot;2020-06-23&quot;</span></a>
+<a class="sourceLine" id="cb1-8" title="8">output<span class="op">:</span></a>
+<a class="sourceLine" id="cb1-9" title="9"><span class="st">  </span>html_document<span class="op">:</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb1-10" title="10"><span class="st">    </span>toc<span class="op">:</span><span class="st"> </span>yes</a>
+<a class="sourceLine" id="cb1-11" title="11">    toc_float<span class="op">:</span><span class="st"> </span>true</a>
+<a class="sourceLine" id="cb1-12" title="12">    highlight<span class="op">:</span><span class="st"> </span>tango</a>
+<a class="sourceLine" id="cb1-13" title="13">    code_folding<span class="op">:</span><span class="st"> </span>hide</a>
+<a class="sourceLine" id="cb1-14" title="14">    number_section<span class="op">:</span><span class="st"> </span>true</a>
+<a class="sourceLine" id="cb1-15" title="15">    self_contained<span class="op">:</span><span class="st"> </span>true</a>
+<a class="sourceLine" id="cb1-16" title="16">editor_options<span class="op">:</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb1-17" title="17"><span class="st">  </span>chunk_output_type<span class="op">:</span><span class="st"> </span>console</a>
+<a class="sourceLine" id="cb1-18" title="18"><span class="op">---</span></a></code></pre></div>
+<p>내가 선호하는 코드이다. date의 경우 <code>Sys.Date</code>로 가능하지만, 직접 입력하는걸 선호한다. 이 블로그의 코드는 아래와 같다.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="op">---</span></a>
+<a class="sourceLine" id="cb2-2" title="2">title<span class="op">:</span><span class="st"> </span>R 마크다운</a>
+<a class="sourceLine" id="cb2-3" title="3">author<span class="op">:</span><span class="st"> </span>이청파</a>
+<a class="sourceLine" id="cb2-4" title="4">date<span class="op">:</span><span class="st"> &#39;2020-06-26&#39;</span></a>
+<a class="sourceLine" id="cb2-5" title="5">slug<span class="op">:</span><span class="st"> &#39;r/4&#39;</span></a>
+<a class="sourceLine" id="cb2-6" title="6">categories<span class="op">:</span></a>
+<a class="sourceLine" id="cb2-7" title="7"><span class="st">  </span><span class="op">-</span><span class="st"> </span>R</a>
+<a class="sourceLine" id="cb2-8" title="8">tags<span class="op">:</span></a>
+<a class="sourceLine" id="cb2-9" title="9"><span class="st">  </span><span class="op">-</span><span class="st"> </span>R</a>
+<a class="sourceLine" id="cb2-10" title="10">  <span class="op">-</span><span class="st"> </span>R studio</a>
+<a class="sourceLine" id="cb2-11" title="11">  <span class="op">-</span><span class="st"> </span>R 마크다운</a>
+<a class="sourceLine" id="cb2-12" title="12">editor_options<span class="op">:</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb2-13" title="13"><span class="st">  </span>chunk_output_type<span class="op">:</span><span class="st"> </span>inline</a>
+<a class="sourceLine" id="cb2-14" title="14">output<span class="op">:</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb2-15" title="15"><span class="st">  </span>blogdown<span class="op">::</span>html_page<span class="op">:</span></a>
+<a class="sourceLine" id="cb2-16" title="16"><span class="st">    </span>toc<span class="op">:</span><span class="st"> </span>true</a>
+<a class="sourceLine" id="cb2-17" title="17">    highlight<span class="op">:</span><span class="st"> </span>tango</a>
+<a class="sourceLine" id="cb2-18" title="18">    number_section<span class="op">:</span><span class="st"> </span>true</a>
+<a class="sourceLine" id="cb2-19" title="19">    self_contained<span class="op">:</span><span class="st"> </span>true</a>
+<a class="sourceLine" id="cb2-20" title="20"><span class="op">---</span></a></code></pre></div>
+<p>야물 해더에 params : 를 이용할 수 있으나 잘 사용하지 않으므로 생략한다.</p>
+</div>
+<div id="코드청크" class="section level1">
+<h1>코드청크</h1>
+<p>코드청크는 쉽게 ctrl + alt + i 눌러서 만들자. 힘들게 하나하나 치지말고</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="co"># ```{r setup, include=FALSE}</span></a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="co"># knitr::opts_chunk$set(echo = TRUE)</span></a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="co"># ```</span></a></code></pre></div>
+<p>일반적으로 제일 위에 있는 코드이다. setup은 코드 별명으로 다른것 지정가능하나 setup일 경우 기본적으로 다른 코드 실행 전 한번 실행된다.</p>
+<p>뒤에는 코드옵션들이다. eval inclue echo message wranning message ressults등이 있다. 각 별명 옆에 적용가능하나 setup에서 볼 수 있는 것처럼 을 통해 글로벌옵션을 변경가능하다.</p>
+<ul>
+<li><p>eval = FALSE : 코드만 표시</p></li>
+<li><p>include = FALSE : 코드만 실행</p></li>
+<li><p>echo = FALSE : 코드만 생략 (warning,message 포함됨)</p></li>
+<li><p>results = “hide” : 결과만 생략</p></li>
+</ul>
+<p>아래는 작업시 일반적으로 쓰는 코드이다.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="co"># ```{r setup, include=FALSE}</span></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="co"># knitr::opts_chunk$set(error = TRUE)</span></a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="co"># ```</span></a></code></pre></div>
+<p>추가적으로 <code>cache = TRUE</code>를 통해 해당청크(전역 불가능 : 의미가 없음)를 통해 오래걸리는 특정청크가 knitr할때마다 시간이 소비되는 것을 막을 수 있다. 하지만 해당청크에서만 적용되므로 <code>cache = TRUE, dependson=&#39;다른청크별명&#39;</code>을 통해 함께 변화된 부분이 있을 경우 반영될 수 있게 만들어야 한다. Rmd 외적인 파일도 추적하고 싶으면 <code>cache.extra=file.info(&quot;파일명&quot;)</code>를 사용하면 된다.</p>
+<p><code>knitr::clean_cache()</code>를 통해 복잡할 경우 지울 수 있다.</p>
+<p>최종시에는 아래와 같이 사용한다.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="co"># ```{r setup, include=FALSE}</span></a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="co"># knitr::opts_chunk$set(warning = FALSE, message = FALSE)</span></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="co"># ```</span></a></code></pre></div>
+</div>
+<div id="기본-문법" class="section level1">
+<h1>기본 문법</h1>
+<p>Help - Cheatsheets - R markdown cheat sheet 를 확인해 보자</p>
+<p>진하게, 기울기, 번호 등등이 가능하다. 더 복잡한 것을 원하면 CSS을 공부하자. 물론 word_document인경우 워드프로세스를 공부하자.</p>
+</div>
+

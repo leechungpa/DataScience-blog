@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-us">
     <title type="text">Leechungpa&#39;s Data Science blog</title>
     <subtitle type="html">Blog for Data Science by Leechungpa.</subtitle>
-    <updated>2020-06-22T16:30:15&#43;09:00</updated>
+    <updated>2020-06-26T15:42:23&#43;09:00</updated>
     <id>/</id>
     <link rel="alternate" type="text/html" href="/" />
     <link rel="self" type="application/atom&#43;xml" href="/atom.xml" />
@@ -16,6 +16,213 @@
             </author>
     <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</rights>
     <generator uri="https://gohugo.io/" version="0.71.1">Hugo</generator>
+        <entry>
+            <title type="text">R 마크다운</title>
+            <link rel="alternate" type="text/html" href="/posts/r/4/" />
+            <id>/posts/r/4/</id>
+            <updated>2020-06-26T15:42:20&#43;09:00</updated>
+            <published>2020-06-26T00:00:00&#43;00:00</published>
+            <author>
+                    <name>Lee Chung Pa</name>
+                    <uri>https://leechungpa.netlify.app/</uri>
+                    <email>leechungpa@naver.com</email>
+                    </author>
+            <rights>[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en)</rights><summary type="html">a.sourceLine { display: inline-block; line-height: 1.25; }a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }a.sourceLine:empty { height: 1.2em; }.sourceCode { overflow: visible; }code.sourceCode { white-space: pre; position: relative; }div.</summary>
+            
+                <content type="html">
+&lt;style type=&#34;text/css&#34;&gt;
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  { background-color: #f8f8f8; }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+&lt;/style&gt;
+
+&lt;div id=&#34;TOC&#34;&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;/posts/r/4/#r-마크다운의-기본원리&#34;&gt;R 마크다운의 기본원리&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;/posts/r/4/#yaml-헤더&#34;&gt;YAML 헤더&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;/posts/r/4/#코드청크&#34;&gt;코드청크&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;/posts/r/4/#기본-문법&#34;&gt;기본 문법&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+
+&lt;div id=&#34;r-마크다운의-기본원리&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;R 마크다운의 기본원리&lt;/h1&gt;
+&lt;p&gt;먼저 R마크다운은 .md가 아니라 .Rmd이다. 즉 Rmd가 knitr패키지에 의해 md가 되고 이 파일을 pandoc이 처리하게 된다.&lt;/p&gt;
+&lt;p&gt;하지만 수식이나 띄어쓰기 한글 등에서 종종 자주 문제가 발생한다. 실제로 Rmd 출력시 다양한 형태 심지어 ppt도 가능하나, 매우 형편없다. 개인적으로는 html_document이나 word_document가 좋다. 현 페이지는 blogdown::html_page를 사용하였다.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;yaml-헤더&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;YAML 헤더&lt;/h1&gt;
+&lt;div class=&#34;sourceCode&#34; id=&#34;cb1&#34;&gt;&lt;pre class=&#34;sourceCode r&#34;&gt;&lt;code class=&#34;sourceCode r&#34;&gt;&lt;a class=&#34;sourceLine&#34; id=&#34;cb1-1&#34; title=&#34;1&#34;&gt;&lt;span class=&#34;op&#34;&gt;---&lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb1-2&#34; title=&#34;2&#34;&gt;layout&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;page&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb1-3&#34; title=&#34;3&#34;&gt;title&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &amp;quot;제목&amp;quot;&lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb1-4&#34; title=&#34;4&#34;&gt;subtitle&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &amp;quot;부제목&amp;quot;&lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb1-5&#34; title=&#34;5&#34;&gt;author&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb1-6&#34; title=&#34;6&#34;&gt;&lt;span class=&#34;st&#34;&gt;    &lt;/span&gt;name&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &amp;quot;[이청파](https://github.com/leechungpa/)&amp;quot;&lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb1-7&#34; title=&#34;7&#34;&gt;date&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &amp;quot;2020-06-23&amp;quot;&lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb1-8&#34; title=&#34;8&#34;&gt;output&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb1-9&#34; title=&#34;9&#34;&gt;&lt;span class=&#34;st&#34;&gt;  &lt;/span&gt;html_document&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb1-10&#34; title=&#34;10&#34;&gt;&lt;span class=&#34;st&#34;&gt;    &lt;/span&gt;toc&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;yes&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb1-11&#34; title=&#34;11&#34;&gt;    toc_float&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;true&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb1-12&#34; title=&#34;12&#34;&gt;    highlight&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;tango&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb1-13&#34; title=&#34;13&#34;&gt;    code_folding&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;hide&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb1-14&#34; title=&#34;14&#34;&gt;    number_section&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;true&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb1-15&#34; title=&#34;15&#34;&gt;    self_contained&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;true&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb1-16&#34; title=&#34;16&#34;&gt;editor_options&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb1-17&#34; title=&#34;17&#34;&gt;&lt;span class=&#34;st&#34;&gt;  &lt;/span&gt;chunk_output_type&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;console&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb1-18&#34; title=&#34;18&#34;&gt;&lt;span class=&#34;op&#34;&gt;---&lt;/span&gt;&lt;/a&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;내가 선호하는 코드이다. date의 경우 &lt;code&gt;Sys.Date&lt;/code&gt;로 가능하지만, 직접 입력하는걸 선호한다. 이 블로그의 코드는 아래와 같다.&lt;/p&gt;
+&lt;div class=&#34;sourceCode&#34; id=&#34;cb2&#34;&gt;&lt;pre class=&#34;sourceCode r&#34;&gt;&lt;code class=&#34;sourceCode r&#34;&gt;&lt;a class=&#34;sourceLine&#34; id=&#34;cb2-1&#34; title=&#34;1&#34;&gt;&lt;span class=&#34;op&#34;&gt;---&lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb2-2&#34; title=&#34;2&#34;&gt;title&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;R 마크다운&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb2-3&#34; title=&#34;3&#34;&gt;author&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;이청파&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb2-4&#34; title=&#34;4&#34;&gt;date&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &amp;#39;2020-06-26&amp;#39;&lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb2-5&#34; title=&#34;5&#34;&gt;slug&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &amp;#39;r/4&amp;#39;&lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb2-6&#34; title=&#34;6&#34;&gt;categories&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb2-7&#34; title=&#34;7&#34;&gt;&lt;span class=&#34;st&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;op&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;R&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb2-8&#34; title=&#34;8&#34;&gt;tags&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb2-9&#34; title=&#34;9&#34;&gt;&lt;span class=&#34;st&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;op&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;R&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb2-10&#34; title=&#34;10&#34;&gt;  &lt;span class=&#34;op&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;R studio&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb2-11&#34; title=&#34;11&#34;&gt;  &lt;span class=&#34;op&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;R 마크다운&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb2-12&#34; title=&#34;12&#34;&gt;editor_options&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb2-13&#34; title=&#34;13&#34;&gt;&lt;span class=&#34;st&#34;&gt;  &lt;/span&gt;chunk_output_type&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;inline&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb2-14&#34; title=&#34;14&#34;&gt;output&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb2-15&#34; title=&#34;15&#34;&gt;&lt;span class=&#34;st&#34;&gt;  &lt;/span&gt;blogdown&lt;span class=&#34;op&#34;&gt;::&lt;/span&gt;html_page&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb2-16&#34; title=&#34;16&#34;&gt;&lt;span class=&#34;st&#34;&gt;    &lt;/span&gt;toc&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;true&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb2-17&#34; title=&#34;17&#34;&gt;    highlight&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;tango&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb2-18&#34; title=&#34;18&#34;&gt;    number_section&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;true&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb2-19&#34; title=&#34;19&#34;&gt;    self_contained&lt;span class=&#34;op&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;st&#34;&gt; &lt;/span&gt;true&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb2-20&#34; title=&#34;20&#34;&gt;&lt;span class=&#34;op&#34;&gt;---&lt;/span&gt;&lt;/a&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;야물 해더에 params : 를 이용할 수 있으나 잘 사용하지 않으므로 생략한다.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;코드청크&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;코드청크&lt;/h1&gt;
+&lt;p&gt;코드청크는 쉽게 ctrl + alt + i 눌러서 만들자. 힘들게 하나하나 치지말고&lt;/p&gt;
+&lt;div class=&#34;sourceCode&#34; id=&#34;cb3&#34;&gt;&lt;pre class=&#34;sourceCode r&#34;&gt;&lt;code class=&#34;sourceCode r&#34;&gt;&lt;a class=&#34;sourceLine&#34; id=&#34;cb3-1&#34; title=&#34;1&#34;&gt;&lt;span class=&#34;co&#34;&gt;# ```{r setup, include=FALSE}&lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb3-2&#34; title=&#34;2&#34;&gt;&lt;span class=&#34;co&#34;&gt;# knitr::opts_chunk$set(echo = TRUE)&lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb3-3&#34; title=&#34;3&#34;&gt;&lt;span class=&#34;co&#34;&gt;# ```&lt;/span&gt;&lt;/a&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;일반적으로 제일 위에 있는 코드이다. setup은 코드 별명으로 다른것 지정가능하나 setup일 경우 기본적으로 다른 코드 실행 전 한번 실행된다.&lt;/p&gt;
+&lt;p&gt;뒤에는 코드옵션들이다. eval inclue echo message wranning message ressults등이 있다. 각 별명 옆에 적용가능하나 setup에서 볼 수 있는 것처럼 을 통해 글로벌옵션을 변경가능하다.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;eval = FALSE : 코드만 표시&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;include = FALSE : 코드만 실행&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;echo = FALSE : 코드만 생략 (warning,message 포함됨)&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;results = “hide” : 결과만 생략&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;아래는 작업시 일반적으로 쓰는 코드이다.&lt;/p&gt;
+&lt;div class=&#34;sourceCode&#34; id=&#34;cb4&#34;&gt;&lt;pre class=&#34;sourceCode r&#34;&gt;&lt;code class=&#34;sourceCode r&#34;&gt;&lt;a class=&#34;sourceLine&#34; id=&#34;cb4-1&#34; title=&#34;1&#34;&gt;&lt;span class=&#34;co&#34;&gt;# ```{r setup, include=FALSE}&lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb4-2&#34; title=&#34;2&#34;&gt;&lt;span class=&#34;co&#34;&gt;# knitr::opts_chunk$set(error = TRUE)&lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb4-3&#34; title=&#34;3&#34;&gt;&lt;span class=&#34;co&#34;&gt;# ```&lt;/span&gt;&lt;/a&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;추가적으로 &lt;code&gt;cache = TRUE&lt;/code&gt;를 통해 해당청크(전역 불가능 : 의미가 없음)를 통해 오래걸리는 특정청크가 knitr할때마다 시간이 소비되는 것을 막을 수 있다. 하지만 해당청크에서만 적용되므로 &lt;code&gt;cache = TRUE, dependson=&amp;#39;다른청크별명&amp;#39;&lt;/code&gt;을 통해 함께 변화된 부분이 있을 경우 반영될 수 있게 만들어야 한다. Rmd 외적인 파일도 추적하고 싶으면 &lt;code&gt;cache.extra=file.info(&amp;quot;파일명&amp;quot;)&lt;/code&gt;를 사용하면 된다.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;knitr::clean_cache()&lt;/code&gt;를 통해 복잡할 경우 지울 수 있다.&lt;/p&gt;
+&lt;p&gt;최종시에는 아래와 같이 사용한다.&lt;/p&gt;
+&lt;div class=&#34;sourceCode&#34; id=&#34;cb5&#34;&gt;&lt;pre class=&#34;sourceCode r&#34;&gt;&lt;code class=&#34;sourceCode r&#34;&gt;&lt;a class=&#34;sourceLine&#34; id=&#34;cb5-1&#34; title=&#34;1&#34;&gt;&lt;span class=&#34;co&#34;&gt;# ```{r setup, include=FALSE}&lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb5-2&#34; title=&#34;2&#34;&gt;&lt;span class=&#34;co&#34;&gt;# knitr::opts_chunk$set(warning = FALSE, message = FALSE)&lt;/span&gt;&lt;/a&gt;
+&lt;a class=&#34;sourceLine&#34; id=&#34;cb5-3&#34; title=&#34;3&#34;&gt;&lt;span class=&#34;co&#34;&gt;# ```&lt;/span&gt;&lt;/a&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;기본-문법&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;기본 문법&lt;/h1&gt;
+&lt;p&gt;Help - Cheatsheets - R markdown cheat sheet 를 확인해 보자&lt;/p&gt;
+&lt;p&gt;진하게, 기울기, 번호 등등이 가능하다. 더 복잡한 것을 원하면 CSS을 공부하자. 물론 word_document인경우 워드프로세스를 공부하자.&lt;/p&gt;
+&lt;/div&gt;
+
+</content>
+            
+            
+            
+            
+            
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="/categories/r/" term="R" label="R" />
+                            
+                        
+                    
+                
+                    
+                        
+                            
+                            
+                            
+                                <category scheme="/tags/r/" term="R" label="R" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="/tags/r-studio/" term="R studio" label="R studio" />
+                            
+                        
+                            
+                            
+                            
+                                <category scheme="/tags/r-%EB%A7%88%ED%81%AC%EB%8B%A4%EC%9A%B4/" term="R 마크다운" label="R 마크다운" />
+                            
+                        
+                    
+                
+            
+        </entry>
+    
         <entry>
             <title type="text">데이터마이닝 - 이론정리</title>
             <link rel="alternate" type="text/html" href="/posts/data_mining/0/" />

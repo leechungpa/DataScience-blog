@@ -1,0 +1,136 @@
+---
+title: R 마크다운
+author: 이청파
+date: '2020-06-26'
+slug: 'r/4'
+categories:
+  - R
+tags:
+  - R
+  - R studio
+  - R 마크다운
+editor_options: 
+  chunk_output_type: inline
+output: 
+  blogdown::html_page:
+    toc: true
+    highlight: tango
+    number_section: true
+    self_contained: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+
+# R 마크다운의 기본원리
+
+먼저 R마크다운은 .md가 아니라 .Rmd이다. 즉 Rmd가 knitr패키지에 의해 md가 되고 이 파일을 pandoc이 처리하게 된다.
+
+하지만 수식이나 띄어쓰기 한글 등에서 종종 자주 문제가 발생한다. 실제로 Rmd 출력시 다양한 형태 심지어 ppt도 가능하나, 매우 형편없다. 개인적으로는 html_document이나 word_document가 좋다. 현 페이지는 blogdown::html_page를 사용하였다.
+
+# YAML 헤더
+
+```{r}
+---
+layout: page
+title: "제목"
+subtitle: "부제목"
+author:
+    name: "[이청파](https://github.com/leechungpa/)"
+date: "2020-06-23"
+output:
+  html_document: 
+    toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: hide
+    number_section: true
+    self_contained: true
+editor_options: 
+  chunk_output_type: console
+---
+```
+
+내가 선호하는 코드이다. date의 경우 `Sys.Date`로 가능하지만, 직접 입력하는걸 선호한다. 이 블로그의 코드는 아래와 같다.
+
+```{r}
+---
+title: R 마크다운
+author: 이청파
+date: '2020-06-26'
+slug: 'r/4'
+categories:
+  - R
+tags:
+  - R
+  - R studio
+  - R 마크다운
+editor_options: 
+  chunk_output_type: inline
+output: 
+  blogdown::html_page:
+    toc: true
+    highlight: tango
+    number_section: true
+    self_contained: true
+---
+```
+
+
+야물 해더에 params : 를 이용할 수 있으나 잘 사용하지 않으므로 생략한다.
+
+
+# 코드청크
+
+코드청크는 쉽게 ctrl + alt + i 눌러서 만들자. 힘들게 하나하나 치지말고
+
+```{r}
+# ```{r setup, include=FALSE}
+# knitr::opts_chunk$set(echo = TRUE)
+# ```
+```
+
+일반적으로 제일 위에 있는 코드이다. setup은 코드 별명으로 다른것 지정가능하나 setup일 경우 기본적으로 다른 코드 실행 전 한번 실행된다.
+
+뒤에는 코드옵션들이다. eval inclue echo message wranning message ressults등이 있다. 각 별명 옆에 적용가능하나 setup에서 볼 수 있는 것처럼 `r knitr::opts_chunk$set()`을 통해 글로벌옵션을 변경가능하다. 
+
+- eval = FALSE : 코드만 표시
+
+- include = FALSE : 코드만 실행
+
+- echo = FALSE : 코드만 생략 (warning,message 포함됨)
+
+- results = "hide" : 결과만 생략
+
+아래는 작업시 일반적으로 쓰는 코드이다.
+
+```{r}
+# ```{r setup, include=FALSE}
+# knitr::opts_chunk$set(error = TRUE)
+# ```
+```
+
+추가적으로 `cache = TRUE`를 통해 해당청크(전역 불가능 : 의미가 없음)를 통해 오래걸리는 특정청크가 knitr할때마다 시간이 소비되는 것을 막을 수 있다. 하지만 해당청크에서만 적용되므로 `cache = TRUE, dependson='다른청크별명'`을 통해 함께 변화된 부분이 있을 경우 반영될 수 있게 만들어야 한다. Rmd 외적인 파일도 추적하고 싶으면 `cache.extra=file.info("파일명")`를 사용하면 된다.
+
+`knitr::clean_cache()`를 통해 복잡할 경우 지울 수 있다.
+
+
+최종시에는 아래와 같이 사용한다.
+
+```{r}
+# ```{r setup, include=FALSE}
+# knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+# ```
+```
+
+# 기본 문법
+
+Help - Cheatsheets - R markdown cheat sheet 를 확인해 보자
+
+진하게, 기울기, 번호 등등이 가능하다. 더 복잡한 것을 원하면 CSS을 공부하자. 물론 word_document인경우 워드프로세스를 공부하자.
+
+
+
+
