@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-us">
     <title type="text">Leechungpa&#39;s Data Science blog</title>
     <subtitle type="html">Blog for Data Science by Leechungpa.</subtitle>
-    <updated>2020-07-15T11:48:42&#43;09:00</updated>
+    <updated>2020-07-15T11:59:43&#43;09:00</updated>
     <id>/</id>
     <link rel="alternate" type="text/html" href="/" />
     <link rel="self" type="application/atom&#43;xml" href="/atom.xml" />
