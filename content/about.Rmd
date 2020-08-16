@@ -11,6 +11,6 @@ output:
 ---  
  
 
-해당 블로그는 [**blogdown package**](https://github.com/rstudio/blogdown)를 바탕으로 제작되었습니다. 2020학년도 1학기 [데이터사이언스 입문](https://statkclee.github.io/ds-intro-2020/) 수업에서 배운 내용을 바탕으로 데이터 사이언스를 위한 블로그입니다.
+해당 블로그는 [**blogdown package**](https://github.com/rstudio/blogdown)를 활용하여 R로 제작되었습니다. 2020학년도 1학기 [데이터사이언스 입문](https://statkclee.github.io/ds-intro-2020/) 수업에서 배운 내용을 바탕으로 데이터 사이언스를 위한 블로그입니다.
 
 작성자에 대한 정보가 궁금하면 다음의 [resume](https://leechungpa.github.io/resume.html)를 참고해 주시기 바랍니다.
